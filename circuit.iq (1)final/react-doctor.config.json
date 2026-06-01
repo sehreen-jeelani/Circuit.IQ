@@ -1,0 +1,11 @@
+{
+  "ignore": {
+    "rules": [
+      "react-doctor/no-unknown-property"
+    ],
+    "files": [
+      "public/**",
+      "dist/**"
+    ]
+  }
+}

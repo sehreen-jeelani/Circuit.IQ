@@ -1,0 +1,10 @@
+{
+  "name": "Remix: Circuit.IQ",
+  "description": "AI Powered Virtual Physics Laboratory - Immersive, cinematic laboratory for physics experiments and electronic simulations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "3D Simulation",
+    "AI Tutoring",
+    "Circuit Analysis"
+  ]
+}

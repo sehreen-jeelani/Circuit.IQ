@@ -1,0 +1,11 @@
+Model Information:
+* title:	[CC0] Set of Electronic Components
+* source:	https://sketchfab.com/3d-models/cc0-set-of-electronic-components-f4cb777b4ea3490587008e24b61bcf75
+* author:	Lara Sophie Schütt (https://sketchfab.com/literallylara)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "[CC0] Set of Electronic Components" (https://sketchfab.com/3d-models/cc0-set-of-electronic-components-f4cb777b4ea3490587008e24b61bcf75) by Lara Sophie Schütt (https://sketchfab.com/literallylara) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

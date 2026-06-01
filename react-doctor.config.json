@@ -1,0 +1,16 @@
+{
+  "ignore": {
+    "rules": [
+      "react-doctor/no-unknown-property"
+    ],
+    "files": [
+      "circuit.iq (1)final/public/**",
+      "circuit.iq (1)final/dist/**",
+      "LABfront-IQ-3D/dist/**",
+      "LABfront-IQ-3D/node_modules/**",
+      "circuit.iq (1)final/node_modules/**",
+      "**/assets/**",
+      "**/dist/**"
+    ]
+  }
+}

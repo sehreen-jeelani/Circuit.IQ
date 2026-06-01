@@ -1,0 +1,882 @@
+<!--
+ ============================================================================
+  Circuit IQ — Virtual Physics Lab  ·  3D Frontend
+  FILE: index.html
+  ROLE: HTML Shell — Full UI layout, panels, modals
+ ============================================================================
+
+  HTML STRUCTURE OVERVIEW:
+  ┌──────────────────────────────────────────────────────────┐
+  │  #topbar                                                  │
+  │    Logo | Experiment Select | Run/Stop | Score | Buttons  │
+  ├────────────────┬──────────────────────────┬──────────────┤
+  │  #left-panel   │  #center-panel            │ #right-panel │
+  │  (230px)       │  (flex:1)                 │ (280px)      │
+  │                │                           │              │
+  │  Search bar    │  #canvas-container        │ #lab-panel   │
+  │  Component     │  (Three.js 3D scene)      │  Tabs:       │
+  │  Sidebar       │                           │  Theory      │
+  │    ├ Source    │  Canvas bottom bar        │  Steps       │
+  │    ├ Resistor  │  (zoom, fit, rotate)      │  Table       │
+  │    ├ Inductor  │                           │  Graph       │
+  │    ├ Capacitor │  #meters-panel (floats)   │  Viva        │
+  │    ├ LED       │  #osc-panel-float         │  Conclusion  │
+  │    ├ Wires     │  #graph-panel-float       │              │
+  │    └ Breadbd   │                           │ #ai-panel    │
+  │                │                           │  AI Chat     │
+  │  #inspector    │                           │              │
+  │  (bottom)      │                           │ #meters-panel│
+  └────────────────┴──────────────────────────┴──────────────┘
+
+  KEY ELEMENT IDs (to reference in main.js):
+    #topbar              Topbar container
+    #exp-selector        Experiment dropdown <select>
+    #btn-run             Run/Simulate button
+    #btn-stop            Stop button
+    #btn-record          Record data point button
+    #btn-report          Download Lab Report button
+    #score-display       Score number display
+    #left-panel          Left sidebar
+    #components-search   Component search input
+    #search-clear        Clear search button
+    #components-list     Grid of .comp-chip elements
+    #center-panel        Center 3D canvas area
+    #canvas-container    Three.js canvas parent
+    #right-panel         Right panel container
+    #lab-panel           Lab notebook panel
+    #lab-tabs            Tab buttons row
+    #sub-theory          Theory content panel
+    #sub-steps           Procedure steps panel
+    #step-list           Steps container
+    #sub-table           Observation table panel
+    #data-table-wrap     Table container
+    #sub-graph-tab       Graph tab panel
+    #sub-viva            Viva questions panel
+    #viva-container      Viva Q cards container
+    #sub-conclusion      Conclusion panel
+    #conclusion-text     Conclusion text element
+    #ai-panel            AI mentor chat panel
+    #ai-messages         Chat message list
+    #ai-input            User chat input
+    #meters-panel        Meters floating panel
+    #osc-panel-float     Oscilloscope floating panel
+    #graph-panel-float   Graph floating panel
+    #inspector-panel     Component inspector (right)
+    #formula-container   Formula chips container
+
+  SCRIPTS:
+    src/main.js (loaded as ES module at end of <body>)
+
+  EXTERNAL CDNs:
+    Google Fonts: Inter + JetBrains Mono
+    FontAwesome 6.4 (icons)
+ ============================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circuit IQ | Virtual Breadboard Lab</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+  <div id="topbar">
+    <div class="tb-logo">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="4" fill="#00d084" opacity=".15"/><path d="M7 12h2l2-4 2 8 2-4h2" stroke="#00d084" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Circuit<b>IQ</b></span>
+    </div>
+    <div class="tb-divider"></div>
+    <select class="exp-select" id="exp-selector">
+      <optgroup label="Electricity & Circuits">
+        <option value="ohms">EXP-01 · Ohm's Law (DC)</option>
+        <option value="kvl">EXP-02 · Kirchhoff's Voltage Law</option>
+        <option value="kcl">EXP-03 · Kirchhoff's Current Law</option>
+        <option value="rc_rl_rlc">EXP-04 · RC/RL/RLC AC Circuits</option>
+        <option value="series_parallel">EXP-05 · Series & Parallel Loads</option>
+        <option value="wheatstone">EXP-06 · Wheatstone Bridge</option>
+      </optgroup>
+      <optgroup label="Electromagnetism">
+        <option value="faraday">EXP-07 · Faraday's Induction Law</option>
+        <option value="lenz">EXP-08 · Lenz's Law Demonstration</option>
+        <option value="solenoid">EXP-09 · Solenoid Magnetic Field</option>
+        <option value="transformer">EXP-10 · AC Transformer Ratio</option>
+      </optgroup>
+      <optgroup label="Optics & Light">
+        <option value="snell">EXP-11 · Snell's Law & Refraction</option>
+        <option value="lens_eq">EXP-12 · Thin Lens Equation</option>
+        <option value="tir">EXP-13 · Total Internal Reflection</option>
+        <option value="prism">EXP-14 · Prism Dispersion Spectrum</option>
+      </optgroup>
+      <optgroup label="Mechanics & Waves">
+        <option value="pendulum">EXP-15 · Simple Pendulum Motion</option>
+        <option value="hooke">EXP-16 · Hooke's Law & Springs</option>
+        <option value="projectile">EXP-17 · Projectile Firing Path</option>
+        <option value="doppler">EXP-18 · Doppler Shift Simulation</option>
+      </optgroup>
+      <optgroup label="Thermodynamics">
+        <option value="ideal_gas">EXP-19 · Ideal Gas State Equation</option>
+        <option value="boyle">EXP-20 · Boyle's Constant Temp Law</option>
+        <option value="charles">EXP-21 · Charles's Constant Pres Law</option>
+        <option value="specific_heat">EXP-22 · Specific Heat Capacity</option>
+      </optgroup>
+      <optgroup label="Modern Physics">
+        <option value="photoelectric">EXP-23 · Photoelectric Effect</option>
+        <option value="radioactive">EXP-24 · Radioactive Decay Half-Life</option>
+        <option value="de_broglie">EXP-25 · de Broglie Wavelength</option>
+        <option value="bohr_model">EXP-26 · Bohr Hydrogen Atom orbits</option>
+      </optgroup>
+    </select>
+    <div class="tb-sep"></div>
+    <div class="error-badge" id="error-badge">⚠ 1 error</div>
+    <button class="tb-btn tb-btn-ghost" id="btn-reload">↺ Reload</button>
+    <button class="tb-btn tb-btn-outline" id="btn-osc-toggle">~ Scope</button>
+    <button class="tb-btn tb-btn-outline" id="btn-graph-toggle">∿ Graph</button>
+    <div class="tb-divider"></div>
+    <button class="tb-btn tb-btn-green" id="btn-simulate">▶ Simulate</button>
+    <button class="tb-btn tb-btn-red" id="btn-stop" style="display:none">■ Stop</button>
+    <div class="tb-divider"></div>
+    <button class="tb-btn tb-btn-ghost" id="btn-reset">🗑 Clear</button>
+    <div class="tb-divider" style="margin-left: auto;"></div>
+    <button class="tb-btn tb-btn-red" id="btn-close-lab" style="margin-right: 10px;">✕ Exit Lab</button>
+  </div>
+
+  <div id="workspace">
+    <div id="left-panel">
+      <div class="lp-section-hdr-container">
+        <span class="lp-title-main">Components</span>
+        <span class="lp-title-count-badge" id="total-components-count">13</span>
+      </div>
+      <div class="search-container">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="components-search" placeholder="Search components...">
+        <i class="fa-solid fa-circle-xmark search-clear-icon" id="search-clear" style="display: none; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--text3); cursor: pointer; transition: color 0.15s; font-size: 12px; z-index: 10;"></i>
+      </div>
+      <div class="search-underline-colors">
+        <span class="c-red"></span>
+        <span class="c-green"></span>
+        <span class="c-yellow"></span>
+        <span class="c-blue"></span>
+      </div>
+      <div class="lp-scroll">
+
+        <div class="lp-section" data-block="breadboard">
+          <div class="lp-section-hdr">
+            <span>Breadboard</span>
+            <span class="count">2</span>
+            <i class="fa-solid fa-chevron-down category-chevron"></i>
+          </div>
+          <div class="lp-section-body">
+            <button class="component-card comp-chip" data-type="bb_half" data-name="breadboard half 400 tie-points swap size">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <rect x="10" y="15" width="80" height="30" rx="2" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+                  <line x1="15" y1="20" x2="85" y2="20" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="2 2"/>
+                  <line x1="15" y1="40" x2="85" y2="40" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="2 2"/>
+                  <circle cx="20" cy="27" r="1.2" fill="#64748b"/>
+                  <circle cx="30" cy="27" r="1.2" fill="#64748b"/>
+                  <circle cx="40" cy="27" r="1.2" fill="#64748b"/>
+                  <circle cx="50" cy="27" r="1.2" fill="#64748b"/>
+                  <circle cx="60" cy="27" r="1.2" fill="#64748b"/>
+                  <circle cx="70" cy="27" r="1.2" fill="#64748b"/>
+                  <circle cx="80" cy="27" r="1.2" fill="#64748b"/>
+                  <circle cx="20" cy="33" r="1.2" fill="#64748b"/>
+                  <circle cx="30" cy="33" r="1.2" fill="#64748b"/>
+                  <circle cx="40" cy="33" r="1.2" fill="#64748b"/>
+                  <circle cx="50" cy="33" r="1.2" fill="#64748b"/>
+                  <circle cx="60" cy="33" r="1.2" fill="#64748b"/>
+                  <circle cx="70" cy="33" r="1.2" fill="#64748b"/>
+                  <circle cx="80" cy="33" r="1.2" fill="#64748b"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">Breadboard (Half+)</span>
+              <span class="comp-chip-sub" style="display:none">400 tie-points</span>
+            </button>
+            <button class="component-card comp-chip selected" data-type="bb_full" data-name="breadboard full-size 830 tie-points swap size">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <rect x="5" y="15" width="90" height="30" rx="2" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+                  <line x1="10" y1="20" x2="90" y2="20" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="2 2"/>
+                  <line x1="10" y1="40" x2="90" y2="40" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="2 2"/>
+                  <circle cx="15" cy="27" r="1" fill="#64748b"/>
+                  <circle cx="25" cy="27" r="1" fill="#64748b"/>
+                  <circle cx="35" cy="27" r="1" fill="#64748b"/>
+                  <circle cx="45" cy="27" r="1" fill="#64748b"/>
+                  <circle cx="55" cy="27" r="1" fill="#64748b"/>
+                  <circle cx="65" cy="27" r="1" fill="#64748b"/>
+                  <circle cx="75" cy="27" r="1" fill="#64748b"/>
+                  <circle cx="85" cy="27" r="1" fill="#64748b"/>
+                  <circle cx="15" cy="33" r="1" fill="#64748b"/>
+                  <circle cx="25" cy="33" r="1" fill="#64748b"/>
+                  <circle cx="35" cy="33" r="1" fill="#64748b"/>
+                  <circle cx="45" cy="33" r="1" fill="#64748b"/>
+                  <circle cx="55" cy="33" r="1" fill="#64748b"/>
+                  <circle cx="65" cy="33" r="1" fill="#64748b"/>
+                  <circle cx="75" cy="33" r="1" fill="#64748b"/>
+                  <circle cx="85" cy="33" r="1" fill="#64748b"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">Breadboard (Full-size)</span>
+              <span class="comp-chip-sub" style="display:none">830 tie-points</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="lp-section" data-block="sources">
+          <div class="lp-section-hdr">
+            <span>Power Sources</span>
+            <span class="count">1</span>
+            <i class="fa-solid fa-chevron-down category-chevron"></i>
+          </div>
+          <div class="lp-section-body">
+            <button class="component-card comp-chip" draggable="true" data-type="source" data-name="power source dc voltage battery supply variable">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <rect x="30" y="15" width="40" height="30" rx="4" fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
+                  <path d="M 50 20 L 42 32 L 49 32 L 48 40 L 58 28 L 51 28 Z" fill="#ffffff"/>
+                  <circle cx="38" cy="38" r="3" fill="#1e293b"/>
+                  <circle cx="62" cy="38" r="3" fill="#ef4444"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">Power Source</span>
+              <div class="component-select-container" onclick="event.stopPropagation();">
+                <select class="component-value-select" data-param="V">
+                  <option value="1.5">1.5 V</option>
+                  <option value="3.3">3.3 V</option>
+                  <option value="5">5.0 V</option>
+                  <option value="9">9.0 V</option>
+                  <option value="12" selected>12 V</option>
+                  <option value="15">15 V</option>
+                  <option value="24">24 V</option>
+                </select>
+              </div>
+              <span class="comp-chip-sub" style="display:none">0–24V Variable</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="lp-section" data-block="passives">
+          <div class="lp-section-hdr">
+            <span>Passive</span>
+            <span class="count">8</span>
+            <i class="fa-solid fa-chevron-down category-chevron"></i>
+          </div>
+          <div class="lp-section-body">
+            <button class="component-card comp-chip" draggable="true" data-type="resistor" data-name="resistor ceramic passive r resistor-value">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <line x1="10" y1="30" x2="90" y2="30" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+                  <rect x="25" y="20" width="50" height="20" rx="5" fill="#f5ebe0" stroke="#e3d5ca" stroke-width="1.5"/>
+                  <rect x="35" y="20" width="5" height="20" fill="#9c6644"/>
+                  <rect x="47" y="20" width="5" height="20" fill="#e07a5f"/>
+                  <rect x="59" y="20" width="5" height="20" fill="#f4f1de"/>
+                  <rect x="67" y="20" width="5" height="20" fill="#f3c68f"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">Resistor</span>
+              <div class="component-select-container" onclick="event.stopPropagation();">
+                <select class="component-value-select" data-param="R">
+                  <option value="10">10 Ω</option>
+                  <option value="50">50 Ω</option>
+                  <option value="100" selected>100 Ω</option>
+                  <option value="150">150 Ω</option>
+                  <option value="220">220 Ω</option>
+                  <option value="330">330 Ω</option>
+                  <option value="470">470 Ω</option>
+                  <option value="600">600 Ω</option>
+                </select>
+              </div>
+              <span class="comp-chip-sub" style="display:none">1Ω – 1MΩ</span>
+            </button>
+            <button class="component-card comp-chip" draggable="true" data-type="capacitor" data-name="capacitor electrolytic passive c capacitor-value">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <rect x="35" y="15" width="30" height="30" rx="3" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+                  <line x1="45" y1="45" x2="45" y2="52" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+                  <line x1="55" y1="45" x2="55" y2="52" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+                  <rect x="53" y="15" width="8" height="30" fill="#64748b"/>
+                  <line x1="55" y1="22" x2="59" y2="22" stroke="#cbd5e1" stroke-width="1.5"/>
+                  <line x1="55" y1="30" x2="59" y2="30" stroke="#cbd5e1" stroke-width="1.5"/>
+                  <line x1="55" y1="38" x2="59" y2="38" stroke="#cbd5e1" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">Capacitor</span>
+              <div class="component-select-container" onclick="event.stopPropagation();">
+                <select class="component-value-select" data-param="C">
+                  <option value="10">10 µF</option>
+                  <option value="47">47 µF</option>
+                  <option value="100" selected>100 µF</option>
+                  <option value="220">220 µF</option>
+                  <option value="470">470 µF</option>
+                </select>
+              </div>
+              <span class="comp-chip-sub" style="display:none">Electrolytic · µF</span>
+            </button>
+            <button class="component-card comp-chip" draggable="true" data-type="inductor" data-name="inductor copper passive l inductor-value">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <line x1="10" y1="30" x2="90" y2="30" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+                  <rect x="25" y="18" width="50" height="24" rx="4" fill="#475569" stroke="#334155" stroke-width="1"/>
+                  <path d="M 30 18 Q 33 42 36 18 Q 39 42 42 18 Q 45 42 48 18 Q 51 42 54 18 Q 57 42 60 18 Q 63 42 66 18 Q 69 42 72 18" fill="none" stroke="#b45309" stroke-width="3.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">Inductor</span>
+              <div class="component-select-container" onclick="event.stopPropagation();">
+                <select class="component-value-select" data-param="L">
+                  <option value="10">10 mH</option>
+                  <option value="20">20 mH</option>
+                  <option value="50" selected>50 mH</option>
+                  <option value="100">100 mH</option>
+                </select>
+              </div>
+              <span class="comp-chip-sub" style="display:none">Ferrite core · mH</span>
+            </button>
+            <button class="component-card comp-chip" draggable="true" data-type="button" data-name="momentary push button key switch tact red">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <rect x="30" y="15" width="40" height="30" rx="3" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
+                  <circle cx="50" cy="30" r="10" fill="#ef4444" stroke="#b91c1c" stroke-width="1"/>
+                  <circle cx="50" cy="30" r="7" fill="#dc2626"/>
+                  <rect x="26" y="20" width="4" height="6" rx="1" fill="#94a3b8"/>
+                  <rect x="26" y="34" width="4" height="6" rx="1" fill="#94a3b8"/>
+                  <rect x="70" y="20" width="4" height="6" rx="1" fill="#94a3b8"/>
+                  <rect x="70" y="34" width="4" height="6" rx="1" fill="#94a3b8"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">Push Button</span>
+              <span class="comp-chip-sub" style="display:none">Momentary switch</span>
+            </button>
+            <button class="component-card comp-chip" draggable="true" data-type="toggle_switch" data-name="on/off switch toggle key latching black">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <rect x="30" y="15" width="40" height="30" rx="3" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
+                  <circle cx="50" cy="30" r="10" fill="#475569" stroke="#1e293b" stroke-width="1"/>
+                  <circle cx="50" cy="30" r="7" fill="#111111"/>
+                  <rect x="26" y="20" width="4" height="6" rx="1" fill="#94a3b8"/>
+                  <rect x="26" y="34" width="4" height="6" rx="1" fill="#94a3b8"/>
+                  <rect x="70" y="20" width="4" height="6" rx="1" fill="#94a3b8"/>
+                  <rect x="70" y="34" width="4" height="6" rx="1" fill="#94a3b8"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">ON/OFF Switch</span>
+              <span class="comp-chip-sub" style="display:none">Latching toggle switch</span>
+            </button>
+            <button class="component-card comp-chip" draggable="true" data-type="diode" data-name="pn diode silicon rectifier 1n4007 valve d">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <line x1="10" y1="30" x2="90" y2="30" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+                  <rect x="30" y="20" width="40" height="20" rx="2" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+                  <rect x="60" y="20" width="6" height="20" fill="#cbd5e1"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">PN Diode</span>
+              <div class="component-select-container" onclick="event.stopPropagation();">
+                <select class="component-value-select" data-param="diode_model">
+                  <option value="1N4007" selected>1N4007</option>
+                </select>
+              </div>
+              <span class="comp-chip-sub" style="display:none">1N4007 Silicon</span>
+            </button>
+            <button class="component-card comp-chip" draggable="true" data-type="transistor" data-name="npn transistor 2n2222 bjt active current amplifier bjt">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <path d="M 35 15 C 35 15, 50 10, 65 15 L 65 40 C 65 40, 50 42, 35 40 Z" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+                  <line x1="50" y1="15" x2="50" y2="40" stroke="#0f172a" stroke-width="0.5"/>
+                  <line x1="42" y1="40" x2="42" y2="52" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="50" y1="40" x2="50" y2="52" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="58" y1="40" x2="58" y2="52" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">NPN Transistor</span>
+              <span class="comp-chip-sub" style="display:none">2N2222 BJT</span>
+            </button>
+            <button class="component-card comp-chip" draggable="true" data-type="display" data-name="7-seg display segment common anode led digital display">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <rect x="32" y="10" width="36" height="40" rx="3" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+                  <g stroke="#334155" stroke-width="2" stroke-linecap="round" fill="none">
+                    <line x1="42" y1="16" x2="58" y2="16" stroke="#ef4444"/>
+                    <line x1="59" y1="18" x2="59" y2="28" stroke="#ef4444"/>
+                    <line x1="59" y1="32" x2="59" y2="42" stroke="#ef4444"/>
+                    <line x1="42" y1="44" x2="58" y2="44"/>
+                    <line x1="41" y1="32" x2="41" y2="42"/>
+                    <line x1="41" y1="18" x2="41" y2="28" stroke="#ef4444"/>
+                    <line x1="42" y1="30" x2="58" y2="30"/>
+                  </g>
+                  <circle cx="62" cy="44" r="1.5" fill="#334155"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">7-Seg Display</span>
+              <span class="comp-chip-sub" style="display:none">Common Anode</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="lp-section" data-block="leds">
+          <div class="lp-section-hdr">
+            <span>LEDs</span>
+            <span class="count">1</span>
+            <i class="fa-solid fa-chevron-down category-chevron"></i>
+          </div>
+          <div class="lp-section-body">
+            <button class="component-card comp-chip" draggable="true" data-type="led" data-name="led color option diode light emitter">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <path d="M 42 35 C 42 22, 58 22, 58 35 Z" fill="#ef4444" opacity="0.8" id="sidebar-led-svg-color"/>
+                  <rect x="42" y="35" width="16" height="3" rx="0.5" fill="#dc2626" id="sidebar-led-svg-base"/>
+                  <path d="M 47 35 L 47 28 L 51 28" fill="none" stroke="#fecaca" stroke-width="1"/>
+                  <path d="M 53 35 L 53 25 L 50 25" fill="none" stroke="#fecaca" stroke-width="1"/>
+                  <line x1="46" y1="38" x2="46" y2="48" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="54" y1="38" x2="54" y2="52" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">LED</span>
+              <div class="component-select-container" onclick="event.stopPropagation();">
+                <select class="component-value-select" data-param="led_color">
+                  <option value="red" selected>🔴 Red</option>
+                  <option value="green">🟢 Green</option>
+                  <option value="yellow">🟡 Yellow</option>
+                  <option value="blue">🔵 Blue</option>
+                  <option value="white">⚪ White</option>
+                </select>
+              </div>
+              <span class="comp-chip-sub" style="display:none">Color Option</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="lp-section" data-block="wires">
+          <div class="lp-section-hdr">
+            <span>Wires</span>
+            <span class="count">1</span>
+            <i class="fa-solid fa-chevron-down category-chevron"></i>
+          </div>
+          <div class="lp-section-body">
+            <button class="component-card comp-chip" draggable="true" data-type="wire" data-name="wire wiring harness connections route w link">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <path d="M 20 40 C 20 15, 80 15, 80 40" fill="none" stroke="#e8c547" stroke-width="4" stroke-linecap="round"/>
+                  <line x1="20" y1="40" x2="20" y2="45" stroke="#cbd5e1" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="80" y1="40" x2="80" y2="45" stroke="#cbd5e1" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">Wire</span>
+              <span class="comp-chip-sub" style="display:none">Connect two holes</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="lp-section" data-block="instruments">
+          <div class="lp-section-hdr">
+            <span>Instruments</span>
+            <span class="count">3</span>
+            <i class="fa-solid fa-chevron-down category-chevron"></i>
+          </div>
+          <div class="lp-section-body">
+            <button class="component-card comp-chip" draggable="true" data-type="ammeter" data-name="ammeter series current measure gauge meter a multitester">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <rect x="25" y="12" width="50" height="36" rx="4" fill="#1e3a8a" stroke="#1d4ed8" stroke-width="1.5"/>
+                  <path d="M 32 36 A 20 20 0 0 1 68 36" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+                  <line x1="50" y1="42" x2="58" y2="24" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+                  <circle cx="36" cy="42" r="3" fill="#000"/>
+                  <circle cx="64" cy="42" r="3" fill="#ef4444"/>
+                  <text x="50" y="38" text-anchor="middle" fill="#ffffff" font-size="10" font-family="'Inter', sans-serif" font-weight="bold">A</text>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">Ammeter</span>
+              <span class="comp-chip-sub" style="display:none">Series · DC/AC</span>
+            </button>
+            <button class="component-card comp-chip" draggable="true" data-type="voltmeter" data-name="voltmeter parallel voltage measure gauge meter v multitester">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <rect x="25" y="12" width="50" height="36" rx="4" fill="#7f1d1d" stroke="#b91c1c" stroke-width="1.5"/>
+                  <path d="M 32 36 A 20 20 0 0 1 68 36" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+                  <line x1="50" y1="42" x2="44" y2="24" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+                  <circle cx="36" cy="42" r="3" fill="#000"/>
+                  <circle cx="64" cy="42" r="3" fill="#ef4444"/>
+                  <text x="50" y="38" text-anchor="middle" fill="#ffffff" font-size="10" font-family="'Inter', sans-serif" font-weight="bold">V</text>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">Voltmeter</span>
+              <span class="comp-chip-sub" style="display:none">Parallel · DC/AC</span>
+            </button>
+            <button class="component-card comp-chip" data-type="eraser" data-name="eraser tool delete remove trash clear rub">
+              <div class="component-preview">
+                <svg viewBox="0 0 100 60" class="component-svg">
+                  <rect x="35" y="15" width="30" height="30" rx="3" fill="#f43f5e" stroke="#e11d48" stroke-width="1.5"/>
+                  <line x1="43" y1="23" x2="57" y2="23" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                  <rect x="45" y="27" width="10" height="13" fill="none" stroke="#ffffff" stroke-width="2"/>
+                  <line x1="49" y1="30" x2="49" y2="37" stroke="#ffffff" stroke-width="1.5"/>
+                  <line x1="51" y1="30" x2="51" y2="37" stroke="#ffffff" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <span class="component-name comp-chip-name">Eraser Tool</span>
+              <span class="comp-chip-sub" style="display:none">Click items to delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="canvas-area">
+      <!-- Top Center Wiring Mode Banner -->
+      <div class="wiring-mode-banner hidden" id="wiring-mode-banner">
+        ● WIRING MODE // SELECT TERMINAL 1
+      </div>
+      <!-- Snapping labels -->
+      <div id="guide-label-1" class="guide-floating-label hidden"></div>
+      <div id="guide-label-2" class="guide-floating-label hidden"></div>
+
+      <div id="canvas-3d-parent" style="width:100%; height:100%;"></div>
+      <div id="wire-toast"><div class="wt-dot"></div><span id="wire-toast-text">Select first hole on breadboard</span></div>
+      <div id="notif-wrap"></div>
+
+      <!-- OSCILLOSCOPE PANEL -->
+      <div id="osc-wrap">
+        <div class="osc-hdr">
+          <div class="osc-title"><div style="width:6px;height:6px;border-radius:50%;background:#00ff88;animation:blink 1s infinite"></div> Oscilloscope</div>
+          <div class="panel-hdr-actions">
+            <button class="panel-hdr-btn" id="osc-download" title="Download Scope Image"><i class="fa-solid fa-download"></i></button>
+            <button class="osc-close" id="osc-close">✕</button>
+          </div>
+        </div>
+        <div class="canvas-holder">
+          <canvas id="osc-canvas"></canvas>
+        </div>
+        <div class="osc-footer">
+          <div class="osc-stats-grid">
+            <div class="osc-stat">f: <b id="osc-freq">50 Hz</b></div>
+            <div class="osc-stat">φ: <b id="osc-phase">0°</b></div>
+            <div class="osc-stat">Vp: <b id="osc-vp">12V</b></div>
+            <div class="osc-stat">T: <b id="osc-period">20ms</b></div>
+          </div>
+          <div class="osc-controls">
+            <div class="osc-ctrl-row">
+              <label>Time/Div</label>
+              <input type="range" id="osc-scale-time" min="0.2" max="3" step="0.1" value="1.0">
+            </div>
+            <div class="osc-ctrl-row">
+              <label>Volts/Div</label>
+              <input type="range" id="osc-scale-volts" min="0.2" max="3" step="0.1" value="1.0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- V-I GRAPH PANEL -->
+      <div id="graph-wrap">
+        <div class="graph-hdr">
+          <div class="graph-title">V–I Graph</div>
+          <div class="panel-hdr-actions">
+            <button class="panel-hdr-btn" id="graph-download" title="Download Graph Image"><i class="fa-solid fa-download"></i></button>
+            <button class="graph-close" id="graph-close">✕</button>
+          </div>
+        </div>
+        <div class="canvas-holder">
+          <canvas id="graph-canvas"></canvas>
+        </div>
+        <div class="graph-footer"><span>I (A) →</span><span id="graph-slope">Slope: —</span></div>
+        <div style="padding:0 8px 8px"><button style="width:100%;padding:5px;font-size:10px;font-weight:600;background:#3b82f615;color:var(--blue);border:1px solid #3b82f630;border-radius:5px;cursor:pointer;font-family:'JetBrains Mono',monospace" id="btn-add-point">+ Record Point</button></div>
+      </div>
+
+      <!-- CANVAS BOTTOM BAR -->
+      <div id="canvas-bar">
+        <button class="cb-btn" id="cb-zoom-out">－</button>
+        <div class="zoom-display" id="zoom-display">100%</div>
+        <button class="cb-btn" id="cb-zoom-in">＋</button>
+        <div class="cb-sep"></div>
+        <button class="cb-btn" id="cb-fit">⊡ Fit</button>
+        <button class="cb-btn" id="cb-front">Front</button>
+        <button class="cb-btn" id="cb-top">Top</button>
+        <button class="cb-btn" id="cb-side">Side</button>
+        <div class="cb-sep"></div>
+        <button class="cb-btn" id="cb-wire">⟿ Wire</button>
+      </div>
+    </div>
+
+    <div id="right-panel">
+      <div class="rp-tabs">
+        <div class="rp-tab active" data-rp="inspector">Inspector</div>
+        <div class="rp-tab" data-rp="meters">Meters</div>
+        <div class="rp-tab" data-rp="lab">Lab</div>
+        <div class="rp-tab" data-rp="ai" style="color:#00d084;">AI ✦</div>
+      </div>
+      <div class="rp-body">
+        <!-- INSPECTOR PANEL -->
+        <div class="rp-panel active" id="rp-inspector">
+          <div class="prop-block">
+            <div class="prop-title">Selected</div>
+            <div id="sel-comp-info" style="font-size:11px;color:var(--text3)">Click a hole or component to inspect.</div>
+          </div>
+          <div class="prop-block">
+            <div class="prop-title">Breadboard</div>
+            <div class="prop-row"><span class="prop-label">Type</span><span class="prop-val" id="inspector-bb-type">Full-size (830pt)</span></div>
+            <div class="prop-row"><span class="prop-label">Size</span><span class="prop-val" id="inspector-bb-size">165×8.5×54.5mm</span></div>
+            <div class="prop-row"><span class="prop-label">Position</span><span class="prop-val" id="bb-pos">(0.0, 0.0)</span></div>
+          </div>
+          <div class="prop-block">
+            <div class="prop-title">Circuit Parameters</div>
+            <div class="slider-group" data-slider-param="V">
+              <div class="slider-row">
+                <span class="slider-label">Source Voltage</span>
+                <span class="param-input-wrap" style="display:flex;align-items:center;gap:4px">
+                  <input type="number" id="lbl-v" class="slider-num-input" min="0" max="30" step="0.1" value="12" style="width:52px;background:#09090b;color:#3b82f6;border:1px solid rgba(59,130,246,0.3);border-radius:4px;font-size:10px;font-family:'JetBrains Mono',monospace;text-align:right;padding:2px 4px">
+                  <span style="font-size:10px;color:var(--text3)">V</span>
+                </span>
+              </div>
+              <input type="range" id="sl-v" min="0" max="30" step="0.1" value="12">
+            </div>
+            <div class="slider-group" data-slider-param="R">
+              <div class="slider-row">
+                <span class="slider-label">Resistance R</span>
+                <span class="param-input-wrap" style="display:flex;align-items:center;gap:4px">
+                  <input type="number" id="lbl-r" class="slider-num-input" min="1" max="1000" step="0.1" value="100" style="width:52px;background:#09090b;color:#f97316;border:1px solid rgba(249,115,22,0.3);border-radius:4px;font-size:10px;font-family:'JetBrains Mono',monospace;text-align:right;padding:2px 4px">
+                  <span style="font-size:10px;color:var(--text3)">Ω</span>
+                </span>
+              </div>
+              <input type="range" id="sl-r" min="1" max="1000" step="0.1" value="100">
+            </div>
+            <!-- Dynamic parameters showing when relevant -->
+            <div class="slider-group" data-slider-param="L" style="display:none">
+              <div class="slider-row">
+                <span class="slider-label">Inductance L</span>
+                <span class="param-input-wrap" style="display:flex;align-items:center;gap:4px">
+                  <input type="number" id="lbl-l" class="slider-num-input" step="1" value="50" style="width:52px;background:#09090b;color:#3b82f6;border:1px solid rgba(59,130,246,0.3);border-radius:4px;font-size:10px;font-family:'JetBrains Mono',monospace;text-align:right;padding:2px 4px">
+                  <span style="font-size:10px;color:var(--text3)">mH</span>
+                </span>
+              </div>
+              <input type="range" id="sl-l" min="1" max="500" value="50">
+            </div>
+            <div class="slider-group" data-slider-param="C" style="display:none">
+              <div class="slider-row">
+                <span class="slider-label">Capacitance C</span>
+                <span class="param-input-wrap" style="display:flex;align-items:center;gap:4px">
+                  <input type="number" id="lbl-c" class="slider-num-input" step="1" value="100" style="width:52px;background:#09090b;color:#00d084;border:1px solid rgba(0,208,132,0.3);border-radius:4px;font-size:10px;font-family:'JetBrains Mono',monospace;text-align:right;padding:2px 4px">
+                  <span style="font-size:10px;color:var(--text3)">µF</span>
+                </span>
+              </div>
+              <input type="range" id="sl-c" min="1" max="500" value="100">
+            </div>
+            <div class="slider-group" data-slider-param="f" style="display:none">
+              <div class="slider-row">
+                <span class="slider-label">Frequency f</span>
+                <span class="param-input-wrap" style="display:flex;align-items:center;gap:4px">
+                  <input type="number" id="lbl-f" class="slider-num-input" step="1" value="50" style="width:52px;background:#09090b;color:#eab308;border:1px solid rgba(234,179,8,0.3);border-radius:4px;font-size:10px;font-family:'JetBrains Mono',monospace;text-align:right;padding:2px 4px">
+                  <span style="font-size:10px;color:var(--text3)">Hz</span>
+                </span>
+              </div>
+              <input type="range" id="sl-f" min="1" max="1000" value="50">
+            </div>
+            <div class="slider-group" data-slider-param="T" style="display:none">
+              <div class="slider-row">
+                <span class="slider-label">Temperature</span>
+                <span class="param-input-wrap" style="display:flex;align-items:center;gap:4px">
+                  <input type="number" id="lbl-temp" class="slider-num-input" step="1" value="25" style="width:52px;background:#09090b;color:#fb923c;border:1px solid rgba(251,146,60,0.3);border-radius:4px;font-size:10px;font-family:'JetBrains Mono',monospace;text-align:right;padding:2px 4px">
+                  <span style="font-size:10px;color:var(--text3)">°C</span>
+                </span>
+              </div>
+              <input type="range" id="sl-temp" min="0" max="200" value="25">
+            </div>
+          </div>
+        </div>
+
+        <!-- METERS PANEL -->
+        <div class="rp-panel" id="rp-meters">
+          <div class="meter">
+            <div class="meter-hdr"><span>VOLTMETER</span><span id="volt-mode">DC</span></div>
+            <div style="display:flex;align-items:baseline;gap:4px"><div class="meter-val" style="color:var(--red)" id="mm-v">0.00</div><div class="meter-unit">V</div></div>
+            <div class="meter-bar"><div class="meter-fill" style="background:var(--red);width:0%" id="bar-v"></div></div>
+          </div>
+          <div class="meter">
+            <div class="meter-hdr"><span>AMMETER</span><span>Series</span></div>
+            <div style="display:flex;align-items:baseline;gap:4px"><div class="meter-val" style="color:var(--blue)" id="mm-i">0.0000</div><div class="meter-unit">A</div></div>
+            <div class="meter-bar"><div class="meter-fill" style="background:var(--blue);width:0%" id="bar-i"></div></div>
+          </div>
+          <div class="meter">
+            <div class="meter-hdr"><span id="meter-impedance-title">IMPEDANCE</span><span>Ω</span></div>
+            <div style="display:flex;align-items:baseline;gap:4px"><div class="meter-val" style="color:var(--accent)" id="mm-z">0.00</div><div class="meter-unit">Ω</div></div>
+            <div class="meter-bar"><div class="meter-fill" style="background:var(--accent);width:0%" id="bar-z"></div></div>
+          </div>
+          <div class="prop-block" style="margin-top:8px">
+            <div class="prop-title">Power Analysis</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <div class="analysis-cell"><div class="ac-label">Power</div><div class="ac-val" id="val-power" style="color:var(--yellow)">— W</div></div>
+              <div class="analysis-cell"><div class="ac-label">Energy</div><div class="ac-val" id="val-energy" style="color:var(--orange)">— J</div></div>
+            </div>
+          </div>
+          <div class="prop-block" id="ac-analysis-block">
+            <div class="prop-title">AC Analysis</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <div class="analysis-cell"><div class="ac-label">XL</div><div class="ac-val" id="rc-xl" style="color:var(--blue)">—</div></div>
+              <div class="analysis-cell"><div class="ac-label">XC</div><div class="ac-val" id="rc-xc" style="color:var(--accent)">—</div></div>
+              <div class="analysis-cell"><div class="ac-label">Phase φ</div><div class="ac-val" id="rc-phi" style="color:var(--purple)">—</div></div>
+              <div class="analysis-cell"><div class="ac-label">f₀ Res.</div><div class="ac-val" id="rc-f0" style="color:var(--yellow)">—</div></div>
+            </div>
+          </div>
+          <div class="prop-block">
+            <div class="prop-title">Kirchhoff Validation</div>
+            <div class="kvl-box" id="kvl-box">Start simulation to validate KVL/KCL.</div>
+          </div>
+        </div>
+
+        <!-- LAB PANEL -->
+        <div class="rp-panel" id="rp-lab">
+          <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:8px;flex-wrap:wrap">
+            <button class="tb-btn tb-btn-ghost lab-sub-tab active" data-sub="theory">Theory</button>
+            <button class="tb-btn tb-btn-ghost lab-sub-tab" data-sub="steps">Procedure</button>
+            <button class="tb-btn tb-btn-ghost lab-sub-tab" data-sub="diagram">Diagram</button>
+            <button class="tb-btn tb-btn-ghost lab-sub-tab" data-sub="data">Table</button>
+            <button class="tb-btn tb-btn-ghost lab-sub-tab" data-sub="graph-tab">Graph</button>
+            <button class="tb-btn tb-btn-ghost lab-sub-tab" data-sub="viva">Viva</button>
+            <button class="tb-btn tb-btn-ghost lab-sub-tab" data-sub="conclusion">Conclusion</button>
+          </div>
+          <div id="sub-theory" style="display:block">
+            <div class="theory-body" id="theory-content"></div>
+            <div style="margin-top:8px" id="formula-list"></div>
+          </div>
+          <div id="sub-steps" style="display:none">
+            <div id="step-list"></div>
+            <div style="margin-top:8px;background:#111116;border:1px solid var(--border);border-radius:5px;padding:8px 10px">
+              <div style="font-size:8px;font-weight:600;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Progress</div>
+              <div style="background:#0a0a0a;border-radius:2px;height:3px;overflow:hidden"><div id="progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#00b06a,#00d084);transition:width .5s"></div></div>
+              <div style="font-size:9px;color:var(--text3);margin-top:4px;font-family:'JetBrains Mono',monospace" id="progress-text">0% Complete</div>
+            </div>
+          </div>
+          <div id="sub-diagram" style="display:none">
+            <div style="text-align:center;padding:10px 0;background:#000;border:1px solid var(--border);border-radius:6px;margin-bottom:10px">
+              <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+                <!-- Battery -->
+                <line x1="30" y1="50" x2="30" y2="70" stroke="#ef4444" stroke-width="2"/>
+                <line x1="35" y1="55" x2="35" y2="65" stroke="#ef4444" stroke-width="1"/>
+                <line x1="40" y1="50" x2="40" y2="70" stroke="#ef4444" stroke-width="2"/>
+                <line x1="45" y1="55" x2="45" y2="65" stroke="#ef4444" stroke-width="1"/>
+                <text x="20" y="63" fill="#ef4444" font-size="8" font-family="sans-serif" font-weight="bold">+</text>
+                <text x="50" y="63" fill="#ef4444" font-size="8" font-family="sans-serif">-</text>
+                
+                <!-- Connections -->
+                <path d="M 30 60 L 15 60 L 15 20 L 70 20" fill="none" stroke="#00d084" stroke-width="1.5"/>
+                <path d="M 45 60 L 175 60 L 175 20 L 150 20" fill="none" stroke="#64748b" stroke-width="1.5"/>
+                
+                <!-- Ammeter -->
+                <circle cx="85" cy="20" r="10" fill="#020617" stroke="#3b82f6" stroke-width="1.5"/>
+                <text x="85" y="23" fill="#3b82f6" font-size="9" font-family="sans-serif" font-weight="bold" text-anchor="middle">A</text>
+                <line x1="70" y1="20" x2="75" y2="20" stroke="#00d084" stroke-width="1.5"/>
+                <line x1="95" y1="20" x2="105" y2="20" stroke="#00d084" stroke-width="1.5"/>
+                
+                <!-- Resistor -->
+                <path d="M 105 20 L 110 15 L 115 25 L 120 15 L 125 25 L 130 15 L 135 25 L 140 20" fill="none" stroke="#f97316" stroke-width="1.5"/>
+                <line x1="140" y1="20" x2="150" y2="20" stroke="#64748b" stroke-width="1.5"/>
+                <text x="122" y="10" fill="#f97316" font-size="8" font-family="sans-serif" text-anchor="middle" font-weight="bold">R</text>
+                
+                <!-- Voltmeter (Parallel) -->
+                <path d="M 105 20 L 105 45 L 115 45" fill="none" stroke="#00d084" stroke-width="1.2"/>
+                <path d="M 140 20 L 140 45 L 130 45" fill="none" stroke="#64748b" stroke-width="1.2"/>
+                <circle cx="122" cy="45" r="9" fill="#020617" stroke="#ef4444" stroke-width="1.5"/>
+                <text x="122" y="48" fill="#ef4444" font-size="8" font-family="sans-serif" font-weight="bold" text-anchor="middle">V</text>
+              </svg>
+            </div>
+            <div style="font-size:10px;color:var(--text2);line-height:1.5">
+              <b>DC Circuit Schema:</b>
+              <p>The ammeter is connected in series to measure total loop current <i>I</i>, while the voltmeter is connected in parallel directly across the resistor <i>R</i> to measure the exact potential drop <i>V</i>.</p>
+            </div>
+          </div>
+          <div id="sub-data" style="display:none">
+            <div style="overflow-x:auto" id="data-table-wrap">
+              <!-- Dynamically rendered table -->
+            </div>
+            <button class="exp-btn" style="background:#3b82f610;color:var(--blue);border-color:#3b82f630" id="btn-export">↓ Export CSV</button>
+          </div>
+          <div id="sub-graph-tab" style="display:none">
+            <button class="exp-btn" style="background:#a855f710;color:var(--purple);border-color:#a855f730;margin-bottom:10px;width:100%" id="btn-tab-toggle-graph">
+              <i class="fa-solid fa-chart-line"></i> Toggle Graph Panel
+            </button>
+            <div style="font-size:10px;color:var(--text2);line-height:1.5">
+              <b>Graph Telemetry:</b>
+              <p>Verify Ohm's Law by observing the straight line plot on the graph panel. Record at least 5 points at different voltages to see the linear best-fit regression line.</p>
+            </div>
+          </div>
+          <div id="sub-viva" style="display:none">
+            <div id="viva-list"></div>
+          </div>
+          <div id="sub-conclusion" style="display:none">
+            <div style="display:flex;gap:10px;align-items:center;background:#000;border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:10px">
+              <svg width="60" height="60" viewBox="0 0 60 60">
+                <circle cx="30" cy="30" r="25" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+                <circle cx="30" cy="30" r="25" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" class="score-ring" id="score-ring" transform="rotate(-90 30 30)"/>
+                <text x="30" y="35" text-anchor="middle" fill="var(--accent)" font-size="13" font-weight="700" font-family="JetBrains Mono" id="score-ring-txt">0</text>
+              </svg>
+              <div><div style="font-size:12px;font-weight:600" id="report-grade">Grade: —</div><div style="font-size:10px;color:var(--text3);margin-top:3px" class="grade-desc">Complete steps to earn points</div></div>
+            </div>
+            <div style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Conclusion</div>
+            <div id="conclusion-text" style="background:#000;border:1px solid var(--border);border-radius:5px;padding:8px;font-size:10px;color:var(--text2);line-height:1.6;margin-bottom:10px"></div>
+            <button class="exp-btn" style="background:#00d08410;color:var(--accent);border-color:#00d08430" id="btn-report">↓ Download Lab Report</button>
+          </div>
+        </div>
+
+        <!-- AI PANEL -->
+        <div class="rp-panel" id="rp-ai">
+          <div id="ai-panel">
+            <div id="ai-messages">
+              <div class="ai-msg">
+                <div class="ai-avatar">⚡</div>
+                <div>
+                  <div style="font-size:9px;font-weight:600;color:var(--accent);letter-spacing:.5px;margin-bottom:3px">Circuit IQ · AI Mentor</div>
+                  <div class="ai-bubble" id="ai-message">Hello! I'm your AI circuit mentor. I'll guide you step-by-step — including <b>exactly which holes</b> on the breadboard to use for each wire. 🔌<br><br>Click <b>↺ Reload</b> to auto-build the current experiment!</div>
+                </div>
+              </div>
+            </div>
+            <div class="ai-input-wrap">
+              <textarea class="ai-input" id="ai-input" rows="1" placeholder="Ask about your circuit..."></textarea>
+              <button class="ai-send" id="ai-send">↑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="statusbar">
+    <div class="sb-item"><div class="sb-dot" id="sb-status-dot" style="background:var(--accent)"></div> <span id="sb-status-text">READY</span></div>
+    <div class="sb-item">|</div>
+    <div class="sb-item">Components: <b id="st-comps" style="color:var(--text)">0</b></div>
+    <div class="sb-item">Wires: <b id="st-wires" style="color:var(--text)">0</b></div>
+    <div class="sb-item" style="margin-left:auto">Drag=orbit · Scroll=zoom · <b style="color:var(--text2)">W</b>=wire · <b style="color:var(--text2)">R</b>=clear · <b style="color:var(--text2)">Esc</b>=cancel</div>
+  </div>
+
+  <!-- EXPERIMENTS LIBRARY MODAL OVERLAY -->
+  <div id="modal-library" style="display:none;position:fixed;inset:0;background:rgba(7,10,19,0.96);backdrop-filter:blur(12px);z-index:99999;align-items:center;justify-content:center;color:white;font-family:'Inter',sans-serif">
+     <div style="background:#0b0d19;border:1px solid rgba(255,255,255,0.06);border-radius:24px;width:92%;max-width:1050px;height:82%;max-height:780px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 0 50px rgba(59,130,246,0.18)">
+        <div style="padding:22px 28px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;background:#090b14">
+           <div>
+              <h2 style="font-size:22px;font-weight:700;margin:0;letter-spacing:-0.5px">Virtual Lab Experiments Library</h2>
+              <p style="font-size:11px;color:#64748b;margin:4px 0 0 0">Select any experiment module below to load it immediately in the 3D workspace.</p>
+           </div>
+           <button id="library-close" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 10px;border-radius:8px;transition:all hover:color-white hover:bg-white/5">✕</button>
+        </div>
+        <div style="display:flex;flex:1;overflow:hidden">
+           <!-- Side Navigation Tabs -->
+           <div id="lib-tabs" style="width:230px;border-right:1px solid rgba(255,255,255,0.06);background:#070911;padding:20px;display:flex;flex-direction:column;gap:10px">
+              <button class="lib-tab-btn active" data-lib-cat="circuits" style="text-align:left;padding:12px 14px;border-radius:12px;border:none;background:rgba(59,130,246,0.12);color:#60a5fa;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px">⚡ Electricity & Circuits</button>
+              <button class="lib-tab-btn" data-lib-cat="magnetism" style="text-align:left;padding:12px 14px;border-radius:12px;border:none;background:none;color:#64748b;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px">🧲 Electromagnetism</button>
+              <button class="lib-tab-btn" data-lib-cat="optics" style="text-align:left;padding:12px 14px;border-radius:12px;border:none;background:none;color:#64748b;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px">🔍 Optics & Light</button>
+              <button class="lib-tab-btn" data-lib-cat="mechanics" style="text-align:left;padding:12px 14px;border-radius:12px;border:none;background:none;color:#64748b;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px">⚙ Mechanics & Waves</button>
+              <button class="lib-tab-btn" data-lib-cat="thermo" style="text-align:left;padding:12px 14px;border-radius:12px;border:none;background:none;color:#64748b;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px">🔥 Thermodynamics</button>
+              <button class="lib-tab-btn" data-lib-cat="modern" style="text-align:left;padding:12px 14px;border-radius:12px;border:none;background:none;color:#64748b;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px">⚛ Modern Physics</button>
+           </div>
+           <!-- Card Grid Viewports -->
+           <div style="flex:1;overflow-y:auto;padding:24px;background:#090b14" id="library-grid-container">
+           </div>
+        </div>
+     </div>
+  </div>
+
+  <!-- Main JavaScript File -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

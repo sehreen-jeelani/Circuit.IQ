@@ -1,0 +1,470 @@
+{
+  "accessors": [
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 64,
+      "max": [
+        0.0007966909906826913,
+        0.0009561590268276632,
+        0.0009542559855617583
+      ],
+      "min": [
+        0.0004917550249956548,
+        -0.0009561629849486053,
+        -0.0009580599726177752
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 768,
+      "componentType": 5126,
+      "count": 64,
+      "max": [
+        -0.13313379883766174,
+        0.9907435178756714,
+        0.9910981059074402
+      ],
+      "min": [
+        -0.1383616030216217,
+        -0.9907433986663818,
+        -0.9903817772865295
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 192,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1536,
+      "componentType": 5126,
+      "count": 853,
+      "max": [
+        0.0030462739523500204,
+        0.001199960010126233,
+        0.0012049670331180096
+      ],
+      "min": [
+        -0.0029789800755679607,
+        -0.001199960010126233,
+        -0.0012047289637848735
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 11772,
+      "componentType": 5126,
+      "count": 853,
+      "max": [
+        0.9475541710853577,
+        0.9996964931488037,
+        0.999915361404419
+      ],
+      "min": [
+        -0.9475492835044861,
+        -0.9996964931488037,
+        -0.9999386072158813
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 768,
+      "componentType": 5125,
+      "count": 4203,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 22008,
+      "componentType": 5126,
+      "count": 154,
+      "max": [
+        0.0017973179928958416,
+        0.0011966220336034894,
+        0.0011920919641852379
+      ],
+      "min": [
+        0.0014911290490999818,
+        -0.0011966220336034894,
+        -0.001201151986606419
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 23856,
+      "componentType": 5126,
+      "count": 154,
+      "max": [
+        -0.09039658308029175,
+        0.9862077832221985,
+        0.9899922013282776
+      ],
+      "min": [
+        -0.9973039031028748,
+        -0.986207902431488,
+        -0.9895569086074829
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 17580,
+      "componentType": 5125,
+      "count": 654,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 25704,
+      "componentType": 5126,
+      "count": 224,
+      "max": [
+        -0.00020346099336165935,
+        0.0011966220336034894,
+        0.0012013909872621298
+      ],
+      "min": [
+        -0.00173002399969846,
+        -0.0011966220336034894,
+        -0.0011918540112674236
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 28392,
+      "componentType": 5126,
+      "count": 224,
+      "max": [
+        0.9972941875457764,
+        0.9962434768676758,
+        0.9960116744041443
+      ],
+      "min": [
+        0.08396869152784348,
+        -0.9962434768676758,
+        -0.9964684844017029
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 20196,
+      "componentType": 5125,
+      "count": 858,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 31080,
+      "componentType": 5126,
+      "count": 64,
+      "max": [
+        0.014999980106949806,
+        0.0002999980060849339,
+        0.0003080469905398786
+      ],
+      "min": [
+        -0.014890249818563461,
+        -0.00030000199330970645,
+        -0.00030783898546360433
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 31848,
+      "componentType": 5126,
+      "count": 64,
+      "max": [
+        0.6662089228630066,
+        0.7834751009941101,
+        0.7874038815498352
+      ],
+      "min": [
+        -0.6662166118621826,
+        -0.7834751605987549,
+        -0.7882373929023743
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 23628,
+      "componentType": 5125,
+      "count": 276,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "Robótica Paraná (https://sketchfab.com/roboticaparana)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/resistor-330ohms-7d1a538370724b77a4608e12389419cd",
+      "title": "Resistor 330Ohms"
+    },
+    "generator": "Sketchfab-16.16.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 24732,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 32616,
+      "byteOffset": 24732,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 57348,
+      "uri": "scene.bin"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "MARRON",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.17885699999999993,
+          0.036601500000000016,
+          0.0186803,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "CERAMICA",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.8,
+          0.395126,
+          0.17699,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "OURO",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.8,
+          0.698828,
+          0.0,
+          1.0
+        ],
+        "roughnessFactor": 0.059428752544769654
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "LARANJA",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1.0,
+          0.226334,
+          0.0,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "METAL",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.723043,
+          0.723043,
+          0.723043,
+          1.0
+        ],
+        "roughnessFactor": 0.0
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "MARRON-material",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0
+          },
+          "indices": 2,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "CERAMICA-material",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 4,
+            "POSITION": 3
+          },
+          "indices": 5,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "OURO-material",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 7,
+            "POSITION": 6
+          },
+          "indices": 8,
+          "material": 2,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "LARANJA-material",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 10,
+            "POSITION": 9
+          },
+          "indices": 11,
+          "material": 3,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "METAL-material",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 13,
+            "POSITION": 12
+          },
+          "indices": 14,
+          "material": 4,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "name": "Collada visual scene group"
+    },
+    {
+      "children": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "matrix": [
+        0.9999991,
+        0.001318693,
+        0.0,
+        0.0,
+        5.76419e-11,
+        -4.37114e-08,
+        1.0,
+        0.0,
+        0.001318693,
+        -0.9999991,
+        -4.37114e-08,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "330"
+    },
+    {
+      "mesh": 0,
+      "name": "MARRON-material"
+    },
+    {
+      "mesh": 1,
+      "name": "CERAMICA-material"
+    },
+    {
+      "mesh": 2,
+      "name": "OURO-material"
+    },
+    {
+      "mesh": 3,
+      "name": "LARANJA-material"
+    },
+    {
+      "mesh": 4,
+      "name": "METAL-material"
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}
