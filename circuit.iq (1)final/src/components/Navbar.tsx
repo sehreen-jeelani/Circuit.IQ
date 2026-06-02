@@ -5,7 +5,7 @@ import { LayoutGrid, FlaskConical, Cpu, Bot, FileText, Info, Zap, Moon, Sun, Men
 import { cn } from '../lib/utils';
 
 export default function Navbar() {
-  const { setLabOpen, isLabOpen, theme, toggleTheme, activeTab, setActiveTab } = useAppStore();
+const { setLabOpen, isLabOpen, theme, toggleTheme, activeTab, setActiveTab, physicsBotOpen, setPhysicsBotOpen } = useAppStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -27,7 +27,7 @@ export default function Navbar() {
           <NavLink icon={<LayoutGrid size={18} />} label="Home" active={activeTab === 'home' && !isLabOpen} onClick={() => { setActiveTab('home'); setLabOpen(false); }} />
           <NavLink icon={<FlaskConical size={18} />} label="Experiments" active={activeTab === 'experiments' && !isLabOpen} onClick={() => { setActiveTab('experiments'); setLabOpen(false); }} />
           <NavLink icon={<Cpu size={18} />} label="Virtual Lab" active={isLabOpen} onClick={() => setLabOpen(true)} />
-          <NavLink icon={<Bot size={18} />} label="PhysicsBot" active={activeTab === 'physicsbot' && !isLabOpen} onClick={() => { setActiveTab('physicsbot'); setLabOpen(false); }} />
+          <NavLink icon={<Bot size={18} />} label="PhysicsBot" active={physicsBotOpen} onClick={() => { setPhysicsBotOpen(!physicsBotOpen); setLabOpen(false); }} />
           <NavLink icon={<FileText size={18} />} label="Contact" active={activeTab === 'contact' && !isLabOpen} onClick={() => { setActiveTab('contact'); setLabOpen(false); }} />
         </div>
 
