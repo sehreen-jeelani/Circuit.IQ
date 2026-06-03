@@ -275,12 +275,15 @@ export default function LandingPage({ view = 'home' }: { view?: 'home' | 'experi
                     <motion.div
                       key={exp.id}
                       layoutId={`exp-card-${exp.id}`}
-                      className="p-6 rounded-2xl border border-slate-200 dark:border-white/5 bg-white/80 dark:bg-black/25 backdrop-blur-md hover:border-blue-500/30 transition-all flex flex-col justify-between group hover:shadow-lg hover:shadow-blue-500/5 text-left"
+                      className="p-6 rounded-2xl border border-slate-200/80 dark:border-white/[0.06] bg-white/90 dark:bg-white/[0.03] backdrop-blur-xl hover:border-indigo-400/40 dark:hover:border-indigo-400/20 transition-all duration-300 flex flex-col justify-between group hover:shadow-xl hover:shadow-indigo-500/[0.07] dark:hover:shadow-indigo-500/[0.04] text-left hover:-translate-y-0.5 relative overflow-hidden"
                     >
                       <div className="flex flex-col gap-2">
                         <div className="flex justify-between items-start">
                           <span className="text-[10px] font-mono text-blue-500 dark:text-blue-400 uppercase tracking-widest font-bold">Lab Module</span>
-                          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 group-hover:scale-150 transition-transform" />
+                          <div className="relative w-3 h-3 flex items-center justify-center">
+                            <div className="absolute inset-0 rounded-full bg-emerald-400/30 animate-ping" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-400 shadow-[0_0_6px_rgba(52,211,153,0.5)] group-hover:scale-150 transition-transform" />
+                          </div>
                         </div>
                         <h3 className="text-base font-bold text-slate-900 dark:text-white mt-1">{exp.name}</h3>
                         <p className="text-xs text-slate-500 dark:text-slate-400 leading-normal">{exp.desc}</p>
