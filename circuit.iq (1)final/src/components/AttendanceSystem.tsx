@@ -58,8 +58,8 @@ const EXPERIMENTS = [
 
 // ── Root Component ─────────────────────────────────────────────────────────────
 export default function AttendanceSystem({ onLabUnlock, onLabPause, onLabResume }: AttendanceSystemProps) {
-  const [view, setView] = useState<View>('gate');
-  const [adminToken, setAdminToken] = useState('');
+  const [view, setView] = useState<View>(() => sessionStorage.getItem('adminToken') ? 'adminPanel' : 'gate');
+  const [adminToken, setAdminToken] = useState(() => sessionStorage.getItem('adminToken') || ''); 
   const [activeSession, setActiveSession] = useState<Session | null>(null);
   const [studentRegNo, setStudentRegNo] = useState('');
 
@@ -72,7 +72,7 @@ export default function AttendanceSystem({ onLabUnlock, onLabPause, onLabResume 
         {view === 'adminLogin' && (
           <AdminLoginView
             key="adminLogin"
-            onSuccess={(token) => { setAdminToken(token); setView('adminPanel'); }}
+            onSuccess={(token) => { sessionStorage.setItem('adminToken', token); setAdminToken(token); setView('adminPanel'); }}
             onBack={() => setView('gate')}
           />
         )}
@@ -80,7 +80,7 @@ export default function AttendanceSystem({ onLabUnlock, onLabPause, onLabResume 
           <AdminPanelView
             key="adminPanel"
             token={adminToken}
-            onLogout={() => { setAdminToken(''); setView('gate'); }}
+            onLogout={() => { sessionStorage.removeItem('adminToken'); setAdminToken(''); setView('gate'); }}
           />
         )}
         {view === 'studentJoin' && (
