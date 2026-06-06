@@ -47,7 +47,9 @@ export default function App() {
             {activeTab === 'contact' ? (
   <ContactPage />
 ) : activeTab === 'attendance' ? (
-  <AttendanceSystem />
+  <div className="min-h-screen bg-[#070B14]">
+    <AttendanceSystem />
+  </div>
 ) : (
               <LandingPage view={activeTab === 'home' ? 'home' : activeTab} />
             )}
