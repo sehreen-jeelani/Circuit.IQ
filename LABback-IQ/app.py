@@ -26,6 +26,7 @@ import os
 import webbrowser
 from flask import Flask, send_from_directory
 from flask_cors import CORS
+from routes.attendance import attendance_bp
 from config import Config
 
 
@@ -51,6 +52,7 @@ def create_app():
     app.register_blueprint(physics_bp)
     app.register_blueprint(physicsbot_bp)
     app.register_blueprint(contact_bp)
+    app.register_blueprint(attendance_bp, url_prefix="/api")
     app.register_blueprint(db_bp)
 
     # ── Serve built React + 3D lab static files ───────────────────────────────
