@@ -1,481 +1,170 @@
-<![CDATA[# Circuit.IQ — Developer & Architecture Guide
+<![CDATA[# 🛠️ Circuit.IQ – Developer Guide
 
-> Complete reference for contributors — how to add experiments, modify components, debug issues, and understand the codebase.
-
----
-
-## 📑 Table of Contents
-
-- [Workspace Directory Map](#-workspace-directory-map)
-- [Development Workflow](#-development-workflow)
-- [How to Add a New Experiment](#-how-to-add-a-new-experiment)
-- [How to Add a New 3D Component](#-how-to-add-a-new-3d-component)
-- [How to Add a New API Route](#-how-to-add-a-new-api-route)
-- [How to Modify the Database Schema](#-how-to-modify-the-database-schema)
-- [How to Embed Videos in Team Cards](#-how-to-embed-videos-in-team-cards)
-- [Key Architecture Decisions](#-key-architecture-decisions)
-- [Wire System Internals](#-wire-system-internals)
-- [Common Debugging Recipes](#-common-debugging-recipes)
-- [Development Commands](#-development-commands)
+> A quick‑start reference for contributors who want to extend the platform (new experiments, components, APIs, or UI).
 
 ---
 
-## 📂 Workspace Directory Map
+## 1️⃣ Project Overview (One‑sentence)
 
-```
-Circuit.IQ/
-├── LABback-IQ/                  # Python Flask API & Physics Solver (Port 5000)
-│   ├── main.py                  # Backend startup entrypoint
-│   ├── app.py                   # Flask factory — CORS, blueprints, static serving
-│   ├── config.py                # Environment config (.env → Config class)
-│   ├── physics_engine.py        # Rigid solver: V, I, Z, P, XL, XC, φ, f₀
-│   ├── ai_guide.py              # Local rule-based tutoring & quiz engine
-│   ├── database.py              # Dual DB: Supabase (PostgreSQL) + SQLite fallback
-│   ├── test_physics.py          # Unit tests for physics calculations
-│   ├── experiments/             # Modular experiment calculation plugins
-│   │   ├── base_experiment.py   # Abstract base class
-│   │   ├── ohms.py, lcr.py, rc.py
-│   └── routes/                  # Flask API blueprints
-│       ├── physics.py           # /api/calculate, /api/validate
-│       ├── physicsbot.py        # /api/physicsbot/ask (Gemini AI)
-│       ├── contact.py           # /api/contact (Resend email)
-│       ├── database_routes.py   # /api/db/* (circuit CRUD, profiles, logs)
-│       └── attendance.py        # /api/attendance/* (student tracking)
-│
-├── LABfront-IQ-3D/              # 3D WebGL Virtual Lab Simulator (Three.js + Vite)
-│   ├── index.html               # Complete UI shell (panels, meters, chat)
-│   ├── vite.config.js           # Build config + API proxy
-│   └── src/
-│       ├── main.js              # ⭐ Core app (11,000+ lines — all logic)
-│       └── style.css            # Complete design system (dark theme)
-│
-├── circuit.iq (1)final/         # React Main Portal (Port 3000)
-│   ├── vite.config.ts           # Build config with API proxy → :5000
-│   └── src/
-│       ├── App.tsx              # Router & page transitions
-│       ├── store/useAppStore.ts # Zustand state (page, experiment, lab)
-│       ├── pages/
-│       │   ├── LandingPage.tsx  # Homepage — catalog, domains, AI console
-│       │   ├── LabStudio.tsx    # Fullscreen iframe → /lab.html?exp=<key>
-│       │   └── ContactPage.tsx  # Support portal
-│       └── components/
-│           ├── Navbar.tsx, AntigravityHero.tsx, PhysicsBotPanel.tsx
-│           ├── PhysicsShowcase.tsx, InteractiveCircuitLines.tsx
-│           ├── InteractiveBreadboard.tsx, CyberpunkLedMatrix.tsx
-│           ├── AttendanceSystem.tsx, TeamRolesSection.tsx
-│
-├── start_dev.py                 # 🚀 Unified dev launcher (backend + frontend)
-├── build_all.py                 # 🏗️ Production build automation
-├── schema.sql                   # Supabase PostgreSQL schema + RLS + seeds
-├── customise.sql                # Database column extensions
-└── circuit_iq.db                # Local SQLite database (auto-created)
-```
+Circuit.IQ = **React portal** → **iframe** (3D lab) → **Flask server** → **SQLite/Supabase**. All three pieces talk over `/api/*` endpoints.
 
 ---
 
-## 🛠️ Development Workflow
-
-### Daily Development
+## 2️⃣ Getting Started Locally
 
 ```bash
-python start_dev.py    # Start both servers, auto-opens browser
+# Clone and install everything (once)
+git clone https://github.com/SYEDTUFAILANDRABI/Circuit.IQ.git
+cd Circuit.IQ
+
+# Python backend
+pip install -r LABback-IQ/requirements.txt
+cp LABback-IQ/.env.example LABback-IQ/.env   # optional keys
+
+# 3D lab
+cd LABfront-IQ-3D && npm install && cd ..
+
+# React portal
+cd "circuit.iq (1)final" && npm install && cd ..
 ```
 
-### After Changing 3D Lab Code
-
+Run everything with a single command:
 ```bash
-python build_all.py    # Rebuild lab → copy to portal → rebuild portal
+python start_dev.py
 ```
 
-### After Changing React Portal Code Only
+---
 
+## 3️⃣ Adding a New Physics Experiment
+
+1. **Create a plugin** in `LABback-IQ/experiments/`:
+   - Copy `base_experiment.py` → `my_experiment.py`.
+   - Implement `calculate(params)` and `validate(circuit)` methods.
+   - Export the class in `__init__.py`.
+2. **Add metadata** to `LABfront-IQ-3D/src/main.js` under the `EXPERIMENT_DATA` block:
+   - `key`, `name`, `description`, `aim`, `componentsRequired`.
+3. **Add a card** in `LandingPage.tsx` (React) – copy an existing `<ExperimentCard>` and change the `expKey`.
+4. **Update README** (root) – the Experiments table automatically reflects the new entry.
+
+> **Tip:** Run `python test_physics.py` after adding to ensure the new plugin passes basic tests.
+
+---
+
+## 4️⃣ Adding a New 3D Component (Breadboard)
+
+1. **Add the 3D model** to `LABfront-IQ-3D/public/models/` (GLTF/GLB). Name it `my_component.glb`.
+2. **Register the component** in `src/main.js` inside the `COMPONENT_LIBRARY` object:
+   ```js
+   "my_component": {
+     model: "models/my_component.glb",
+     span: 5,               // how many holes it occupies
+     pins: [0, 4]           // snap indices for connections
+   },
+   ```
+3. **Create a sidebar chip** – find the `createComponentChip` function and add a new entry with the icon and label.
+4. **Wire handling** works automatically – just ensure `span` matches the number of holes.
+
+---
+
+## 5️⃣ Adding a New API Route (Flask)
+
+1. **Create a new blueprint** in `LABback-IQ/routes/` (e.g., `my_feature.py`).
+2. **Register the blueprint** in `app.py`:
+   ```python
+   from .routes.my_feature import my_feature_bp
+   app.register_blueprint(my_feature_bp, url_prefix="/api/my_feature")
+   ```
+3. **Write unit tests** in `LABback-IQ/test_my_feature.py` and run `pytest` to verify.
+4. **Document the endpoint** in `LABback-IQ/README.md` – use the table format already present.
+
+---
+
+## 6️⃣ Extending the Database (`customise.sql`)
+
+`customise.sql` adds extra columns to the default Supabase schema. To add a new column:
+
+```sql
+ALTER TABLE circuits ADD COLUMN "my_extra" TEXT;
+-- or for SQLite (same syntax works)
+```
+
+After editing, **run the migration**:
 ```bash
-cd "circuit.iq (1)final"
-npm run build
+# If using Supabase CLI
+supabase db push
+# For local SQLite – nothing needed; the column appears on next run
 ```
 
-### Running Tests
+Update the JSON circuit payload handling in `database.py` if the new column should be populated automatically.
 
+---
+
+## 7️⃣ Build & Deploy
+
+### Development (hot‑reload)
 ```bash
-python LABback-IQ/test_physics.py
+python start_dev.py
 ```
 
----
-
-## 🚀 How to Add a New Experiment
-
-Adding a new experiment (e.g., `faraday_cage`) requires changes in **4 files** across the codebase:
-
-### Step 1: Add to React Portal Catalog
-
-**File:** `circuit.iq (1)final/src/pages/LandingPage.tsx`
-
-Find the `PHYSICS_DOMAINS` array and add your experiment under the matching category:
-
-```typescript
-{
-  id: "faraday_cage",
-  name: "Faraday Cage Shielding",
-  desc: "Study electrostatic field isolation inside conductors.",
-  aim: "Verify electric fields equal zero inside a conductor.",
-  formula: "E_inside = 0"
-}
-```
-
-### Step 2: Add Experiment Data to 3D Lab
-
-**File:** `LABfront-IQ-3D/src/main.js`
-
-**a)** Add the experiment schema to the `experiments` dictionary (~line 267):
-
-```javascript
-faraday_cage: {
-  name: "Faraday Cage Shielding",
-  aim: "Observe electrostatic shielding inside hollow conductors.",
-  apparatus: "Hollow sphere, voltage source, Gaussmeter probe.",
-  req: ['source'],  // required component types
-  steps: [
-    { id: 1, text: "Charge the outer sphere and measure internal E-field." },
-    { id: 2, text: "Verify E = 0 inside the conductor." }
-  ],
-  theory: "<h3>Faraday Cage</h3><p>A hollow conductor shields its interior...</p>",
-  formulas: [
-    { name: "Gauss's Law", expr: "∮ E · dA = Q_enc / ε₀" },
-    { name: "Interior Field", expr: "E_inside = 0" }
-  ]
-}
-```
-
-**b)** Add viva questions to `assessmentQuestions` (~line 617):
-
-```javascript
-faraday_cage: [
-  {
-    q: "What is the electric field inside a charged hollow conductor?",
-    options: ["Infinity", "Zero", "Equal to external field", "Depends on material"],
-    correct: 1,
-    explanation: "By Gauss's Law, no net charge inside → E = 0."
-  }
-]
-```
-
-**c)** Add calculation logic to `calculateCircuitLocal()` (~line 703):
-
-```javascript
-} else if (activeExperiment === 'faraday_cage') {
-  V = params.V;
-  I = 0;  // No current inside the cage
-  Z = Infinity;
-  P = 0;
-}
-```
-
-**d)** Add auto-setup components in `autoSetupExperiment()` (~line 4500):
-
-```javascript
-} else if (expKey === 'faraday_cage') {
-  placeComponent3D('source', 7 * 14 + 0, 7 * 14 + 1);
-  create3DWire(7 * 14 + 0, 7 * 14 + 4);
-  // ... wire and component placement
-}
-```
-
-### Step 3: Add Backend Physics Calculation
-
-**File:** `LABback-IQ/physics_engine.py`
-
-```python
-elif active_experiment == 'faraday_cage':
-    return {
-        'status': 'success',
-        'metrics': {
-            'V': params.get('V', 0),
-            'I': 0.0,
-            'Z': float('inf'),
-            'P': 0.0,
-            'E_outside': params.get('V', 0) * 1.5,
-            'E_inside': 0.0
-        }
-    }
-```
-
-### Step 4: Add AI PhysicsBot Keywords
-
-**File:** `LABback-IQ/routes/physicsbot.py`
-
-```python
-elif 'cage' in question or 'shielding' in question or 'electrostatic' in question:
-    formulas = [{"name": "Gauss Shielding", "expr": "E_inside = 0"}]
-    explanation = "A Faraday cage shields its interior from external electric fields."
-    recommended_exp = "faraday_cage"
-```
-
-### Step 5: Rebuild
-
+### Production (single command)
 ```bash
-python build_all.py
+python build_all.py   # builds 3D lab, copies assets, builds React portal
+# Then serve with Flask:
+cd LABback-IQ && python main.py   # serves on :5000
 ```
+
+The built site is in `circuit.iq (1)final/dist/` and can be deployed to any static‑file host (Netlify, Vercel) while Flask can run on any PaaS (Render, Railway).
 
 ---
 
-## 🧩 How to Add a New 3D Component
+## 8️⃣ Testing
 
-To add a new component type (e.g., `transistor`) to the 3D breadboard:
-
-### Step 1: Define Component in State
-
-**File:** `LABfront-IQ-3D/src/main.js`
-
-Add the type to the `state.selectedTool` comment (~line 110):
-
-```javascript
-selectedTool: null,  // ..., 'transistor'
-```
-
-### Step 2: Add Sidebar Chip
-
-**File:** `LABfront-IQ-3D/index.html`
-
-Add a chip button in the component sidebar:
-
-```html
-<button class="comp-chip" data-type="transistor">
-  <span class="chip-icon">🔌</span>
-  <span>Transistor</span>
-</button>
-```
-
-### Step 3: Create 3D Mesh
-
-**File:** `LABfront-IQ-3D/src/main.js`
-
-In `createComponentVisuals()` (~line 6500), add a case:
-
-```javascript
-case 'transistor': {
-  // Create Three.js meshes for the transistor
-  const body = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.12, 0.12, 0.3, 16),
-    new THREE.MeshStandardMaterial({ color: 0x333333 })
-  );
-  // Add leads, labels, etc.
-  group.add(body);
-  break;
-}
-```
-
-### Step 4: Add Snap Logic
-
-Define how many holes the component spans and update `placeComponent3D()`.
+- **Physics engine**: `python LABback-IQ/test_physics.py`
+- **Flask routes**: `pytest LABback-IQ/` (install `pytest` if missing)
+- **React UI**: `npm test` inside the portal folder (uses Jest + React Testing Library)
 
 ---
 
-## 🌐 How to Add a New API Route
+## 9️⃣ Common Issues & Fixes
 
-### Step 1: Create Blueprint
-
-**File:** `LABback-IQ/routes/my_feature.py`
-
-```python
-from flask import Blueprint, request, jsonify
-
-my_feature_bp = Blueprint('my_feature', __name__)
-
-@my_feature_bp.route('/api/my-feature/endpoint', methods=['POST'])
-def my_endpoint():
-    data = request.get_json()
-    # Process...
-    return jsonify({"status": "success", "data": result})
-```
-
-### Step 2: Register in App Factory
-
-**File:** `LABback-IQ/app.py`
-
-```python
-from routes.my_feature import my_feature_bp
-app.register_blueprint(my_feature_bp)
-```
-
-### Step 3: Add Frontend Proxy (if needed)
-
-**File:** `circuit.iq (1)final/vite.config.ts`
-
-The proxy is already configured for `/api/*` → `:5000`, so new routes under `/api/` work automatically.
+| Issue | Quick Fix |
+|-------|----------|
+| `ModuleNotFoundError: flask` | `pip install -r LABback-IQ/requirements.txt` |
+| `npm ERR! missing script: dev` | Run `npm install` in the folder first |
+| 3D models not loading | Verify file path & case‑sensitivity in `public/models/` |
+| API 404 on `/api/*` | Ensure `python start_dev.py` is running; Flask default port is 5000 |
+| Wire positions shift after reload | The `false` flag in `loadCircuitFromBackend()` (already applied) |
+| Build fails (large chunks) | Add a manual chunk split in `vite.config.js` under `build.rollupOptions.output.manualChunks` |
+| PDF generation blank | Allow pop‑ups for localhost; check console for `jspdf` errors |
 
 ---
 
-## 💾 How to Modify the Database Schema
+## 🔧 Useful Scripts
 
-### For Supabase (Production)
-
-1. Write your SQL in a new migration file or append to `customise.sql`
-2. Run in Supabase SQL Editor
-3. Update `database.py` functions to use the new columns
-
-### For SQLite (Local Development)
-
-1. Update `init_sqlite_db()` in `LABback-IQ/database.py` with the new columns
-2. Delete `circuit_iq.db` and restart (auto-recreated with new schema)
-
-### Current Tables
-
-| Table | Key Columns |
-|-------|-------------|
-| `profiles` | id, full_name, university, semester, graduation_year, role, phone, is_active |
-| `circuits` | id, user_id, name, circuit_data (JSON), status, is_public, tags, view_count |
-| `experiment_logs` | id, user_id, circuit_id, experiment_type, results, score, duration_seconds, attempt_number, feedback |
+| Script | What it does |
+|--------|--------------|
+| `python start_dev.py` | Starts Flask + React dev servers together |
+| `python build_all.py` | Full production build (3D lab → React → Flask) |
+| `python test_physics.py` | Runs physics engine unit tests |
+| `npm run lint` | Checks TypeScript types & ESLint rules |
+| `npm run preview` | Serves the built React app locally |
 
 ---
 
-## 📹 How to Embed Videos in Team Cards
+## 📚 Further Reading
 
-### Step 1: Place Video Assets
-
-Save your video (e.g., `demo.mp4`) in:
-```
-circuit.iq (1)final/public/assets/videos/
-```
-
-### Step 2: Edit TeamRolesSection.tsx
-
-**File:** `circuit.iq (1)final/src/components/TeamRolesSection.tsx`
-
-Add `videoUrl` to the `TeamMember` interface and member data:
-
-```typescript
-interface TeamMember {
-  // ... existing fields
-  videoUrl?: string;
-}
-
-// In team array:
-videoUrl: "/assets/videos/demo.mp4"
-```
-
-Replace the `SimulatedWaveform` with a video element:
-
-```tsx
-{member.videoUrl ? (
-  <video src={member.videoUrl} controls autoPlay loop muted
-    className="w-full h-full object-cover rounded-xl" />
-) : (
-  <SimulatedWaveform index={index} />
-)}
-```
+- **API Reference** – see `LABback-IQ/README.md`
+- **3D Lab Code Map** – see `LABfront-IQ-3D/README.md`
+- **React Component Tree** – see `circuit.iq (1)final/README.md`
+- **Database Schema** – see `schema.sql` and `customise.sql`
 
 ---
 
-## 🏗️ Key Architecture Decisions
+## 🎉 Thank You!
 
-### Why a Monolithic main.js?
+Contributions are welcome – feel free to open a Pull Request, add tests, and update the documentation sections above.
 
-The 3D lab uses a single 11,000+ line file because:
-- **Three.js scenes** require shared state (scene, camera, renderer)
-- **Component interactions** are tightly coupled (wires reference holes, holes reference components)
-- **Section markers** (`// ---`) make navigation easy via search
-- Vite's tree-shaking eliminates dead code in production builds
-
-### Why iframe for the 3D Lab?
-
-- **WebGL context isolation** — prevents React-Three-Fiber (hero) and raw Three.js (lab) conflicts
-- **Independent lifecycle** — lab can load/unload without affecting React state
-- **Performance** — heavy 3D rendering doesn't block React's render cycle
-
-### Why Dual Database?
-
-- **SQLite** for zero-config local development (no Supabase account needed)
-- **Supabase** for production with Row-Level Security and PostgreSQL features
-- **Automatic fallback** — if Supabase keys are missing, SQLite is used transparently
-
----
-
-## 🔌 Wire System Internals
-
-### Key Functions
-
-| Function | Purpose |
-|----------|---------|
-| `create3DWire(snap1, snap2, isUserClick)` | Creates a wire between two holes |
-| `createWireCurve(p1, p2, seed, wireIndex)` | Generates Bézier curve for wire path |
-| `getRedirectedSnap(snap, occupied, otherSnap)` | Finds nearest unoccupied hole |
-| `getOccupiedHoles()` | Calculates bounding boxes for all placed components |
-| `updateWireVisuals(wireObj, idx)` | Refreshes wire mesh geometry |
-
-### Wire Overlap Prevention
-
-```
-Wire creation → check wire index → calculate height boost
-                                        │
-                  height = baseHeight + (wireIndex * 0.15)
-                                        │
-                                        ▼
-                  Wires stack vertically, never intersecting
-```
-
-### Wire Color System
-
-```
-snap matches positive rail → Red (0xef4444)
-snap matches negative rail → Black (0x111827)
-else → Cycle through: Blue → Green → Orange → Purple
-```
-
-### Reload Fidelity
-
-When loading from database:
-- Components: `placeComponent3D(type, snap1, snap2)` — exact positions
-- Wires: `create3DWire(fromHole, toHole, false)` — `false` bypasses redirection
-- This ensures **pixel-perfect restoration** of saved circuits
-
----
-
-## 🐛 Common Debugging Recipes
-
-### Wire Positions Shifting on Reload
-
-**Cause:** `create3DWire` was called without `isUserClick = false`
-**Fix:** Ensure `loadCircuitFromBackend()` passes `false` as the third argument
-
-### Components Overlapping
-
-**Cause:** `getOccupiedHoles()` missing bounding box for a component type
-**Fix:** Add the component type to the bounding box calculation in `getOccupiedHoles()`
-
-### 3D Scene Not Rendering
-
-**Check:**
-1. Browser console for WebGL errors
-2. `initScene()` is called on page load
-3. GLTF models exist in `public/models/`
-
-### API 404 Errors
-
-**Check:**
-1. Flask backend is running (`python main.py` or `python start_dev.py`)
-2. Route blueprint is registered in `app.py`
-3. Vite proxy is configured for `/api/*`
-
-### Database Not Persisting
-
-**Check:**
-1. `circuit_iq.db` exists in project root
-2. `saveCircuitToBackend()` is called after component/wire changes
-3. No errors in browser console network tab
-
----
-
-## 💻 Development Commands
-
-| Command | Directory | Description |
-|---------|-----------|-------------|
-| `python start_dev.py` | Root | Start backend + frontend together |
-| `python build_all.py` | Root | Full production build pipeline |
-| `python main.py` | `LABback-IQ/` | Start Flask backend only |
-| `npm run dev` | `LABfront-IQ-3D/` | Start 3D lab dev server (port 5173) |
-| `npm run dev` | `circuit.iq (1)final/` | Start React portal dev server (port 3000) |
-| `npm run build` | Either frontend | Production build to `dist/` |
-| `npm run preview` | Either frontend | Preview production build |
-| `npm run lint` | `circuit.iq (1)final/` | TypeScript type checking |
-| `python test_physics.py` | `LABback-IQ/` | Run physics unit tests |
+<div align="center">
+Built with ❤️ by the Circuit.IQ Team – Python, Flask, React, Three.js, Gemini AI.
+</div>
 ]]>
