@@ -36,7 +36,13 @@ const PHYSICS_DOMAINS: DomainCategory[] = [
       { id: "kcl", name: "Kirchhoff's Current Law", desc: "Verify nodal charge conservation.", aim: "Verify sum of currents entering junction equals currents exiting.", formula: "Σ I_in = Σ I_out" },
       { id: "rc_rl_rlc", name: "RC/RL/RLC AC Circuits", desc: "Analyze reactive components impedance.", aim: "Measure phase angle and total impedance.", formula: "Z = √[R² + (X_L - X_C)²]" },
       { id: "series_parallel", name: "Series & Parallel Loads", desc: "Analyze equivalent resistance combinations.", aim: "Compare additive vs reciprocal sum R.", formula: "R_eq = R1 + R2 | 1/R_eq = 1/R1 + 1/R2" },
-      { id: "wheatstone", name: "Wheatstone Bridge", desc: "Measure unknown resistance via bridge balance.", aim: "Verify null detector voltage at balance.", formula: "R1 / R2 = R3 / R4" }
+      { id: "wheatstone", name: "Wheatstone Bridge", desc: "Measure unknown resistance via bridge balance.", aim: "Verify null detector voltage at balance.", formula: "R1 / R2 = R3 / R4" },
+      { id: "diode_iv", name: "Diode I-V Characteristics", desc: "Study PN junction exponential forward and reverse bias current.", aim: "Verify the I-V characteristics of a semiconductor diode (PN Junction).", formula: "I = I_s * (e^(V_d / n V_t) - 1)" },
+      { id: "voltage_divider", name: "Voltage & Current Divider", desc: "Analyze voltage drops and branch currents division ratios.", aim: "Verify the voltage division rule in series and current division in parallel circuits.", formula: "V_out = V_in * [R2 / (R1 + R2)]" },
+      { id: "led", name: "LED Color & Planck's Constant", desc: "Study LED wavelength threshold turn-on voltages.", aim: "Determine Planck's constant by measuring the turn-on voltage of different colored LEDs.", formula: "e × V_th = h × ν" },
+      { id: "lcr", name: "Series LCR Resonance", desc: "Find inductive and capacitive cancellation resonance point.", aim: "Determine resonant frequency of LCR series circuit.", formula: "f₀ = 1 / (2π√(LC))" },
+      { id: "rc", name: "RC Time Constant", desc: "Study capacitor charging transient voltage profiles.", aim: "Measure transient capacitor charging rate.", formula: "τ = R × C" },
+      { id: "arduino_led", name: "Arduino LED Control", desc: "Assemble basic digital control circuit loop using Arduino 5V/GND.", aim: "Control an LED using a switch and an Arduino power loop.", formula: "I = (V_pin - V_led) / R" }
     ]
   },
   {
@@ -45,34 +51,11 @@ const PHYSICS_DOMAINS: DomainCategory[] = [
     icon: "🧲",
     color: "from-purple-500/20 to-pink-500/20 border-purple-500/30 text-purple-600 dark:text-purple-400",
     experiments: [
-      { id: "faraday", name: "Faraday's Induction Law", desc: "Induce emf via magnetic flux change.", aim: "Study electromagnetic induction from moving magnet.", formula: "E = -N (ΔΦ / Δt)" },
-      { id: "lenz", name: "Lenz's Law Demonstration", desc: "Verify direction of induced magnetic fields.", aim: "Verify induced current opposes changing flux.", formula: "Direction of E opposes dΦ/dt" },
-      { id: "solenoid", name: "Solenoid Magnetic Field", desc: "Measure magnetic flux density inside a coil.", aim: "Calculate B-field as function of turns & current.", formula: "B = μ₀ n I" },
-      { id: "transformer", name: "AC Transformer Ratio", desc: "Verify step-up & step-down ratios.", aim: "Verify voltage ratio scales with turns ratio.", formula: "V_s / V_p = N_s / N_p" }
-    ]
-  },
-  {
-    id: "optics",
-    title: "Optics & Light",
-    icon: "🔍",
-    color: "from-cyan-500/20 to-blue-500/20 border-cyan-500/30 text-cyan-600 dark:text-cyan-400",
-    experiments: [
-      { id: "snell", name: "Snell's Law of Refraction", desc: "Measure refractive index boundaries.", aim: "Verify constant ratio of incident vs refract angles.", formula: "n1 sin(θ1) = n2 sin(θ2)" },
-      { id: "lens_eq", name: "Thin Lens Equation", desc: "Form images using convex lenses.", aim: "Locate image distance and magnification factor.", formula: "1/f = 1/v + 1/u" },
-      { id: "tir", name: "Total Internal Reflection", desc: "Measure critical angle boundary values.", aim: "Observe reflection when incident exceeds critical.", formula: "θc = arcsin(n2 / n1)" },
-      { id: "prism", name: "Prism Dispersion Spectrum", desc: "Split white light into spectral lines.", aim: "Measure refraction indices varying with wavelength.", formula: "n(λ) = A + B/λ²" }
-    ]
-  },
-  {
-    id: "mechanics",
-    title: "Mechanics & Waves",
-    icon: "⚙",
-    color: "from-amber-500/20 to-orange-500/20 border-amber-500/30 text-amber-600 dark:text-amber-400",
-    experiments: [
-      { id: "pendulum", name: "Simple Pendulum Motion", desc: "Study gravity and length periods.", aim: "Verify gravity period independence of bob mass.", formula: "T = 2π √(L / g)" },
-      { id: "hooke", name: "Hooke's Law & Springs", desc: "Verify displacement linear tension.", aim: "Calculate spring constant k from loads.", formula: "F = -k x" },
-      { id: "projectile", name: "Projectile Firing Path", desc: "Fire particles in parabolic arcs.", aim: "Map range and height limits under varying angles.", formula: "y = x tan(θ) - g x² / (2 v₀² cos²(θ))" },
-      { id: "doppler", name: "Doppler Shift Simulation", desc: "Observe sound waves frequency shifts.", aim: "Verify compression and expansion of wave crests.", formula: "f' = f [ (v ± v_o) / (v ∓ v_s) ]" }
+      { id: "faraday", name: "Faraday's Induction Law", desc: "Induce voltage by moving magnet flux changes through coil.", aim: "Induce emf via moving magnetic fields.", formula: "E = -N (ΔΦ / Δt)" },
+      { id: "lenz", name: "Lenz's Law Demonstration", desc: "Verify that induced voltage direction opposes flux changes.", aim: "Study induced magnetic field polarity directions.", formula: "Direction opposes dΦ/dt" },
+      { id: "solenoid", name: "Solenoid Magnetic Field", desc: "Map magnetic flux density variations inside a coil.", aim: "Measure B-field inside current-carrying solenoid.", formula: "B = μ₀ n I" },
+      { id: "transformer", name: "AC Transformer Ratio", desc: "Analyze voltage step-up/step-down coupling ratios.", aim: "Study voltage conversion ratios of transformers.", formula: "V_s / V_p = N_s / N_p" },
+      { id: "biot_savart", name: "Biot-Savart's Law", desc: "Measure field decay curves around current carrying straight conductor.", aim: "Verify the relation between magnetic field, current, and distance from a straight conductor.", formula: "B = (μ₀ × I) / (2π × r)" }
     ]
   },
   {
@@ -81,10 +64,11 @@ const PHYSICS_DOMAINS: DomainCategory[] = [
     icon: "🔥",
     color: "from-rose-500/20 to-red-500/20 border-rose-500/30 text-rose-600 dark:text-rose-400",
     experiments: [
-      { id: "ideal_gas", name: "Ideal Gas State Equation", desc: "Study pressure, volume & temperature.", aim: "Verify state equations for ideal gas gas.", formula: "P V = n R T" },
-      { id: "boyle", name: "Boyle's Constant Temp Law", desc: "Verify pressure-volume inverse relation.", aim: "Study volume decrease under pressure scaling.", formula: "P1 V1 = P2 V2" },
-      { id: "charles", name: "Charles's Constant Pres Law", desc: "Verify volume-temperature linear relation.", aim: "Study gas expansion under heat scaling.", formula: "V1 / T1 = V2 / T2" },
-      { id: "specific_heat", name: "Specific Heat Capacity", desc: "Measure metal thermal capacities.", aim: "Find specific heat capacity using calorimetry.", formula: "Q = m c ΔT" }
+      { id: "ideal_gas", name: "Ideal Gas State Equation", desc: "Study pressure, volume and temperature state equations.", aim: "Verify P-V-T thermodynamic relationships.", formula: "P V = n R T" },
+      { id: "boyle", name: "Boyle's Constant Temp Law", desc: "Measure volume contraction ratio under scaling pressure.", aim: "Verify P-V inverse pressure volume relations.", formula: "P1 V1 = P2 V2" },
+      { id: "charles", name: "Charles's Constant Pres Law", desc: "Observe linear volume expansion under thermal scaling.", aim: "Verify V-T volume temperature linear relations.", formula: "V1 / T1 = V2 / T2" },
+      { id: "specific_heat", name: "Specific Heat Capacity", desc: "Trace specific heat ratios of metals using calorimetry.", aim: "Measure copper thermal specific heat.", formula: "Q = m c ΔT" },
+      { id: "stefan_law", name: "Stefan's Law Verification", desc: "Verify energy radiation scaling with fourth power of temperature.", aim: "Verify the Stefan-Boltzmann law relating total radiated energy to absolute temperature.", formula: "P = σ × ε × A × T⁴" }
     ]
   },
   {
@@ -93,10 +77,12 @@ const PHYSICS_DOMAINS: DomainCategory[] = [
     icon: "⚛",
     color: "from-emerald-500/20 to-teal-500/20 border-emerald-500/30 text-emerald-600 dark:text-emerald-400",
     experiments: [
-      { id: "photoelectric", name: "Photoelectric Effect", desc: "Verify work function quantum barriers.", aim: "Study kinetic energy and stopping voltage vs frequency.", formula: "Kmax = h ν - Φ" },
-      { id: "radioactive", name: "Radioactive Decay", desc: "Measure isotope half-life rates.", aim: "Trace exponential decay of parent nuclei.", formula: "N(t) = N₀ e^(-λ t)" },
-      { id: "de_broglie", name: "de Broglie Wavelength", desc: "Study matter wave-particle duality.", aim: "Measure wavelength of accelerating masses.", formula: "λ = h / (m v)" },
-      { id: "bohr_model", name: "Bohr Hydrogen Atom", desc: "Animate quantum orbital jumps.", aim: "Calculate photon wavelength emitted on shell transitions.", formula: "E = 13.6 (1/n_f² - 1/n_i²) eV" }
+      { id: "photoelectric", name: "Photoelectric Effect", desc: "Verify work function quantum barriers.", aim: "Determine stopping voltage vs light wavelength.", formula: "Kmax = h ν - Φ" },
+      { id: "planck_photocell", name: "Planck's Constant (Photocell)", desc: "Calculate h constant via phototube stopping voltage.", aim: "Find Planck's constant using photoelectric effect in a vacuum photocell.", formula: "e × Vs = h × f − Φ" },
+      { id: "planck_led", name: "Planck's Constant using LEDs", desc: "Measure turn-on voltages of multiple LEDs to estimate Planck's constant.", aim: "Determine Planck's constant by measuring the turn-on voltage of different colored LEDs.", formula: "h = (e × V_th × λ) / c" },
+      { id: "radioactive", name: "Radioactive Decay Half-Life", desc: "Observe parent nuclei counts half-life reduction rates.", aim: "Verify nuclei exponential decay rate.", formula: "N(t) = N₀ e^(-λ t)" },
+      { id: "de_broglie", name: "de Broglie matter wave", desc: "Determine quantum matter wave duality limits.", aim: "Measure wave characteristics of moving masses.", formula: "λ = h / (m v)" },
+      { id: "bohr_model", name: "Bohr Hydrogen atom transitions", desc: "Study discrete photon emissions on orbital energy drops.", aim: "Calculate transition shell wavelengths.", formula: "E = 13.6 (1/n_f² - 1/n_i²) eV" }
     ]
   }
 ];
@@ -138,7 +124,7 @@ export default function LandingPage({ view = 'home' }: { view?: 'home' | 'experi
     setBotChatHistory([
       {
         sender: 'bot',
-        text: "Hello! I am PhysicsBot, your virtual AI tutor. Ask me any physics question from our core domains (Circuits, Electromagnetism, Optics, Mechanics, Thermodynamics, or Quantum/Modern Physics) and I will provide step-by-step solutions, equations, and let you load active 3D simulations!"
+        text: "Hello! I am PhysicsBot, your virtual AI tutor. Ask me any physics question from our core domains (Circuits, Electromagnetism, Thermodynamics, or Quantum/Modern Physics) and I will provide step-by-step solutions, equations, and let you load active 3D simulations!"
       }
     ]);
   }, []);
@@ -327,7 +313,7 @@ export default function LandingPage({ view = 'home' }: { view?: 'home' | 'experi
               </div>
               <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 dark:text-white tracking-tight">PhysicsBot AI Console</h2>
               <p className="text-slate-500 dark:text-slate-400 max-w-md text-xs leading-relaxed">
-                Ask PhysicsBot queries in electrodynamics, optics, thermodynamics, or modern mechanics, and get immediate step-by-step math analysis.
+                Ask PhysicsBot queries in electrodynamics, thermodynamics, or modern physics, and get immediate step-by-step math analysis.
               </p>
             </div>
 

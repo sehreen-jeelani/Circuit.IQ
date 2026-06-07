@@ -258,6 +258,13 @@ function OhmsLawInteractive() {
   // Calculate Current: I = V / R (represented in milliamperes)
   const currentMa = (voltage / resistance) * 1000;
 
+  const stateRef = useRef({ voltage, resistance, currentMa });
+
+  // Keep stateRef in sync with React state
+  useEffect(() => {
+    stateRef.current = { voltage, resistance, currentMa };
+  }, [voltage, resistance, currentMa]);
+
   // React-driven high-precision Canvas-based wire particle simulation
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -266,18 +273,23 @@ function OhmsLawInteractive() {
     if (!ctx) return;
 
     let animId: number;
-    let width = canvas.width = canvas.offsetWidth || 400;
-    let height = canvas.height = canvas.offsetHeight || 300;
+    let width = canvas.offsetWidth || 400;
+    let height = canvas.offsetHeight || 300;
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        width = canvas.width = entry.contentRect.width;
-        height = canvas.height = entry.contentRect.height;
+        const dpr = window.devicePixelRatio || 1;
+        width = entry.contentRect.width;
+        height = entry.contentRect.height;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.resetTransform();
+        ctx.scale(dpr, dpr);
       }
     });
     resizeObserver.observe(canvas);
 
-    // Track state: initialize stable particles
+    // Track state: initialize stable particles once
     const maxParticlesCount = 50;
     const particles = Array.from({ length: maxParticlesCount }, (_, i) => ({
       progress: i / maxParticlesCount
@@ -285,6 +297,8 @@ function OhmsLawInteractive() {
 
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
+
+      const { voltage: currentV, currentMa: currentI } = stateRef.current;
 
       // Wire track geometries corresponding exactly to SVG track bounds
       const rx = width * 0.15;
@@ -351,8 +365,7 @@ function OhmsLawInteractive() {
 
       // Flow speed scales dynamically: V / R (proportional current)
       // High potential (V) pushes faster. Low resistance facilitates faster flow.
-      const currentFactor = currentMa; // max value around 240
-      const velocity = Math.max(0.001, (currentFactor / 240) * 0.016 + 0.001);
+      const velocity = Math.max(0.001, (currentI / 240) * 0.016 + 0.001);
 
       // Move particle array clockwise (current conventional flow)
       particles.forEach((p) => {
@@ -360,9 +373,7 @@ function OhmsLawInteractive() {
       });
 
       // Particle density represents resistance throttling
-      // High resistance limits total flowing electrons, while low resistance opens floodgates
-      // Also scale quantity with active voltage
-      const particlesToDraw = Math.round(5 + (currentFactor / 240) * 35);
+      const particlesToDraw = Math.round(5 + (currentI / 240) * 35);
 
       // Draw active particles
       for (let i = 0; i < particlesToDraw; i++) {
@@ -373,16 +384,16 @@ function OhmsLawInteractive() {
         const pos = getPointAlongTrack(p.progress);
 
         // Size represents voltage intensity level
-        let particleRadius = 1.3 + (voltage / 12) * 2.5;
-        let glowSize = 4 + (voltage / 12) * 14;
+        let particleRadius = 1.3 + (currentV / 12) * 2.5;
+        let glowSize = 4 + (currentV / 12) * 14;
 
         // Colors change based on intensity: cooling low voltage is pale cyan, shifting to bright yellow/electric blue for higher current loops
         let glowColor = '#60a5fa'; // Cool blue
-        if (voltage > 9) {
+        if (currentV > 9) {
           glowColor = '#22c55e'; // Blazing energetic electric green
-        } else if (voltage > 5) {
+        } else if (currentV > 5) {
           glowColor = '#f59e0b'; // Dynamic golden-yellow flux
-        } else if (voltage < 3) {
+        } else if (currentV < 3) {
           glowColor = '#06b6d4'; // Very light icy cyan
         }
 
@@ -397,7 +408,7 @@ function OhmsLawInteractive() {
         ctx.fill();
 
         // White core multiplier for hot high voltages
-        if (voltage > 7) {
+        if (currentV > 7) {
           ctx.shadowBlur = 0;
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
@@ -418,7 +429,7 @@ function OhmsLawInteractive() {
       cancelAnimationFrame(animId);
       resizeObserver.disconnect();
     };
-  }, [voltage, resistance, currentMa]);
+  }, []);
 
   return (
     <div className="flex-1 flex flex-col h-full pointer-events-auto select-none">

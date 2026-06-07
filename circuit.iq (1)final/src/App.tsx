@@ -26,6 +26,11 @@ export default function App() {
     }
   }, [theme]);
 
+  // Reset window scroll to top when changing views/tabs
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab, isLabOpen]);
+
   return (
     <div className={cn("min-h-screen bg-white dark:bg-space-black text-slate-900 dark:text-slate-100 relative overflow-hidden transition-colors duration-300", theme)}>
       <div className="atmospheric-bg" />

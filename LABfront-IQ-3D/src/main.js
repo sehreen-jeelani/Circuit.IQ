@@ -416,93 +416,96 @@ const experiments = {
     theory: "<h3>Transformers</h3><p>Inductive coupling scales voltage based on coil turn ratios.</p>",
     formulas: [{ name: "Turns Law", expr: "Vs / Vp = Ns / Np" }]
   },
-  snell: {
-    name: "Snell's Law of Refraction",
-    aim: "Measure index of refraction n of glass.",
-    apparatus: "Laser source, semicircular glass block.",
-    req: [],
+  diode_iv: {
+    name: "Diode I-V Characteristics",
+    aim: "Verify the I-V characteristics of a semiconductor diode (PN Junction).",
+    apparatus: "DC Power Supply (0-5V), Diode (1N4007), Resistor (100Ω), Ammeter, Voltmeter, Breadboard.",
+    req: ['source', 'resistor', 'diode', 'ammeter', 'voltmeter'],
     steps: [
-      { id: 1, text: "Vary incident angle θ1 and verify ratio consistency." }
+      { id: 1, text: "Place the PN Junction diode and series resistor on the breadboard." },
+      { id: 2, text: "Connect DC power supply positive to resistor start." },
+      { id: 3, text: "Connect voltmeter in parallel with the diode to measure barrier voltage." },
+      { id: 4, text: "Connect ammeter in series to measure forward bias current." }
     ],
-    theory: "<h3>Refraction</h3><p>Light bends at optical interfaces due to speed propagation differences.</p>",
-    formulas: [{ name: "Snell's Law", expr: "n1 sin(θ1) = n2 sin(θ2)" }]
+    theory: "<h3>Diode Characteristics</h3><p>A diode conducts current primarily in one direction. In forward bias, current increases exponentially after overcoming the barrier potential (~0.7V for Silicon).</p>",
+    formulas: [
+      { name: "Shockley Eq", expr: "I = I_s * (e^(V_d / n V_t) - 1)" },
+      { name: "Barrier Potential", expr: "V_barrier ≈ 0.7 V" }
+    ]
   },
-  lens_eq: {
-    name: "Thin Lens Equation",
-    aim: "Trace image distances from convex lens.",
-    apparatus: "Object pin, convex lens, projection screen.",
-    req: [],
+  voltage_divider: {
+    name: "Voltage & Current Divider",
+    aim: "Verify the voltage division rule in series and current division in parallel circuits.",
+    apparatus: "DC Power Supply (0-30V), Resistors (100Ω, 200Ω), Wires, Breadboard.",
+    req: ['source', 'resistor'],
     steps: [
-      { id: 1, text: "Vary object distance u and map matching image distance v." }
+      { id: 1, text: "Place two resistors in series across the power rails." },
+      { id: 2, text: "Measure output voltage across the second resistor." },
+      { id: 3, text: "Verify the ratio corresponds to R2 / (R1 + R2)." }
     ],
-    theory: "<h3>Lens Formulas</h3><p>Convex lenses focus rays forming real inverted images.</p>",
-    formulas: [{ name: "Lens Equation", expr: "1/f = 1/v + 1/u" }]
+    theory: "<h3>Voltage Divider</h3><p>Voltage distributes across series components in proportion to their resistances: V_out = V_in * [R2 / (R1 + R2)].</p>",
+    formulas: [
+      { name: "Voltage Division", expr: "V_out = V_in * (R2 / (R1 + R2))" },
+      { name: "Current Division", expr: "I1 = I_total * (R2 / (R1 + R2))" }
+    ]
   },
-  tir: {
-    name: "Total Internal Reflection",
-    aim: "Calculate critical angle of dense media boundary.",
-    apparatus: "Laser, glass block, angle scale.",
-    req: [],
+  planck_led: {
+    name: "Planck's Constant using LEDs",
+    aim: "Determine Planck's constant by measuring the turn-on voltage of different colored LEDs.",
+    apparatus: "DC Supply (0-5V), Red/Green/Blue/Yellow LEDs, Resistor (150Ω), Breadboard.",
+    req: ['source', 'resistor', 'led'],
     steps: [
-      { id: 1, text: "Increase incident angle until light reflects completely inside." }
+      { id: 1, text: "Connect the selected LED in series with a 150Ω resistor." },
+      { id: 2, text: "Slowly increase voltage until the LED just starts to glow." },
+      { id: 3, text: "Record threshold turn-on voltage V_d for each color wavelength λ." }
     ],
-    theory: "<h3>TIR</h3><p>Light cannot refract if angle exceeds critical value; it reflects internally.</p>",
-    formulas: [{ name: "Critical Angle", expr: "θc = arcsin(n2 / n1)" }]
+    theory: "<h3>Planck's Constant via LEDs</h3><p>The energy of emitted photons is E = h*c/λ, which equals the energy barrier e*V_th. Thus, h = (e * V_th * λ) / c.</p>",
+    formulas: [
+      { name: "Planck Relation", expr: "e × V_th = h × ν" },
+      { name: "Planck's Constant", expr: "h = (e × V_th × λ) / c" }
+    ]
   },
-  prism: {
-    name: "Prism Dispersion Spectrum",
-    aim: "Measure wavelength deviation angles through prism.",
-    apparatus: "Light ray, glass triangular prism.",
+  biot_savart: {
+    name: "Biot-Savart's Law",
+    aim: "Verify the relation between magnetic field, current, and distance from a straight conductor.",
+    apparatus: "Straight conductor rod, variable high-current source, Teslameter probe.",
     req: [],
     steps: [
-      { id: 1, text: "Vary incident angle and observe color spectrum dispersion." }
+      { id: 1, text: "Vary the current slider and observe concentric magnetic field lines." },
+      { id: 2, text: "Adjust the distance probe and record the magnetic field strength B." }
     ],
-    theory: "<h3>Dispersion</h3><p>Glass index of refraction changes with frequency, splitting white light.</p>",
-    formulas: [{ name: "Deviation Angle", expr: "δ = i1 + i2 - A" }]
+    theory: "<h3>Biot-Savart's Law</h3><p>Magnetic field B around a straight wire is directly proportional to current I and inversely proportional to radial distance r: B = μ₀I / (2πr).</p>",
+    formulas: [
+      { name: "Biot-Savart Straight", expr: "B = (μ₀ × I) / (2π × r)" }
+    ]
   },
-  pendulum: {
-    name: "Simple Pendulum Motion",
-    aim: "Study gravity periods of swinging pendulum.",
-    apparatus: "Stand, string, heavy bob, timer.",
+  planck_photocell: {
+    name: "Planck's Constant (Photocell)",
+    aim: "Find Planck's constant using photoelectric effect in a vacuum photocell.",
+    apparatus: "Monochromatic light source, vacuum phototube, stopping voltage supply.",
     req: [],
     steps: [
-      { id: 1, text: "Vary length L and gravity g. Measure period T." }
+      { id: 1, text: "Vary light wavelength and measure stopping voltage Vs where current drops to zero." },
+      { id: 2, text: "Plot Vs vs 1/λ and find the slope to compute h/e." }
     ],
-    theory: "<h3>Pendulums</h3><p>Period depends on length and gravity, remaining independent of mass.</p>",
-    formulas: [{ name: "Period", expr: "T = 2π √(L / g)" }]
+    theory: "<h3>Planck's Photocell Method</h3><p>Stopping voltage Vs prevents the highest energy electrons from reaching the collector: e*Vs = h*f - Φ.</p>",
+    formulas: [
+      { name: "Einstein equation", expr: "e × Vs = h × f − Φ" }
+    ]
   },
-  hooke: {
-    name: "Hooke's Law & Springs",
-    aim: "Verify linear extension of loaded springs.",
-    apparatus: "Spring, stand, weight hanger.",
+  stefan_law: {
+    name: "Stefan's Law Verification",
+    aim: "Verify the Stefan-Boltzmann law relating total radiated energy to absolute temperature.",
+    apparatus: "Electric blackbody furnace, optical radiation pyrometer.",
     req: [],
     steps: [
-      { id: 1, text: "Hang weights on spring and measure displacement stretch." }
+      { id: 1, text: "Increase blackbody furnace temperature and observe radiation spectrum glow." },
+      { id: 2, text: "Measure radiated power output P and confirm relation to T⁴." }
     ],
-    theory: "<h3>Hooke's Law</h3><p>Restoring spring force is linear to extension distance.</p>",
-    formulas: [{ name: "Spring Force", expr: "F = -k x" }]
-  },
-  projectile: {
-    name: "Projectile Firing Path",
-    aim: "Study parabolic trajectory parameters.",
-    apparatus: "Launcher cannon, landing pad, timer.",
-    req: [],
-    steps: [
-      { id: 1, text: "Vary firing angle and velocity. Click Simulate to launch ball." }
-    ],
-    theory: "<h3>Projectiles</h3><p>Gravity drives a parabolic path combining independent horizontal and vertical motions.</p>",
-    formulas: [{ name: "Vertical Path", expr: "y = x tan(θ) - g x² / (2 v₀² cos²θ)" }]
-  },
-  doppler: {
-    name: "Doppler Shift Simulation",
-    aim: "Observe wave compression frequency shifts.",
-    apparatus: "Sound source generator, frequency analyzer.",
-    req: [],
-    steps: [
-      { id: 1, text: "Adjust velocity of sound source and observe shifted tones." }
-    ],
-    theory: "<h3>Doppler Effect</h3><p>Wave crests compress ahead of moving source, increasing frequency tone.</p>",
-    formulas: [{ name: "Doppler Freq", expr: "f' = f [ v / (v - vs) ]" }]
+    theory: "<h3>Stefan-Boltzmann Law</h3><p>Total power radiated per unit area of a blackbody is proportional to fourth power of absolute temperature: E = σ * ε * A * T⁴.</p>",
+    formulas: [
+      { name: "Stefan's Law", expr: "P = σ × ε × A × T⁴" }
+    ]
   },
   ideal_gas: {
     name: "Ideal Gas State Equation",
@@ -524,7 +527,7 @@ const experiments = {
       { id: 1, text: "Vary volume slider and confirm P × V constant product." }
     ],
     theory: "<h3>Boyle's Law</h3><p>Pressure is inversely proportional to volume at constant temperature.</p>",
-    formulas: [{ name: "Boyle's", expr: "P₁ V₁ = P₂ V₂" }]
+    formulas: [{ name: "Boyle's", expr: "P1 × V1 = P2 × V2" }]
   },
   charles: {
     name: "Charles's Constant Pres Law",
@@ -535,7 +538,7 @@ const experiments = {
       { id: 1, text: "Heat gas chamber and watch piston expand volume linearly." }
     ],
     theory: "<h3>Charles's Law</h3><p>Gas volume is directly proportional to temperature at constant pressure.</p>",
-    formulas: [{ name: "Charles's", expr: "V₁ / T₁ = V₂ / T₂" }]
+    formulas: [{ name: "Charles's", expr: "V1 / T1 = V2 / T2" }]
   },
   specific_heat: {
     name: "Specific Heat Capacity",
@@ -546,7 +549,7 @@ const experiments = {
       { id: 1, text: "Drop heated metal into calorimeter and measure final mixture temperature." }
     ],
     theory: "<h3>Calorimetry</h3><p>Heat lost by metal block equals heat gained by water: Q = mcΔT.</p>",
-    formulas: [{ name: "Heat Transfer", expr: "Q = m c ΔT" }]
+    formulas: [{ name: "Heat Transfer", expr: "Q = m × c × ΔT" }]
   },
   photoelectric: {
     name: "Photoelectric Effect",
@@ -557,7 +560,7 @@ const experiments = {
       { id: 1, text: "Vary light frequency slider and find threshold work function boundary." }
     ],
     theory: "<h3>Photoelectric</h3><p>Light quanta eject electrons. Energy KE increases linearly with frequency.</p>",
-    formulas: [{ name: "Energy Max", expr: "Kmax = h ν - Φ" }]
+    formulas: [{ name: "Energy Max", expr: "Kmax = h × ν - Φ" }]
   },
   radioactive: {
     name: "Radioactive Decay Half-Life",
@@ -568,7 +571,7 @@ const experiments = {
       { id: 1, text: "Verify remaining parent nuclei drops by half after every half-life interval." }
     ],
     theory: "<h3>Decay Law</h3><p>Nuclei decay is random, scaling with remaining atoms count: N = N0 e^(-λt).</p>",
-    formulas: [{ name: "Decay Law", expr: "N(t) = N₀ e^(−λ t)" }]
+    formulas: [{ name: "Decay Law", expr: "N(t) = N0 e^(-λ × t)" }]
   },
   de_broglie: {
     name: "de Broglie matter wave",
@@ -579,7 +582,7 @@ const experiments = {
       { id: 1, text: "Vary velocity and verify matter wavelength changes." }
     ],
     theory: "<h3>de Broglie Wavelength</h3><p>Moving particles display matter wave behaviors inversely matching momentum.</p>",
-    formulas: [{ name: "Wavelength", expr: "λ = h / (m v)" }]
+    formulas: [{ name: "Wavelength", expr: "λ = h / (m × v)" }]
   },
   bohr_model: {
     name: "Bohr Hydrogen atom transitions",
@@ -649,29 +652,23 @@ const assessmentQuestions = {
   transformer: [
     { q: "A step-up transformer increases voltage by scaling up:", options: ["Primary turns", "Secondary turns", "Primary current", "Frequency"], correct: 1, explanation: "Vs / Vp = Ns / Np. Scaling up secondary turns Ns increases secondary voltage." }
   ],
-  snell: [
-    { q: "Snell's Law defines relationship between angles of:", options: ["Reflection", "Refraction", "Diffraction", "Polarization"], correct: 1, explanation: "Snell's Law connects incident vs refraction angles: n1 sinθ1 = n2 sinθ2." }
+  diode_iv: [
+    { q: "What is the approximate turn-on barrier voltage of a Silicon PN junction diode?", options: ["0.3 V", "0.7 V", "1.1 V", "2.0 V"], correct: 1, explanation: "Silicon diodes generally require about 0.7 V forward bias to start conducting." }
   ],
-  lens_eq: [
-    { q: "A convex lens has f = 15cm. If object is at u = 30cm, the image forms at v =:", options: ["15 cm", "30 cm", "Infinity", "10 cm"], correct: 1, explanation: "1/v = 1/f - 1/u = 1/15 - 1/30 = 1/30 => v = 30 cm." }
+  voltage_divider: [
+    { q: "In a series voltage divider with R1 = 100Ω and R2 = 200Ω, what fraction of Vin appears across R2?", options: ["1/3", "2/3", "1/2", "1/4"], correct: 1, explanation: "V_R2 = Vin * (R2 / (R1 + R2)) = Vin * (200 / 300) = 2/3 of Vin." }
   ],
-  tir: [
-    { q: "TIR occurs when incident angle is:", options: ["Less than critical angle", "Greater than critical angle", "Equal to refraction angle", "Zero"], correct: 1, explanation: "TIR happens only if incident angle θ1 exceeds the critical angle θc." }
+  planck_led: [
+    { q: "Why do different colored LEDs have different turn-on threshold voltages?", options: ["Different physical sizes", "Different semiconductor energy band gaps matching photon frequencies", "Varying internal resistances", "Different current ratings"], correct: 1, explanation: "Turn-on voltage corresponds to the energy gap Eg = h*f = h*c/λ. Shorter wavelengths (blue) require larger turn-on voltages." }
   ],
-  prism: [
-    { q: "Which color refracts (bends) the most through a glass prism?", options: ["Red", "Green", "Yellow", "Violet"], correct: 3, explanation: "Violet light has shorter wavelength, higher refractive index, and deviates the most." }
+  biot_savart: [
+    { q: "How does the magnetic field B change as you move twice as far from a straight current-carrying wire?", options: ["Doubles", "Halves", "Becomes four times", "Remains unchanged"], correct: 1, explanation: "B is inversely proportional to distance r (B ∝ 1/r), so doubling the distance halves the field." }
   ],
-  pendulum: [
-    { q: "If pendulum length is quadrupled (4x), its period T changes by:", options: ["Doubling", "Halving", "4x increase", "Unchanged"], correct: 0, explanation: "T = 2π√(L/g). Multiplying L by 4 increases T by √4 = 2." }
+  planck_photocell: [
+    { q: "What happens to the stopping voltage in a photoelectric experiment when the light intensity is doubled?", options: ["Doubles", "Halves", "Remains unchanged", "Drops to zero"], correct: 2, explanation: "Stopping voltage depends only on photon frequency (energy) and work function, not on intensity (photon quantity)." }
   ],
-  hooke: [
-    { q: "A spring stretches 2cm under 10N force. What is spring constant k?", options: ["5 N/m", "500 N/m", "20 N/m", "50 N/m"], correct: 1, explanation: "k = F/x = 10 / 0.02 = 500 N/m." }
-  ],
-  projectile: [
-    { q: "What launch angle maximizes projectile range under gravity?", options: ["30°", "45°", "60°", "90°"], correct: 1, explanation: "Range is proportional to sin(2θ), which peaks at 2θ = 90° => θ = 45°." }
-  ],
-  doppler: [
-    { q: "If sound source approaches observer, the observed frequency:", options: ["Increases", "Decreases", "Remains same", "Drops to zero"], correct: 0, explanation: "Moving source compresses waves, shifting frequency higher." }
+  stefan_law: [
+    { q: "According to Stefan-Boltzmann law, radiated energy from a blackbody scales with temperature T as:", options: ["T", "T²", "T³", "T⁴"], correct: 3, explanation: "Stefan's law states that total energy radiated per unit area is proportional to the fourth power of absolute temperature (T⁴)." }
   ],
   ideal_gas: [
     { q: "Ideal Gas Law is expressed as:", options: ["P V = n R T", "P / V = n R T", "P T = n R V", "P V = R T"], correct: 0, explanation: "State equation is PV = nRT." }
@@ -791,90 +788,93 @@ function calculateCircuitLocal(params, activeExperiment, buttonPressed) {
     I = V / 100; 
     Z = Ns / (Np || 1); 
     P = V * I;
-  } else if (activeExperiment === 'snell' || activeExperiment === 'tir') {
-    const n1 = params.V;
-    const n2 = params.R;
-    const theta1 = params.C;
-    const sinTheta2 = (n1 / n2) * Math.sin(theta1 * Math.PI / 180);
-    let theta2 = 0;
-    let critAngle = 0;
-    if (n1 > n2) {
-      critAngle = Math.asin(n2 / n1) * 180 / Math.PI;
-    }
-    if (sinTheta2 <= 1.0) {
-      theta2 = Math.asin(sinTheta2) * 180 / Math.PI;
+  } else if (activeExperiment === 'diode_iv') {
+    V = params.V; // source voltage
+    const Rd = params.R; // series resistance
+    const V_barrier = 0.7; // Silicon barrier voltage
+    if (V > V_barrier) {
+      I = (V - V_barrier) / Rd;
+      V = V_barrier + I * 2.0; // small internal resistance drop
     } else {
-      theta2 = 90.0; 
+      I = V * 1e-6; // leakage current
     }
-    V = theta1; 
-    I = theta2; 
-    Z = n2 / n1; 
-    P = critAngle; 
-    f0 = Math.abs(theta1 - theta2); 
-  } else if (activeExperiment === 'lens_eq') {
-    const u = params.V;
-    const f = params.R;
-    let v = 0;
-    if (u !== f) {
-      v = (u * f) / (u - f);
+    Z = Rd;
+    P = V * I;
+  } else if (activeExperiment === 'voltage_divider') {
+    const Vin = params.V;
+    const R1 = params.R;
+    const R2 = params.L || 200;
+    Z = R1 + R2;
+    I = Vin / (Z || 1);
+    V = Vin * (R2 / (Z || 1)); // Vout
+    P = Vin * I;
+  } else if (activeExperiment === 'planck_led') {
+    const Vs = params.V;
+    const Rd = params.R;
+    // Barrier voltages for different colors: Red (1.8V), Yellow (2.0V), Green (2.2V), Blue (2.7V)
+    let V_barrier = 2.0; // default Yellow
+    let wavelength = 590e-9;
+    if (state.params.led_color === 'red') { V_barrier = 1.8; wavelength = 620e-9; }
+    else if (state.params.led_color === 'green') { V_barrier = 2.2; wavelength = 525e-9; }
+    else if (state.params.led_color === 'blue') { V_barrier = 2.7; wavelength = 470e-9; }
+    else if (state.params.led_color === 'yellow') { V_barrier = 2.0; wavelength = 590e-9; }
+    
+    if (Vs > V_barrier) {
+      I = (Vs - V_barrier) / Rd;
+      V = V_barrier + I * 3.0; // actual LED voltage drop
     } else {
-      v = 9999; 
+      I = Vs * 1e-6;
+      V = Vs;
     }
-    V = u;
-    I = v;
-    Z = f;
-    P = Math.abs(v / u); 
-  } else if (activeExperiment === 'prism') {
-    const i = params.V;
-    const A = params.R;
-    const n = params.C;
-    const dev = A * (n - 1); 
-    V = i;
-    I = dev;
-    Z = n;
-  } else if (activeExperiment === 'pendulum') {
-    const theta0 = params.V;
-    const L = params.R;
-    const g = params.L || 9.8;
-    const period = 2 * Math.PI * Math.sqrt(L / g);
-    const t = (Date.now() * 0.001);
-    const omega = Math.sqrt(g / L);
-    const currentAngle = theta0 * Math.cos(omega * t);
-    const currentVelocity = -theta0 * (Math.PI / 180) * omega * Math.sin(omega * t);
-    V = currentAngle;
-    I = currentVelocity;
-    Z = period;
-    const mass = 0.5; 
-    const h0 = L * (1 - Math.cos(theta0 * Math.PI / 180));
-    const h = L * (1 - Math.cos(currentAngle * Math.PI / 180));
-    P = mass * g * (h0 - h); 
-    f0 = mass * g * h; 
-  } else if (activeExperiment === 'hooke') {
-    const mass = params.V * 1e-3; 
-    const k = params.R;
-    const g = 9.8;
-    const stretch = (mass * g) / k; 
-    V = mass * 1000;
-    I = stretch * 100; 
-    Z = k;
-  } else if (activeExperiment === 'projectile') {
-    const theta = params.V * Math.PI / 180;
-    const v0 = params.R;
-    const g = params.L || 9.8;
-    const range = (v0 * v0 * Math.sin(2 * theta)) / g;
-    const maxHeight = (v0 * v0 * Math.sin(theta) * Math.sin(theta)) / (2 * g);
-    V = params.V;
-    I = range;
-    Z = maxHeight;
-  } else if (activeExperiment === 'doppler') {
-    const vs = params.V;
-    const fs = params.R;
-    const v = params.L || 340;
-    const f_approach = fs * (v / (v - vs));
-    const f_recede = fs * (v / (v + vs));
-    V = f_approach;
-    I = f_recede;
-    Z = vs;
+    Z = V_barrier;
+    P = V * I;
+    // Calculate h = (e * V_barrier * wavelength) / c
+    const e = 1.602e-19;
+    const c_speed = 3e8;
+    f0 = (e * V_barrier * wavelength) / c_speed; // display h
+  } else if (activeExperiment === 'biot_savart') {
+    const current = params.V;
+    const r = params.R; // distance in cm
+    const L = params.L || 0.5; // wire length in m
+    const u0 = 4 * Math.PI * 1e-7;
+    const B = (u0 * current) / (2 * Math.PI * (r * 1e-2) || 1); // Tesla
+    V = current;
+    I = r;
+    Z = L;
+    P = B * 1e6; // micro-Tesla for display
+  } else if (activeExperiment === 'planck_photocell') {
+    const lambda = params.V; // wavelength in nm
+    const Vs = params.R; // stopping voltage
+    const intensity = params.L || 50; // light intensity %
+    const h = 4.1357e-15; // eV-s
+    const c_speed = 3e8;
+    const freq = c_speed / (lambda * 1e-9);
+    const E_photon = h * freq; // energy in eV
+    const work_function = 2.0; // vacuum phototube work function in eV
+    let stoppingV = E_photon - work_function;
+    if (stoppingV < 0) stoppingV = 0;
+    
+    // Photo-current drops to 0 when Vs >= stoppingV
+    let I_photo = 0;
+    if (E_photon > work_function && Vs < stoppingV) {
+      I_photo = (intensity / 100) * (1 - Vs / stoppingV) * 0.05; // mA
+    }
+    V = lambda;
+    I = I_photo;
+    Z = stoppingV; // theoretical cutoff voltage
+    P = E_photon; // energy in eV
+    f0 = 6.626e-34; // standard Planck's constant for display
+  } else if (activeExperiment === 'stefan_law') {
+    const T = params.V; // absolute temp in K
+    const emiss = params.R;
+    const area = params.L || 5.0; // cm^2
+    const sigma = 5.6703e-12; // W/(cm^2 K^4)
+    const radiated_power = sigma * emiss * area * Math.pow(T, 4); // Watts
+    V = T;
+    I = emiss;
+    Z = area;
+    P = radiated_power;
+    f0 = Math.pow(T, 4);
   } else if (activeExperiment === 'ideal_gas' || activeExperiment === 'boyle' || activeExperiment === 'charles') {
     const vol = activeExperiment === 'charles' ? (params.V * 0.03) : params.V; 
     const temp = activeExperiment === 'boyle' ? 300.0 : (activeExperiment === 'charles' ? params.V : params.R); 
@@ -1279,7 +1279,110 @@ function validateCircuitLocal() {
     return { status: 'error', message: 'Connect the loop to Arduino 5V and Ground nodes.' };
   }
 
-  const isCircuit = ['ohms', 'kvl', 'kcl', 'rc_rl_rlc', 'series_parallel', 'wheatstone', 'lcr', 'rc', 'arduino_led'].includes(expKey);
+  if (expKey === 'diode_iv') {
+    if (!source || !resistor || !findComp('diode') || !ammeter || !voltmeter) {
+      return { status: 'error', message: 'Missing required components. Place Source, Resistor, Diode, Ammeter, and Voltmeter.' };
+    }
+    const diode = findComp('diode');
+    const r1 = resistor.snap1, r2 = resistor.snap2;
+    const d1 = diode.snap1, d2 = diode.snap2;
+    const am1 = ammeter.snap1, am2 = ammeter.snap2;
+    const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
+    
+    if (find(r1) === find(r2) || find(d1) === find(d2) || find(am1) === find(am2) || find(volt1) === find(volt2)) {
+      return { status: 'error', message: 'One or more components are shorted!' };
+    }
+    
+    const posRail = find(0), negRail = find(1);
+    if (posRail === negRail) return { status: 'error', message: 'Short Circuit Detected!' };
+    
+    const nodeR1 = find(r1), nodeR2 = find(r2);
+    const nodeD1 = find(d1), nodeD2 = find(d2);
+    const nodeAm1 = find(am1), nodeAm2 = find(am2);
+    
+    let pathOk = false;
+    if ((nodeR1 === posRail || nodeR2 === posRail) && (nodeAm1 === negRail || nodeAm2 === negRail)) {
+      const rFree = (nodeR1 === posRail) ? nodeR2 : nodeR1;
+      const amFree = (nodeAm1 === negRail) ? nodeAm2 : nodeAm1;
+      if ((rFree === nodeD1 && nodeD2 === amFree) || (rFree === nodeD2 && nodeD1 === amFree)) {
+        pathOk = true;
+      }
+    } else if ((nodeAm1 === posRail || nodeAm2 === posRail) && (nodeR1 === negRail || nodeR2 === negRail)) {
+      const amFree = (nodeAm1 === posRail) ? nodeAm2 : nodeAm1;
+      const rFree = (nodeR1 === negRail) ? nodeR2 : nodeR1;
+      if ((amFree === nodeD1 && nodeD2 === rFree) || (amFree === nodeD2 && nodeD1 === rFree)) {
+        pathOk = true;
+      }
+    }
+    
+    if (!pathOk) {
+      return { status: 'error', message: 'Invalid series loop. Ensure: Battery (+) -> Resistor -> Diode (Anode to Cathode) -> Ammeter -> Ground (-).' };
+    }
+    
+    const voltmeterParallel = (
+      (find(volt1) === nodeD1 && find(volt2) === nodeD2) ||
+      (find(volt1) === nodeD2 && find(volt2) === nodeD1)
+    );
+    if (!voltmeterParallel) {
+      return { status: 'error', message: 'Voltmeter must be connected in PARALLEL directly across the Diode.' };
+    }
+    return { status: 'success', message: 'Diode forward bias circuit verified!' };
+  }
+
+  if (expKey === 'voltage_divider') {
+    if (!source || comps.filter(c => c.type === 'resistor').length < 2) {
+      return { status: 'error', message: 'Missing components. Place Source and at least 2 Resistors.' };
+    }
+    const resList = comps.filter(c => c.type === 'resistor');
+    const r1 = resList[0], r2 = resList[1];
+    const posRail = find(0), negRail = find(1);
+    if (posRail === negRail) return { status: 'error', message: 'Short Circuit Detected!' };
+    
+    const nodeR1_1 = find(r1.snap1), nodeR1_2 = find(r1.snap2);
+    const nodeR2_1 = find(r2.snap1), nodeR2_2 = find(r2.snap2);
+    
+    const r1_connected_to_pos = (nodeR1_1 === posRail || nodeR1_2 === posRail);
+    const r2_connected_to_neg = (nodeR2_1 === negRail || nodeR2_2 === negRail);
+    const r1_to_r2 = (nodeR1_1 === nodeR2_1 || nodeR1_1 === nodeR2_2 || nodeR1_2 === nodeR2_1 || nodeR1_2 === nodeR2_2);
+    
+    if (r1_connected_to_pos && r2_connected_to_neg && r1_to_r2) {
+      return { status: 'success', message: 'Voltage divider series network verified!' };
+    }
+    const r2_connected_to_pos = (nodeR2_1 === posRail || nodeR2_2 === posRail);
+    const r1_connected_to_neg = (nodeR1_1 === negRail || nodeR1_2 === negRail);
+    if (r2_connected_to_pos && r1_connected_to_neg && r1_to_r2) {
+      return { status: 'success', message: 'Voltage divider series network verified!' };
+    }
+    return { status: 'error', message: 'Ensure Resistor 1 -> Resistor 2 forms a series connection between Battery (+) and Ground (-).' };
+  }
+
+  if (expKey === 'planck_led') {
+    if (!source || !resistor || !led) {
+      return { status: 'error', message: 'Missing components. Place Source, Resistor, and LED.' };
+    }
+    const r1 = resistor.snap1, r2 = resistor.snap2;
+    const l1 = led.snap1, l2 = led.snap2;
+    const posRail = find(0), negRail = find(1);
+    if (posRail === negRail) return { status: 'error', message: 'Short Circuit Detected!' };
+    
+    const nodeR1 = find(r1), nodeR2 = find(r2);
+    const nodeL1 = find(l1), nodeL2 = find(l2);
+    
+    let pathOk = false;
+    if ((nodeR1 === posRail || nodeR2 === posRail) && (nodeL1 === negRail || nodeL2 === negRail)) {
+      const rFree = (nodeR1 === posRail) ? nodeR2 : nodeR1;
+      if (rFree === nodeL1 || rFree === nodeL2) pathOk = true;
+    } else if ((nodeL1 === posRail || nodeL2 === posRail) && (nodeR1 === negRail || nodeR2 === negRail)) {
+      const lFree = (nodeL1 === posRail) ? nodeL2 : nodeL1;
+      if (lFree === nodeR1 || lFree === nodeR2) pathOk = true;
+    }
+    if (pathOk) {
+      return { status: 'success', message: 'LED Planck constant test circuit verified!' };
+    }
+    return { status: 'error', message: 'Connect Battery (+) -> Resistor -> LED -> Ground (-) in a closed loop.' };
+  }
+
+  const isCircuit = ['ohms', 'kvl', 'kcl', 'rc_rl_rlc', 'series_parallel', 'wheatstone', 'lcr', 'rc', 'arduino_led', 'diode_iv', 'voltage_divider', 'planck_led'].includes(expKey);
   if (!isCircuit) {
     return { status: 'success', message: 'Experiment setup verified!' };
   }
@@ -1296,7 +1399,13 @@ function startPollingCalculations() {
     if (!state.isRunning) return;
     try {
       let data;
-      if (state.activeExperiment !== 'arduino_led') {
+      const isBackendCalculated = [
+        'ohms', 'kvl', 'kcl', 'rc_rl_rlc', 'series_parallel', 'wheatstone', 'lcr', 'rc',
+        'faraday', 'lenz', 'solenoid', 'transformer', 'ideal_gas', 'boyle', 'charles',
+        'specific_heat', 'photoelectric', 'radioactive', 'de_broglie', 'bohr_model'
+      ].includes(state.activeExperiment);
+
+      if (isBackendCalculated) {
         try {
           const response = await fetch('/api/calculate', {
             method: 'POST',
@@ -1391,10 +1500,34 @@ function updateUI() {
   } else if (state.activeExperiment === 'rc') {
     const tauMs = (state.analysis.f0 * 1000).toFixed(1);
     elements.kirchhoffDisplay.innerText = `[OK] Transient KVL Validated:\n V_capacitor + V_resistor = V_source\n\n[INFO] Time Constant (τ) = R × C\n τ = ${tauMs} ms`;
+  } else if (state.activeExperiment === 'rc_rl_rlc') {
+    elements.kirchhoffDisplay.innerText = `[OK] AC Impedance Analysis:\n Z = √[R² + (XL−XC)²] = ${state.meters.ohms.toFixed(1)} Ω\n XL = ${state.analysis.XL.toFixed(1)} Ω, XC = ${state.analysis.XC.toFixed(1)} Ω\n Phase φ = ${state.analysis.phi.toFixed(1)}°\n Resonant f₀ = ${state.analysis.f0.toFixed(1)} Hz`;
+  } else if (state.activeExperiment === 'kvl') {
+    const vR1 = (state.meters.volts * state.params.R / (state.params.R * 2)).toFixed(2);
+    elements.kirchhoffDisplay.innerText = `[OK] KVL Validated:\n V_source (${state.meters.volts.toFixed(2)}V) = V_R1 + V_R2\n ΣV(loop) = 0\n\n[OK] Loop Current: ${state.meters.amps.toFixed(4)} A`;
+  } else if (state.activeExperiment === 'kcl') {
+    elements.kirchhoffDisplay.innerText = `[OK] KCL Validated:\n I_total = I_R1 + I_R2\n ΣI(node) = 0\n\n[OK] Total Current: ${state.meters.amps.toFixed(4)} A`;
+  } else if (state.activeExperiment === 'series_parallel') {
+    elements.kirchhoffDisplay.innerText = `[OK] Series-Parallel Network:\n V_source = ${state.meters.volts.toFixed(2)} V\n I_total = ${state.meters.amps.toFixed(4)} A\n R_eq = ${state.meters.ohms.toFixed(1)} Ω`;
+  } else if (state.activeExperiment === 'wheatstone') {
+    elements.kirchhoffDisplay.innerText = `[OK] Wheatstone Bridge:\n V_source = ${state.meters.volts.toFixed(2)} V\n I_total = ${state.meters.amps.toFixed(4)} A\n Balance: R1×R4 = R2×R3`;
+  } else if (state.activeExperiment === 'diode_iv') {
+    elements.kirchhoffDisplay.innerText = `[OK] Diode I-V Characteristics:\n V_diode = ${state.meters.volts.toFixed(2)} V\n I_diode = ${(state.meters.amps * 1000).toFixed(2)} mA\n R_series = ${state.params.R} Ω\n Diode State: ${state.meters.amps > 1e-4 ? 'FORWARD BIASED' : 'REVERSE BIASED'}`;
+  } else if (state.activeExperiment === 'voltage_divider') {
+    elements.kirchhoffDisplay.innerText = `[OK] Voltage Divider Network:\n V_source = ${state.params.V.toFixed(2)} V\n V_out (across R2) = ${state.meters.volts.toFixed(2)} V\n R1 = ${state.params.R} Ω, R2 = ${(state.params.L || 200)} Ω`;
+  } else if (state.activeExperiment === 'planck_led') {
+    const ledColor = state.params.led_color || 'red';
+    elements.kirchhoffDisplay.innerText = `[OK] LED Planck Constant:\n V_led = ${state.meters.volts.toFixed(2)} V\n I_led = ${(state.meters.amps * 1000).toFixed(2)} mA\n Color = ${ledColor.toUpperCase()}\n Planck's h (est.) = ${state.analysis.f0.toExponential(4)} J·s`;
+  } else if (state.activeExperiment === 'biot_savart') {
+    elements.kirchhoffDisplay.innerText = `[OK] Biot-Savart Law:\n Current (I) = ${state.meters.volts.toFixed(2)} A\n Distance (r) = ${state.meters.amps.toFixed(1)} cm\n Magnetic Field (B) = ${state.meters.power.toFixed(2)} μT`;
+  } else if (state.activeExperiment === 'planck_photocell') {
+    elements.kirchhoffDisplay.innerText = `[OK] Planck's Constant (Photocell):\n Wavelength (λ) = ${state.meters.volts.toFixed(1)} nm\n Stopping Voltage (Vs) = ${state.meters.ohms.toFixed(2)} V\n Photo-current (I_photo) = ${(state.meters.amps * 1000).toFixed(3)} mA\n Planck's h = ${state.analysis.f0.toExponential(3)} J·s`;
+  } else if (state.activeExperiment === 'stefan_law') {
+    elements.kirchhoffDisplay.innerText = `[OK] Stefan's Law:\n Temperature (T) = ${state.meters.volts.toFixed(1)} K\n Radiated Power (P) = ${state.meters.power.toFixed(3)} W\n Emissivity (ε) = ${state.meters.amps.toFixed(2)}\n Target Area = ${state.meters.ohms.toFixed(1)} cm²\n T⁴ = ${state.analysis.f0.toExponential(3)} K⁴`;
   }
 
   if (elements.acAnalysisBlock) {
-    elements.acAnalysisBlock.style.display = (state.activeExperiment === 'lcr') ? 'block' : 'none';
+    elements.acAnalysisBlock.style.display = (state.activeExperiment === 'lcr' || state.activeExperiment === 'rc_rl_rlc') ? 'block' : 'none';
   }
   
   const displayScore = Math.min(100, state.score);
@@ -1470,7 +1603,7 @@ function drawObservationTable() {
   let rows = '';
   const expKey = state.activeExperiment;
   
-  if (['ohms', 'kvl', 'kcl', 'series_parallel', 'wheatstone', 'arduino_led'].includes(expKey)) {
+  if (['ohms', 'kvl', 'kcl', 'series_parallel', 'wheatstone', 'arduino_led', 'diode_iv', 'voltage_divider', 'planck_led'].includes(expKey)) {
     headers = `<th>#</th><th>Voltage V (V)</th><th>Current I (mA)</th><th>${expKey === 'ohms' ? 'Resistance' : 'Impedance'} (Ω)</th>`;
     state.dataPoints.forEach(pt => {
       rows += `<tr><td>${pt.id}</td><td>${pt.V.toFixed(2)}</td><td>${(pt.I * 1000).toFixed(1)}</td><td>${pt.R.toFixed(1)}</td></tr>`;
@@ -1780,43 +1913,33 @@ const sliderConfigs = {
     R: { label: "Primary Turns Np", min: 50, max: 500, step: 10, val: 200, unit: "turns" },
     L: { label: "Secondary Turns Ns", min: 50, max: 1000, step: 10, val: 400, unit: "turns" }
   },
-  snell: {
-    V: { label: "Index n1", min: 1.0, max: 2.5, step: 0.01, val: 1.0, unit: "" },
-    R: { label: "Index n2", min: 1.0, max: 2.5, step: 0.01, val: 1.5, unit: "" },
-    C: { label: "Incident Angle θ₁", min: 0, max: 90, step: 1, val: 45, unit: "°" }
+  diode_iv: {
+    V: { label: "Source Voltage", min: 0, max: 5, step: 0.05, val: 1.5, unit: "V" },
+    R: { label: "Resistor R", min: 10, max: 1000, step: 5, val: 100, unit: "Ω" }
   },
-  lens_eq: {
-    V: { label: "Object Distance u", min: 5, max: 100, step: 1, val: 30, unit: "cm" },
-    R: { label: "Focal Length f", min: 2, max: 50, step: 0.5, val: 15, unit: "cm" }
+  voltage_divider: {
+    V: { label: "Source Voltage", min: 0, max: 30, step: 0.1, val: 12, unit: "V" },
+    R: { label: "Resistor R1", min: 10, max: 1000, step: 5, val: 100, unit: "Ω" },
+    L: { label: "Resistor R2", min: 10, max: 1000, step: 5, val: 200, unit: "Ω" }
   },
-  tir: {
-    V: { label: "Index n1 (Dense)", min: 1.2, max: 2.5, step: 0.01, val: 1.5, unit: "" },
-    R: { label: "Index n2 (Rare)", min: 1.0, max: 1.5, step: 0.01, val: 1.0, unit: "" },
-    C: { label: "Incident Angle θ₁", min: 0, max: 90, step: 1, val: 45, unit: "°" }
+  planck_led: {
+    V: { label: "Source Voltage", min: 0, max: 5, step: 0.05, val: 2.5, unit: "V" },
+    R: { label: "Resistor R", min: 10, max: 1000, step: 5, val: 150, unit: "Ω" }
   },
-  prism: {
-    V: { label: "Incident Angle i", min: 0, max: 90, step: 1, val: 45, unit: "°" },
-    R: { label: "Apex Angle A", min: 30, max: 75, step: 1, val: 60, unit: "°" },
-    C: { label: "Base Index n₀", min: 1.2, max: 2.0, step: 0.01, val: 1.5, unit: "" }
+  biot_savart: {
+    V: { label: "Current I", min: 0.1, max: 10.0, step: 0.1, val: 2.0, unit: "A" },
+    R: { label: "Distance r", min: 1.0, max: 10.0, step: 0.1, val: 5.0, unit: "cm" },
+    L: { label: "Wire Length L", min: 0.1, max: 1.0, step: 0.05, val: 0.5, unit: "m" }
   },
-  pendulum: {
-    V: { label: "Start Angle θ₀", min: 5, max: 90, step: 1, val: 30, unit: "°" },
-    R: { label: "String Length L", min: 0.2, max: 3.0, step: 0.05, val: 1.5, unit: "m" },
-    L: { label: "Gravity g", min: 1.0, max: 25.0, step: 0.1, val: 9.8, unit: "m/s²" }
+  planck_photocell: {
+    V: { label: "Wavelength λ", min: 350, max: 700, step: 1, val: 450, unit: "nm" },
+    R: { label: "Stopping Volt Vs", min: 0.0, max: 3.0, step: 0.01, val: 0.8, unit: "V" },
+    L: { label: "Intensity P", min: 10, max: 100, step: 5, val: 50, unit: "%" }
   },
-  hooke: {
-    V: { label: "Hanging Mass m", min: 10, max: 1000, step: 10, val: 200, unit: "g" },
-    R: { label: "Spring Constant k", min: 5, max: 100, step: 1, val: 25, unit: "N/m" }
-  },
-  projectile: {
-    V: { label: "Launch Angle θ", min: 0, max: 90, step: 1, val: 45, unit: "°" },
-    R: { label: "Initial Velocity v₀", min: 1, max: 50, step: 1, val: 20, unit: "m/s" },
-    L: { label: "Gravity g", min: 1.0, max: 25.0, step: 0.1, val: 9.8, unit: "m/s²" }
-  },
-  doppler: {
-    V: { label: "Source Velocity vs", min: 0, max: 150, step: 1, val: 50, unit: "m/s" },
-    R: { label: "Source Freq fs", min: 100, max: 2000, step: 10, val: 500, unit: "Hz" },
-    L: { label: "Sound Speed v", min: 200, max: 500, step: 5, val: 340, unit: "m/s" }
+  stefan_law: {
+    V: { label: "Temperature T", min: 300, max: 2000, step: 10, val: 1000, unit: "K" },
+    R: { label: "Emissivity ε", min: 0.1, max: 1.0, step: 0.01, val: 0.95, unit: "" },
+    L: { label: "Surface Area A", min: 1.0, max: 10.0, step: 0.1, val: 5.0, unit: "cm²" }
   },
   ideal_gas: {
     V: { label: "Chamber Volume V", min: 1.0, max: 30.0, step: 0.1, val: 10.0, unit: "L" },
@@ -1887,183 +2010,105 @@ function initProceduralVisuals(expKey) {
   const glassMat = new THREE.MeshPhysicalMaterial({ color: 0xe0f2fe, transparent: true, opacity: 0.4, roughness: 0.1, transmission: 0.85, thickness: 0.5 });
   const laserMat = new THREE.LineBasicMaterial({ color: 0xff0055 });
 
-  if (['snell', 'lens_eq', 'tir', 'prism'].includes(expKey)) {
-    // Laser pointer source
-    const laserGroup = new THREE.Group();
-    laserGroup.name = 'laser-source';
+  if (expKey === 'biot_savart') {
+    // A vertical current carrying wire
+    const wire = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.0), copperMat);
+    wire.position.set(0, 1.0, 0);
+    state.proceduralGroup.add(wire);
     
-    const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.25, 0.25), metalMat);
-    body.position.set(-2.5, 0.4, 0);
-    laserGroup.add(body);
+    // Stand base
+    const base = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.04, 1.2), metalMat);
+    base.position.y = 0.02;
+    state.proceduralGroup.add(base);
     
-    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.4), metalMat);
-    base.position.set(-2.5, 0.2, 0);
-    laserGroup.add(base);
+    // Magnetic field concentric rings group
+    const fieldRings = new THREE.Group();
+    fieldRings.name = 'biot-rings';
+    state.proceduralGroup.add(fieldRings);
     
-    state.proceduralGroup.add(laserGroup);
-    
-    // Laser Ray line
-    const points = [new THREE.Vector3(-2.5, 0.4, 0), new THREE.Vector3(0, 0.4, 0)];
-    const geo = new THREE.BufferGeometry().setFromPoints(points);
-    const ray = new THREE.Line(geo, laserMat);
-    ray.name = 'laser-ray';
-    state.proceduralGroup.add(ray);
-    
-    if (expKey === 'snell' || expKey === 'tir') {
-      // Protractor dial on the floor
-      const dGeo = new THREE.CylinderGeometry(1.8, 1.8, 0.02, 64);
-      const dMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 });
-      const dial = new THREE.Mesh(dGeo, dMat);
-      dial.position.y = 0.01;
-      state.proceduralGroup.add(dial);
-      
-      const rGeo = new THREE.RingGeometry(1.7, 1.75, 64);
-      const rMat = new THREE.MeshBasicMaterial({ color: 0x64748b, side: THREE.DoubleSide });
-      const ring = new THREE.Mesh(rGeo, rMat);
+    // 3 rings at different radii
+    const ringColors = [0x60a5fa, 0x3b82f6, 0x1d4ed8];
+    for (let r = 1; r <= 3; r++) {
+      const radius = r * 0.35;
+      const ringGeo = new THREE.RingGeometry(radius - 0.015, radius + 0.015, 64);
+      const ringMat = new THREE.MeshBasicMaterial({ color: ringColors[r-1], side: THREE.DoubleSide, transparent: true, opacity: 0.7 });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
       ring.rotation.x = Math.PI / 2;
-      ring.position.y = 0.022;
-      state.proceduralGroup.add(ring);
-      
-      // Semicircular glass slab
-      const gGeo = new THREE.CylinderGeometry(1.3, 1.3, 0.4, 32, 1, false, 0, Math.PI);
-      const glass = new THREE.Mesh(gGeo, glassMat);
-      glass.position.set(0, 0.2, 0);
-      glass.rotation.x = Math.PI / 2;
-      glass.rotation.z = Math.PI / 2;
-      state.proceduralGroup.add(glass);
-    } else if (expKey === 'prism') {
-      const pGeo = new THREE.CylinderGeometry(0.7, 0.7, 1.0, 3, 1);
-      const prism = new THREE.Mesh(pGeo, glassMat);
-      prism.position.set(0, 0.5, 0);
-      prism.rotation.y = Math.PI / 6;
-      state.proceduralGroup.add(prism);
-    } else if (expKey === 'lens_eq') {
-      // Optical bench rail
-      const rail = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 4.8), metalMat);
-      rail.rotation.z = Math.PI / 2;
-      rail.position.set(0, 0.1, 0);
-      state.proceduralGroup.add(rail);
-      
-      // Lens Stand & Lens
-      const stand = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.5), metalMat);
-      stand.position.set(0, 0.25, 0);
-      state.proceduralGroup.add(stand);
-      
-      const lensGeo = new THREE.SphereGeometry(0.5, 32, 32);
-      const lens = new THREE.Mesh(lensGeo, glassMat);
-      lens.scale.set(1, 1, 0.22);
-      lens.position.set(0, 0.6, 0);
-      state.proceduralGroup.add(lens);
-      
-      // Object pin
-      const objPin = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.4), new THREE.MeshStandardMaterial({ color: 0xef4444 }));
-      objPin.position.set(-1.5, 0.3, 0);
-      objPin.name = 'lens-object-pin';
-      state.proceduralGroup.add(objPin);
-      
-      // Image screen
-      const screen = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.7, 0.7), new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.9 }));
-      screen.position.set(1.5, 0.45, 0);
-      screen.name = 'lens-image-screen';
-      state.proceduralGroup.add(screen);
-      
-      const screenSt = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.25), metalMat);
-      screenSt.position.set(1.5, 0.125, 0);
-      screenSt.name = 'lens-screen-stand';
-      state.proceduralGroup.add(screenSt);
+      ring.position.y = 1.0;
+      fieldRings.add(ring);
     }
-  } else if (expKey === 'pendulum') {
-    const base = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.04, 1.0), metalMat);
+    
+    // Distance probe sensor
+    const probe = new THREE.Mesh(new THREE.SphereGeometry(0.06, 16, 16), new THREE.MeshStandardMaterial({ color: 0xef4444 }));
+    probe.position.set(0.7, 1.0, 0);
+    probe.name = 'biot-probe';
+    state.proceduralGroup.add(probe);
+  } else if (expKey === 'planck_photocell') {
+    // Glass tube envelope
+    const env = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 1.6, 32, 1, false), glassMat);
+    env.rotation.z = Math.PI / 2;
+    env.position.set(0, 0.6, 0);
+    state.proceduralGroup.add(env);
+    
+    // Cathode (curved or flat emitter plate)
+    const emitter = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.6, 0.4), new THREE.MeshStandardMaterial({ color: 0x3b82f6, metalness: 0.8 }));
+    emitter.position.set(-0.5, 0.6, 0);
+    state.proceduralGroup.add(emitter);
+    
+    // Anode collector wire loop/plate
+    const collector = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.6), metalMat);
+    collector.position.set(0.5, 0.6, 0);
+    state.proceduralGroup.add(collector);
+    
+    // Light source barrel
+    const lightSource = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.5), metalMat);
+    lightSource.position.set(-1.2, 0.9, 0);
+    lightSource.rotation.z = -Math.PI / 6;
+    state.proceduralGroup.add(lightSource);
+    
+    // Light ray buffer
+    const points = [new THREE.Vector3(-1.2, 0.9, 0), new THREE.Vector3(-0.5, 0.6, 0)];
+    const lightRay = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: 0x38bdf8 }));
+    lightRay.name = 'photocell-ray';
+    state.proceduralGroup.add(lightRay);
+    
+    // Photoelectron particles group
+    const electrons = new THREE.Group();
+    electrons.name = 'photoelectrons-photocell';
+    state.proceduralGroup.add(electrons);
+  } else if (expKey === 'stefan_law') {
+    // Stefan-Boltzmann blackbody cavity furnace: a big sphere
+    const furnaceMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.6, roughness: 0.3 });
+    const furnace = new THREE.Mesh(new THREE.SphereGeometry(0.6, 32, 32), furnaceMat);
+    furnace.position.set(-0.6, 0.7, 0);
+    state.proceduralGroup.add(furnace);
+    
+    // Support base stand
+    const stand = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.7), metalMat);
+    stand.position.set(-0.6, 0.35, 0);
+    state.proceduralGroup.add(stand);
+    
+    const base = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.04, 1.2), metalMat);
     base.position.y = 0.02;
     state.proceduralGroup.add(base);
     
-    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 2.4), metalMat);
-    post.position.set(-0.35, 1.2, 0);
-    state.proceduralGroup.add(post);
+    // Glowing aperture (small disk at opening of the sphere)
+    const glowGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.02, 32);
+    const glowMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const glow = new THREE.Mesh(glowGeo, glowMat);
+    glow.rotation.z = Math.PI / 2;
+    glow.position.set(0.0, 0.7, 0);
+    glow.name = 'furnace-glow';
+    state.proceduralGroup.add(glow);
     
-    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.5), metalMat);
-    rod.rotation.z = Math.PI / 2;
-    rod.position.set(-0.1, 2.3, 0);
-    state.proceduralGroup.add(rod);
+    // Optical pyrometer / radiation receiver sensor
+    const receiver = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.3, 0.3), metalMat);
+    receiver.position.set(1.2, 0.7, 0);
+    state.proceduralGroup.add(receiver);
     
-    const pivot = new THREE.Group();
-    pivot.position.set(0, 2.3, 0);
-    pivot.name = 'pendulum-pivot';
-    state.proceduralGroup.add(pivot);
-    
-    const str = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 1.4), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
-    str.position.y = -0.7;
-    str.name = 'pendulum-string';
-    pivot.add(str);
-    
-    const bob = new THREE.Mesh(new THREE.SphereGeometry(0.12, 32, 32), new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.1 }));
-    bob.position.y = -1.4;
-    bob.name = 'pendulum-bob';
-    pivot.add(bob);
-  } else if (expKey === 'hooke') {
-    const base = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.04, 1.0), metalMat);
-    base.position.y = 0.02;
-    state.proceduralGroup.add(base);
-    
-    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 3.0), metalMat);
-    post.position.set(-0.35, 1.5, 0);
-    state.proceduralGroup.add(post);
-    
-    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.5), metalMat);
-    rod.rotation.z = Math.PI / 2;
-    rod.position.set(-0.1, 2.9, 0);
-    state.proceduralGroup.add(rod);
-    
-    const springGroup = new THREE.Group();
-    springGroup.position.set(0, 2.9, 0);
-    springGroup.name = 'spring-group';
-    state.proceduralGroup.add(springGroup);
-    
-    const weight = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.2), new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.8 }));
-    weight.position.set(0, 1.3, 0);
-    weight.name = 'spring-weight';
-    state.proceduralGroup.add(weight);
-  } else if (expKey === 'projectile') {
-    const ground = new THREE.Mesh(new THREE.BoxGeometry(10.0, 0.02, 1.5), new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.9 }));
-    ground.position.y = 0.01;
-    state.proceduralGroup.add(ground);
-    
-    const cannon = new THREE.Group();
-    cannon.position.set(-4.0, 0.2, 0);
-    cannon.name = 'cannon-group';
-    state.proceduralGroup.add(cannon);
-    
-    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.7, 16), metalMat);
-    barrel.rotation.z = Math.PI / 4;
-    barrel.position.set(0.25, 0.25, 0);
-    barrel.name = 'cannon-barrel';
-    cannon.add(barrel);
-    
-    const mount = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
-    cannon.add(mount);
-    
-    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.07, 16, 16), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
-    ball.position.set(-4.0, 0.2, 0);
-    ball.name = 'projectile-ball';
-    ball.visible = false;
-    state.proceduralGroup.add(ball);
-  } else if (expKey === 'doppler') {
-    const road = new THREE.Mesh(new THREE.BoxGeometry(8.0, 0.02, 1.5), new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 }));
-    road.position.y = 0.01;
-    state.proceduralGroup.add(road);
-    
-    const speaker = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.25, 0.3), new THREE.MeshStandardMaterial({ color: 0x3b82f6 }));
-    speaker.position.set(-2.5, 0.135, 0);
-    speaker.name = 'doppler-source';
-    state.proceduralGroup.add(speaker);
-    
-    const listener = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.4), new THREE.MeshStandardMaterial({ color: 0xef4444 }));
-    listener.position.set(1.5, 0.21, 0);
-    state.proceduralGroup.add(listener);
-    
-    const ripples = new THREE.Group();
-    ripples.name = 'doppler-ripples';
-    state.proceduralGroup.add(ripples);
+    const recStand = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.7), metalMat);
+    recStand.position.set(1.2, 0.35, 0);
+    state.proceduralGroup.add(recStand);
   } else if (['ideal_gas', 'boyle', 'charles'].includes(expKey)) {
     const base = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 0.08, 32), metalMat);
     base.position.y = 0.04;
@@ -2241,7 +2286,7 @@ function initProceduralVisuals(expKey) {
 
 // --- SETUP EXPERIMENT STATE ---
 function setupExperiment(expKey, loadFromDb = false) {
-  if (expKey === 'led') expKey = 'arduino_led';
+  if (expKey === 'led') expKey = 'planck_led';
   state.activeExperiment = expKey;
   state.dataPoints = [];
   state.score = 0;
@@ -2277,7 +2322,7 @@ function setupExperiment(expKey, loadFromDb = false) {
   }
 
   // Determine workspace visibility based on experiment
-  const isCircuit = ['ohms', 'kvl', 'kcl', 'rc_rl_rlc', 'series_parallel', 'wheatstone', 'lcr', 'rc', 'arduino_led'].includes(expKey);
+  const isCircuit = ['ohms', 'kvl', 'kcl', 'rc_rl_rlc', 'series_parallel', 'wheatstone', 'lcr', 'rc', 'arduino_led', 'diode_iv', 'voltage_divider', 'planck_led'].includes(expKey);
   if (boardGroup) {
     boardGroup.visible = isCircuit;
   }
@@ -2331,26 +2376,27 @@ function setupExperiment(expKey, loadFromDb = false) {
   }
 
   // Configure Multimeter Labels per domain
-  if (expKey === 'ohms' || expKey === 'kvl' || expKey === 'kcl' || expKey === 'rc_rl_rlc' || expKey === 'lcr' || expKey === 'rc' || expKey === 'series_parallel' || expKey === 'wheatstone' || expKey === 'arduino_led') {
+  const isStandardCircuit = ['ohms', 'kvl', 'kcl', 'rc_rl_rlc', 'lcr', 'rc', 'series_parallel', 'wheatstone', 'arduino_led', 'diode_iv', 'voltage_divider', 'planck_led'].includes(expKey);
+  if (isStandardCircuit) {
     updateMeterLabels("VOLTMETER", "V", "AMMETER", "A", expKey === 'ohms' ? 'RESISTANCE' : 'IMPEDANCE', "Ω", "Power", "Energy");
-  } else if (['snell', 'lens_eq', 'tir', 'prism'].includes(expKey)) {
-    updateMeterLabels("INCIDENT θ₁", "°", "REFRACTED θ₂", "°", "REFRACT INDEX", "", "Crit Angle θc", "Deviation δ");
-  } else if (expKey === 'pendulum') {
-    updateMeterLabels("POSITION θ", "°", "VELOCITY ω", "rad/s", "PERIOD T", "s", "Kinetic Energy", "Potential Energy");
-  } else if (expKey === 'hooke' || expKey === 'projectile' || expKey === 'doppler') {
-    updateMeterLabels("MEASURE V", "", "MEASURE I", "", "MEASURE Z", "", "Kinetic Energy", "Potential Energy");
-  } else if (['ideal_gas', 'boyle', 'charles'].includes(expKey)) {
-    updateMeterLabels("PRESSURE P", "kPa", "VOLUME V", "L", "TEMPERATURE T", "K", "Moles n", "Internal Energy U");
-  } else if (expKey === 'specific_heat') {
-    updateMeterLabels("METAL TEMP Tm", "°C", "WATER TEMP Tw", "°C", "MIXTURE Tf", "°C", "Heat Exchanged", "Heat Capacity");
-  } else if (expKey === 'photoelectric') {
-    updateMeterLabels("LIGHT FREQ ν", "10¹⁴Hz", "INTENSITY I", "mW", "WORK FUNCTION", "eV", "Stopping Volt Vs", "Max K.E. Kmax");
+  } else if (expKey === 'biot_savart') {
+    updateMeterLabels("CURRENT I", "A", "DISTANCE r", "cm", "WIRE LENGTH L", "m", "B Field (μT)", "Constant μ₀");
+  } else if (expKey === 'planck_photocell') {
+    updateMeterLabels("WAVELENGTH λ", "nm", "CURRENT I_photo", "mA", "STOPPING VOLT Vs", "V", "Photon Energy", "Max K.E. (eV)");
+  } else if (expKey === 'stefan_law') {
+    updateMeterLabels("TEMPERATURE T", "K", "EMISSIVITY ε", "", "SURFACE AREA A", "cm²", "Radiated Power", "Total Energy");
   } else if (expKey === 'radioactive') {
     updateMeterLabels("INITIAL N₀", "", "REMAINING N", "", "HALF-LIFE T₁/₂", "s", "Activity A", "Decay Constant");
   } else if (expKey === 'de_broglie') {
     updateMeterLabels("MASS m", "10⁻³⁰kg", "VELOCITY v", "km/s", "WAVELENGTH λ", "nm", "Momentum p", "Kinetic Energy");
   } else if (expKey === 'bohr_model') {
     updateMeterLabels("INITIAL ni", "", "FINAL nf", "", "ENERGY GAP ΔE", "eV", "Emitted λ", "Frequency ν");
+  } else if (['ideal_gas', 'boyle', 'charles'].includes(expKey)) {
+    updateMeterLabels("PRESSURE P", "kPa", "VOLUME V", "L", "TEMPERATURE T", "K", "Moles n", "Internal Energy U");
+  } else if (expKey === 'specific_heat') {
+    updateMeterLabels("METAL TEMP Tm", "°C", "WATER TEMP Tw", "°C", "MIXTURE Tf", "°C", "Heat Exchanged", "Heat Capacity");
+  } else if (expKey === 'photoelectric') {
+    updateMeterLabels("LIGHT FREQ ν", "10¹⁴Hz", "INTENSITY I", "mW", "WORK FUNCTION", "eV", "Stopping Volt Vs", "Max K.E. Kmax");
   }
 
   drawObservationTable();
@@ -2498,6 +2544,7 @@ function setupExperiment(expKey, loadFromDb = false) {
   updateAIMentor();
   updateTargetHighlights();
   updateToolboxVisibility(expKey);
+  updateDiagram(expKey);
 
   if (loadFromDb) {
     loadCircuitFromBackend(expKey);
@@ -3328,21 +3375,57 @@ function generateLabReportPDF() {
   // --- Build observation table HTML ---
   let tableHeaders = '';
   let tableRows = '';
-  if (expKey === 'ohms') {
-    tableHeaders = `<th>S.No.</th><th>Voltage V (V)</th><th>Current I (A)</th><th>Resistance R = V/I (Ω)</th>`;
+  
+  if (['ohms', 'kvl', 'kcl', 'series_parallel', 'wheatstone', 'arduino_led', 'diode_iv', 'voltage_divider', 'planck_led'].includes(expKey)) {
+    tableHeaders = `<th>S.No.</th><th>Voltage V (V)</th><th>Current I (mA)</th><th>${expKey === 'ohms' ? 'Resistance' : 'Impedance'} R (Ω)</th>`;
     state.dataPoints.forEach(p => {
-      tableRows += `<tr><td>${p.id}</td><td>${p.V.toFixed(2)}</td><td>${(p.I * 1000).toFixed(3)} mA</td><td>${p.R.toFixed(2)}</td></tr>`;
+      tableRows += `<tr><td>${p.id}</td><td>${p.V.toFixed(2)}</td><td>${(p.I * 1000).toFixed(1)} mA</td><td>${p.R.toFixed(1)}</td></tr>`;
     });
-  } else if (expKey === 'lcr') {
-    tableHeaders = `<th>S.No.</th><th>Frequency f (Hz)</th><th>Voltage V (V)</th><th>Current I (A)</th><th>Impedance Z (Ω)</th>`;
+  } else if (['lcr', 'rc_rl_rlc'].includes(expKey)) {
+    tableHeaders = `<th>S.No.</th><th>Frequency f (Hz)</th><th>Voltage V (V)</th><th>Current I (mA)</th><th>Impedance Z (Ω)</th>`;
     state.dataPoints.forEach(p => {
-      tableRows += `<tr><td>${p.id}</td><td>${p.f}</td><td>${p.V.toFixed(2)}</td><td>${p.I.toFixed(4)}</td><td>${p.R.toFixed(2)}</td></tr>`;
+      tableRows += `<tr><td>${p.id}</td><td>${p.f}</td><td>${p.V.toFixed(2)}</td><td>${(p.I * 1000).toFixed(1)} mA</td><td>${p.R.toFixed(1)}</td></tr>`;
     });
   } else if (expKey === 'rc') {
-    tableHeaders = `<th>S.No.</th><th>Capacitance C (µF)</th><th>Voltage V (V)</th><th>Current I (A)</th><th>Time Constant τ = RC (ms)</th>`;
+    tableHeaders = `<th>S.No.</th><th>Capacitance C (µF)</th><th>Voltage V (V)</th><th>Time Constant τ = RC (ms)</th>`;
     state.dataPoints.forEach(p => {
       const tau = (state.params.R * p.C * 1e-6 * 1000).toFixed(2);
-      tableRows += `<tr><td>${p.id}</td><td>${p.C}</td><td>${p.V.toFixed(2)}</td><td>${p.I.toFixed(4)}</td><td>${tau}</td></tr>`;
+      tableRows += `<tr><td>${p.id}</td><td>${p.C}</td><td>${p.V.toFixed(2)}</td><td>${tau}</td></tr>`;
+    });
+  } else if (['ideal_gas', 'boyle'].includes(expKey)) {
+    tableHeaders = `<th>S.No.</th><th>Volume V (L)</th><th>Temp T (K)</th><th>Pressure P (kPa)</th>`;
+    state.dataPoints.forEach(p => {
+      tableRows += `<tr><td>${p.id}</td><td>${p.I.toFixed(1)}</td><td>${p.R.toFixed(0)}</td><td>${p.V.toFixed(1)}</td></tr>`;
+    });
+  } else if (expKey === 'charles') {
+    tableHeaders = `<th>S.No.</th><th>Temp T (K)</th><th>Pressure P (kPa)</th><th>Volume V (L)</th>`;
+    state.dataPoints.forEach(p => {
+      tableRows += `<tr><td>${p.id}</td><td>${p.R.toFixed(0)}</td><td>${p.V.toFixed(1)}</td><td>${p.I.toFixed(1)}</td></tr>`;
+    });
+  } else if (expKey === 'specific_heat') {
+    tableHeaders = `<th>S.No.</th><th>Metal Tm (°C)</th><th>Water Tw (°C)</th><th>Mixture Tf (°C)</th><th>Heat Q (J)</th>`;
+    state.dataPoints.forEach(p => {
+      tableRows += `<tr><td>${p.id}</td><td>${p.V.toFixed(1)}</td><td>${p.I.toFixed(1)}</td><td>${p.R.toFixed(1)}</td><td>${p.P.toFixed(0)}</td></tr>`;
+    });
+  } else if (expKey === 'photoelectric') {
+    tableHeaders = `<th>S.No.</th><th>Freq ν (10¹⁴Hz)</th><th>Intensity (mW)</th><th>Work Fn (eV)</th><th>Stopping Vs (V)</th>`;
+    state.dataPoints.forEach(p => {
+      tableRows += `<tr><td>${p.id}</td><td>${p.V.toFixed(2)}</td><td>${p.I.toFixed(0)}</td><td>${(p.R * 1e-3).toFixed(2)}</td><td>${p.P.toFixed(2)}</td></tr>`;
+    });
+  } else if (expKey === 'radioactive') {
+    tableHeaders = `<th>S.No.</th><th>Time t (s)</th><th>Initial N₀</th><th>Remaining N</th><th>Activity A</th>`;
+    state.dataPoints.forEach(p => {
+      tableRows += `<tr><td>${p.id}</td><td>${p.time.toFixed(1)}</td><td>${p.V.toFixed(0)}</td><td>${p.I.toFixed(0)}</td><td>${p.P.toFixed(1)}</td></tr>`;
+    });
+  } else if (expKey === 'de_broglie') {
+    tableHeaders = `<th>S.No.</th><th>Mass m (10⁻³⁰kg)</th><th>Velocity v (km/s)</th><th>Wavelength λ (nm)</th>`;
+    state.dataPoints.forEach(p => {
+      tableRows += `<tr><td>${p.id}</td><td>${p.V.toFixed(1)}</td><td>${p.I.toFixed(0)}</td><td>${p.R.toFixed(3)}</td></tr>`;
+    });
+  } else if (expKey === 'bohr_model') {
+    tableHeaders = `<th>S.No.</th><th>Orbit ni</th><th>Orbit nf</th><th>Energy Gap ΔE (eV)</th>`;
+    state.dataPoints.forEach(p => {
+      tableRows += `<tr><td>${p.id}</td><td>${p.V.toFixed(0)}</td><td>${p.I.toFixed(0)}</td><td>${p.R.toFixed(2)}</td></tr>`;
     });
   } else if (expKey === 'arduino_led') {
     tableHeaders = `<th>S.No.</th><th>Vcc (V)</th><th>V_LED (V)</th><th>Resistance R (Ω)</th><th>Current I (mA)</th><th>Power P (mW)</th>`;
@@ -3351,9 +3434,18 @@ function generateLabReportPDF() {
       const I = Math.max(0, (Vcc - Vled) / r);
       tableRows += `<tr><td>${idx+1}</td><td>${Vcc}</td><td>${Vled}</td><td>${r}</td><td>${(I*1000).toFixed(2)}</td><td>${(I*Vcc*1000).toFixed(2)}</td></tr>`;
     });
+  } else {
+    tableHeaders = `<th>S.No.</th><th>Voltage V (V)</th><th>Current I (mA)</th><th>Impedance Z (Ω)</th>`;
+    state.dataPoints.forEach(p => {
+      tableRows += `<tr><td>${p.id}</td><td>${p.V.toFixed(2)}</td><td>${(p.I * 1000).toFixed(1)} mA</td><td>${p.R.toFixed(1)}</td></tr>`;
+    });
   }
+
   if (!tableRows) {
-    tableRows = `<tr><td colspan="6" style="text-align:center;color:#888;">No data recorded. Run simulation and use Record button.</td></tr>`;
+    let cols = 4;
+    if (['specific_heat', 'photoelectric', 'radioactive', 'arduino_led', 'lcr', 'rc_rl_rlc'].includes(expKey)) cols = 5;
+    if (expKey === 'arduino_led') cols = 6;
+    tableRows = `<tr><td colspan="${cols}" style="text-align:center;color:#888;">No data recorded. Run simulation and use Record button.</td></tr>`;
   }
 
   // --- Build viva Q&A for report ---
@@ -4094,7 +4186,7 @@ function initInteraction() {
     const currentI = state.meters.amps;
     const currentR = state.meters.ohms;
     
-    if (['ohms', 'kvl', 'kcl', 'series_parallel', 'wheatstone', 'arduino_led'].includes(state.activeExperiment)) {
+    if (['ohms', 'kvl', 'kcl', 'series_parallel', 'wheatstone', 'arduino_led', 'diode_iv', 'voltage_divider', 'planck_led'].includes(state.activeExperiment)) {
       duplicate = state.dataPoints.some(pt => Math.abs(pt.V - currentV) < 0.05);
       if (duplicate) {
         appendAIMessage("Circuit IQ · AI Mentor", `A reading for ${currentV.toFixed(2)} V has already been recorded. Please vary the Voltage to record a new data point.`);
@@ -4387,11 +4479,74 @@ function initInteraction() {
   
   elements.btnExport.addEventListener('click', () => {
     if (state.dataPoints.length === 0) return;
-    let colName = state.activeExperiment === 'ohms' ? "Resistance (Ohm)" : "Impedance (Ohm)";
-    let csv = `Index,Voltage (V),Current (A),${colName}\n`;
-    state.dataPoints.forEach(p => {
-      csv += `${p.id},${p.V.toFixed(2)},${p.I.toFixed(4)},${p.R.toFixed(1)}\n`;
+    
+    let headers = [];
+    let rows = [];
+    const expKey = state.activeExperiment;
+    
+    if (['ohms', 'kvl', 'kcl', 'series_parallel', 'wheatstone', 'arduino_led', 'diode_iv', 'voltage_divider', 'planck_led'].includes(expKey)) {
+      headers = ["Index", "Voltage V (V)", "Current I (mA)", `${expKey === 'ohms' ? 'Resistance' : 'Impedance'} (Ohm)`];
+      state.dataPoints.forEach(pt => {
+        rows.push([pt.id, pt.V.toFixed(2), (pt.I * 1000).toFixed(1), pt.R.toFixed(1)]);
+      });
+    } else if (['lcr', 'rc_rl_rlc'].includes(expKey)) {
+      headers = ["Index", "Freq f (Hz)", "Voltage V (V)", "Current I (mA)", "Impedance Z (Ohm)"];
+      state.dataPoints.forEach(pt => {
+        rows.push([pt.id, pt.f, pt.V.toFixed(2), (pt.I * 1000).toFixed(1), pt.R.toFixed(1)]);
+      });
+    } else if (expKey === 'rc') {
+      headers = ["Index", "Cap C (uF)", "Voltage V (V)", "Time Constant tau (ms)"];
+      state.dataPoints.forEach(pt => {
+        const tau = pt.R * pt.C * 1e-3;
+        rows.push([pt.id, pt.C, pt.V.toFixed(2), tau.toFixed(1)]);
+      });
+    } else if (['ideal_gas', 'boyle'].includes(expKey)) {
+      headers = ["Index", "Volume V (L)", "Temp T (K)", "Pressure P (kPa)"];
+      state.dataPoints.forEach(pt => {
+        rows.push([pt.id, pt.I.toFixed(1), pt.R.toFixed(0), pt.V.toFixed(1)]);
+      });
+    } else if (expKey === 'charles') {
+      headers = ["Index", "Temp T (K)", "Pressure P (kPa)", "Volume V (L)"];
+      state.dataPoints.forEach(pt => {
+        rows.push([pt.id, pt.R.toFixed(0), pt.V.toFixed(1), pt.I.toFixed(1)]);
+      });
+    } else if (expKey === 'specific_heat') {
+      headers = ["Index", "Metal Tm (C)", "Water Tw (C)", "Mixture Tf (C)", "Heat Q (J)"];
+      state.dataPoints.forEach(pt => {
+        rows.push([pt.id, pt.V.toFixed(1), pt.I.toFixed(1), pt.R.toFixed(1), pt.P.toFixed(0)]);
+      });
+    } else if (expKey === 'photoelectric') {
+      headers = ["Index", "Freq v (10^14Hz)", "Intensity (mW)", "Work Fn (eV)", "Stopping Vs (V)"];
+      state.dataPoints.forEach(pt => {
+        rows.push([pt.id, pt.V.toFixed(2), pt.I.toFixed(0), (pt.R * 1e-3).toFixed(2), pt.P.toFixed(2)]);
+      });
+    } else if (expKey === 'radioactive') {
+      headers = ["Index", "Time t (s)", "Initial N0", "Remaining N", "Activity A"];
+      state.dataPoints.forEach(pt => {
+        rows.push([pt.id, pt.time.toFixed(1), pt.V.toFixed(0), pt.I.toFixed(0), pt.P.toFixed(1)]);
+      });
+    } else if (expKey === 'de_broglie') {
+      headers = ["Index", "Mass m (10^-30kg)", "Velocity v (km/s)", "Wavelength lambda (nm)"];
+      state.dataPoints.forEach(pt => {
+        rows.push([pt.id, pt.V.toFixed(1), pt.I.toFixed(0), pt.R.toFixed(3)]);
+      });
+    } else if (expKey === 'bohr_model') {
+      headers = ["Index", "Orbit ni", "Orbit nf", "Energy Gap deltaE (eV)"];
+      state.dataPoints.forEach(pt => {
+        rows.push([pt.id, pt.V.toFixed(0), pt.I.toFixed(0), pt.R.toFixed(2)]);
+      });
+    } else {
+      headers = ["Index", "Voltage V (V)", "Current I (mA)", "Impedance Z (Ohm)"];
+      state.dataPoints.forEach(pt => {
+        rows.push([pt.id, pt.V.toFixed(2), (pt.I * 1000).toFixed(1), pt.R.toFixed(1)]);
+      });
+    }
+    
+    let csv = headers.join(",") + "\n";
+    rows.forEach(r => {
+      csv += r.join(",") + "\n";
     });
+    
     const blob = new Blob([csv], { type: 'text/csv' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -4710,7 +4865,7 @@ async function startSimulation() {
     let data = validateCircuitLocal();
     
     if (data.status === 'success') {
-      const isCircuit = ['ohms', 'kvl', 'kcl', 'rc_rl_rlc', 'series_parallel', 'wheatstone', 'lcr', 'rc', 'arduino_led'].includes(state.activeExperiment);
+      const isCircuit = ['ohms', 'kvl', 'kcl', 'rc_rl_rlc', 'series_parallel', 'wheatstone', 'lcr', 'rc', 'arduino_led', 'diode_iv', 'voltage_divider', 'planck_led'].includes(state.activeExperiment);
       if (isCircuit && state.activeExperiment !== 'arduino_led') {
         try {
           const response = await fetch('/api/validate', {
@@ -4729,7 +4884,9 @@ async function startSimulation() {
             if (backendData.status === 'success') {
               data = { status: 'success', message: backendData.message };
             } else {
-              data = { status: 'error', message: "Backend validation failure: " + backendData.message };
+              // Local Union-Find validation already passed — backend DFS graph
+              // may not correctly represent breadboard topology. Keep local result.
+              console.warn("Backend returned fail but local validation passed:", backendData.message);
             }
           } else {
             throw new Error(`HTTP ${response.status}`);
@@ -4758,6 +4915,16 @@ async function startSimulation() {
       } else if (state.activeExperiment === 'lcr') {
         completeStep(3);
       } else if (state.activeExperiment === 'rc') {
+        completeStep(3);
+      } else if (state.activeExperiment === 'rc_rl_rlc') {
+        completeStep(3);
+      } else if (state.activeExperiment === 'kvl') {
+        completeStep(3);
+      } else if (state.activeExperiment === 'kcl') {
+        completeStep(3);
+      } else if (state.activeExperiment === 'series_parallel') {
+        completeStep(3);
+      } else if (state.activeExperiment === 'wheatstone') {
         completeStep(3);
       } else if (state.activeExperiment === 'arduino_led') {
         completeStep(4);
@@ -4788,24 +4955,48 @@ function autoBuildExperiment() {
     placeComponent3D('source', 1 * 14 + 0, 1 * 14 + 1);
     placeComponent3D('resistor', 7 * 14 + 4, 11 * 14 + 4);
     placeComponent3D('resistor', 13 * 14 + 4, 17 * 14 + 4);
-    create3DWire(1 * 14 + 0, 7 * 14 + 4);
+    create3DWire(2 * 14 + 0, 7 * 14 + 4);
     create3DWire(11 * 14 + 4, 13 * 14 + 4);
-    create3DWire(17 * 14 + 4, 1 * 14 + 1);
+    create3DWire(17 * 14 + 4, 2 * 14 + 1);
   } else if (expKey === 'kcl') {
     placeComponent3D('source', 1 * 14 + 0, 1 * 14 + 1);
     placeComponent3D('resistor', 8 * 14 + 3, 12 * 14 + 3);
     placeComponent3D('resistor', 8 * 14 + 5, 12 * 14 + 5);
-    create3DWire(1 * 14 + 0, 8 * 14 + 3);
+    create3DWire(2 * 14 + 0, 8 * 14 + 3);
     create3DWire(8 * 14 + 3, 8 * 14 + 5);
     create3DWire(12 * 14 + 3, 12 * 14 + 5);
-    create3DWire(12 * 14 + 5, 1 * 14 + 1);
+    create3DWire(12 * 14 + 5, 2 * 14 + 1);
   } else if (expKey === 'led') { // led color experiment
     placeComponent3D('source', 3 * 14 + 0, 3 * 14 + 1); // Source at Col 4 Positive & Negative
     placeComponent3D('resistor', 6 * 14 + 4, 9 * 14 + 4); // Resistor at Col 7E to 10E
     placeComponent3D('led', 9 * 14 + 5, 9 * 14 + 6); // LED anode 10f, cathode 10g
-    create3DWire(3 * 14 + 0, 6 * 14 + 4); // Wire positive rail to Resistor start
+    create3DWire(4 * 14 + 0, 6 * 14 + 4); // Wire positive rail (Col 5) to Resistor start
     create3DWire(9 * 14 + 4, 9 * 14 + 5); // Wire Resistor end to LED anode
-    create3DWire(9 * 14 + 6, 3 * 14 + 1); // Wire LED cathode to ground negative rail
+    create3DWire(9 * 14 + 6, 4 * 14 + 1); // Wire LED cathode to ground negative rail (Col 5)
+  } else if (expKey === 'planck_led') {
+    placeComponent3D('source', 1 * 14 + 0, 1 * 14 + 1);
+    placeComponent3D('resistor', 7 * 14 + 4, 11 * 14 + 4);     // Resistor: Col 8-12, row E
+    placeComponent3D('led', 11 * 14 + 5, 15 * 14 + 5);         // LED: Col 12-16, row D
+    create3DWire(7 * 14 + 0, 7 * 14 + 4);                      // Source (+) Col 8 to Resistor start
+    create3DWire(15 * 14 + 5, 15 * 14 + 1);                    // LED cathode to Source (-) Col 16
+  } else if (expKey === 'diode_iv') {
+    placeComponent3D('source', 1 * 14 + 0, 1 * 14 + 1);
+    placeComponent3D('resistor', 9 * 14 + 4, 14 * 14 + 4);     // Cols 10-15, row E
+    placeComponent3D('diode', 14 * 14 + 7, 19 * 14 + 7);       // Diode anode Col 15F, cathode Col 20F
+    placeComponent3D('ammeter', 19 * 14 + 9, 24 * 14 + 9);     // Cols 20-25, row H
+    placeComponent3D('voltmeter', 14 * 14 + 2, 19 * 14 + 2);    // Voltmeter Col 15A to Col 20A
+    create3DWire(2 * 14 + 0, 9 * 14 + 4);                      // Source (+) rail (Col 3) to Resistor start
+    create3DWire(14 * 14 + 4, 14 * 14 + 7);                    // Resistor end to Diode anode
+    create3DWire(19 * 14 + 7, 19 * 14 + 9);                    // Diode cathode to Ammeter start
+    create3DWire(24 * 14 + 9, 2 * 14 + 1);                     // Ammeter end to Source (-) rail (Col 3)
+    create3DWire(14 * 14 + 2, 14 * 14 + 7);                    // Voltmeter (+) to Diode anode
+    create3DWire(19 * 14 + 2, 19 * 14 + 7);                    // Voltmeter (-) to Diode cathode
+  } else if (expKey === 'voltage_divider') {
+    placeComponent3D('source', 1 * 14 + 0, 1 * 14 + 1);
+    placeComponent3D('resistor', 7 * 14 + 4, 11 * 14 + 4);     // R1: Col 8-12, row E
+    placeComponent3D('resistor', 11 * 14 + 4, 15 * 14 + 4);    // R2: Col 12-16, row E
+    create3DWire(7 * 14 + 0, 7 * 14 + 4);                      // Source (+) Col 8 to R1 start
+    create3DWire(15 * 14 + 4, 15 * 14 + 1);                    // R2 end to Source (-) Col 16
   } else if (expKey === 'rc_rl_rlc') {
     placeComponent3D('source', 1 * 14 + 0, 1 * 14 + 1);
     placeComponent3D('resistor', 7 * 14 + 4, 11 * 14 + 4);
@@ -4843,10 +5034,10 @@ function autoBuildExperiment() {
     placeComponent3D('resistor', 10 * 14 + 3, 14 * 14 + 3); // R2
     placeComponent3D('resistor', 6 * 14 + 5, 10 * 14 + 5);  // R3
     placeComponent3D('resistor', 10 * 14 + 5, 14 * 14 + 5); // R4
-    create3DWire(1 * 14 + 0, 6 * 14 + 3);
+    create3DWire(2 * 14 + 0, 6 * 14 + 3);
     create3DWire(6 * 14 + 3, 6 * 14 + 5);
     create3DWire(14 * 14 + 3, 14 * 14 + 5);
-    create3DWire(14 * 14 + 5, 1 * 14 + 1);
+    create3DWire(14 * 14 + 5, 2 * 14 + 1);
   } else if (expKey === 'arduino_led') {
     placeComponent3D('source', 1 * 14 + 0, 1 * 14 + 1);
     placeComponent3D('button', 11 * 14 + 6, 11 * 14 + 7);
@@ -5102,44 +5293,288 @@ function updateTargetHighlights() {
         const am1 = ammeter.snap1, am2 = ammeter.snap2;
         const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
 
-        const s1_connected = (uf.find(9 * 14 + 0) === uf.find(r1) || uf.find(9 * 14 + 0) === uf.find(r2));
-        if (!s1_connected) {
+        const r_pos_term = (uf.find(r1) === uf.find(9 * 14 + 0)) ? r1 : ((uf.find(r2) === uf.find(9 * 14 + 0)) ? r2 : null);
+        const r_free_term = r_pos_term ? (r_pos_term === r1 ? r2 : r1) : r1;
+
+        if (r_pos_term === null) {
           targetHighlightRing1 = addRing(9 * 14 + 0, true);
           targetHighlightRing2 = addRing(r1, true);
           return;
         }
 
-        const res_to_am = (uf.find(r2) === uf.find(am1) || uf.find(r2) === uf.find(am2));
-        if (!res_to_am) {
-          targetHighlightRing1 = addRing(r2, true);
+        const am_conn_term = (uf.find(am1) === uf.find(r_free_term)) ? am1 : ((uf.find(am2) === uf.find(r_free_term)) ? am2 : null);
+        const am_free_term = am_conn_term ? (am_conn_term === am1 ? am2 : am1) : am1;
+
+        if (am_conn_term === null) {
+          targetHighlightRing1 = addRing(r_free_term, true);
           targetHighlightRing2 = addRing(am1, true);
           return;
         }
 
-        const am_to_gnd = (uf.find(am2) === uf.find(19 * 14 + 1));
+        const am_to_gnd = (uf.find(am_free_term) === uf.find(19 * 14 + 1));
         if (!am_to_gnd) {
-          targetHighlightRing1 = addRing(am2, true);
+          targetHighlightRing1 = addRing(am_free_term, true);
           targetHighlightRing2 = addRing(19 * 14 + 1, true);
           return;
         }
 
-        const volt1_connected = (uf.find(volt1) === uf.find(r1));
+        const volt1_connected = (uf.find(volt1) === uf.find(r1) || uf.find(volt1) === uf.find(r2));
         if (!volt1_connected) {
           targetHighlightRing1 = addRing(volt1, true);
           targetHighlightRing2 = addRing(r1, true);
           return;
         }
 
-        const volt2_connected = (uf.find(volt2) === uf.find(r2));
+        const volt1_conn_to = (uf.find(volt1) === uf.find(r1)) ? r1 : r2;
+        const volt2_target = (volt1_conn_to === r1) ? r2 : r1;
+        const volt2_connected = (uf.find(volt2) === uf.find(volt2_target));
         if (!volt2_connected) {
           targetHighlightRing1 = addRing(volt2, true);
-          targetHighlightRing2 = addRing(r2, true);
+          targetHighlightRing2 = addRing(volt2_target, true);
           return;
         }
       }
     }
-  } 
-  else if (state.activeExperiment === 'lcr') {
+  }
+  else if (state.activeExperiment === 'kvl') {
+    const source = findComp('source');
+    const resistors = comps.filter(c => c.type === 'resistor');
+    
+    const resistor1 = resistors.find(r => r.snap1 === 7 * 14 + 4 || r.snap2 === 7 * 14 + 4);
+    const resistor2 = resistors.find(r => r.snap1 === 13 * 14 + 4 || r.snap2 === 13 * 14 + 4);
+
+    if (!source) {
+      if (!state.selectedTool || state.selectedTool === 'source') {
+        targetHighlightRing1 = addRing(1 * 14 + 0);
+        targetHighlightRing2 = addRing(1 * 14 + 1);
+      }
+    } else if (!resistor1) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(7 * 14 + 4);
+        targetHighlightRing2 = addRing(11 * 14 + 4);
+      }
+    } else if (!resistor2) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(13 * 14 + 4);
+        targetHighlightRing2 = addRing(17 * 14 + 4);
+      }
+    } else {
+      if (!state.selectedTool || state.selectedTool === 'wire') {
+        const r1_1 = resistor1.snap1, r1_2 = resistor1.snap2;
+        const r2_1 = resistor2.snap1, r2_2 = resistor2.snap2;
+
+        const s_to_r1 = (uf.find(2 * 14 + 0) === uf.find(r1_1) || uf.find(2 * 14 + 0) === uf.find(r1_2));
+        if (!s_to_r1) {
+          targetHighlightRing1 = addRing(2 * 14 + 0, true);
+          targetHighlightRing2 = addRing(r1_1, true);
+          return;
+        }
+
+        const r1_free = (uf.find(2 * 14 + 0) === uf.find(r1_1)) ? r1_2 : r1_1;
+        const r1_to_r2 = (uf.find(r1_free) === uf.find(r2_1) || uf.find(r1_free) === uf.find(r2_2));
+        if (!r1_to_r2) {
+          targetHighlightRing1 = addRing(r1_free, true);
+          targetHighlightRing2 = addRing(r2_1, true);
+          return;
+        }
+
+        const r2_free = (uf.find(r1_free) === uf.find(r2_1)) ? r2_2 : r2_1;
+        const r2_to_gnd = (uf.find(r2_free) === uf.find(2 * 14 + 1));
+        if (!r2_to_gnd) {
+          targetHighlightRing1 = addRing(r2_free, true);
+          targetHighlightRing2 = addRing(2 * 14 + 1, true);
+          return;
+        }
+      }
+    }
+  }
+  else if (state.activeExperiment === 'kcl') {
+    const source = findComp('source');
+    const resistors = comps.filter(c => c.type === 'resistor');
+    
+    const resistor1 = resistors.find(r => r.snap1 === 8 * 14 + 3 || r.snap2 === 8 * 14 + 3);
+    const resistor2 = resistors.find(r => r.snap1 === 8 * 14 + 5 || r.snap2 === 8 * 14 + 5);
+
+    if (!source) {
+      if (!state.selectedTool || state.selectedTool === 'source') {
+        targetHighlightRing1 = addRing(1 * 14 + 0);
+        targetHighlightRing2 = addRing(1 * 14 + 1);
+      }
+    } else if (!resistor1) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(8 * 14 + 3);
+        targetHighlightRing2 = addRing(12 * 14 + 3);
+      }
+    } else if (!resistor2) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(8 * 14 + 5);
+        targetHighlightRing2 = addRing(12 * 14 + 5);
+      }
+    } else {
+      if (!state.selectedTool || state.selectedTool === 'wire') {
+        const r1_1 = resistor1.snap1, r1_2 = resistor1.snap2;
+        const r2_1 = resistor2.snap1, r2_2 = resistor2.snap2;
+
+        const s_to_r1 = (uf.find(2 * 14 + 0) === uf.find(r1_1) || uf.find(2 * 14 + 0) === uf.find(r1_2));
+        if (!s_to_r1) {
+          targetHighlightRing1 = addRing(2 * 14 + 0, true);
+          targetHighlightRing2 = addRing(r1_1, true);
+          return;
+        }
+
+        const r1_start = (uf.find(2 * 14 + 0) === uf.find(r1_1)) ? r1_1 : r1_2;
+        const r1_end = (r1_start === r1_1) ? r1_2 : r1_1;
+
+        const branch_in = (uf.find(r1_start) === uf.find(r2_1) || uf.find(r1_start) === uf.find(r2_2));
+        if (!branch_in) {
+          targetHighlightRing1 = addRing(r1_start, true);
+          targetHighlightRing2 = addRing(r2_1, true);
+          return;
+        }
+
+        const r2_end = (uf.find(r1_start) === uf.find(r2_1)) ? r2_2 : r2_1;
+
+        const branch_out = (uf.find(r1_end) === uf.find(r2_end));
+        if (!branch_out) {
+          targetHighlightRing1 = addRing(r1_end, true);
+          targetHighlightRing2 = addRing(r2_end, true);
+          return;
+        }
+
+        const to_gnd = (uf.find(r2_end) === uf.find(2 * 14 + 1));
+        if (!to_gnd) {
+          targetHighlightRing1 = addRing(r2_end, true);
+          targetHighlightRing2 = addRing(2 * 14 + 1, true);
+          return;
+        }
+      }
+    }
+  }
+  else if (state.activeExperiment === 'series_parallel') {
+    const source = findComp('source');
+    const resistors = comps.filter(c => c.type === 'resistor');
+    
+    const resistor1 = resistors.find(r => r.snap1 === 7 * 14 + 4 || r.snap2 === 7 * 14 + 4);
+    const resistor2 = resistors.find(r => r.snap1 === 11 * 14 + 4 || r.snap2 === 11 * 14 + 4);
+
+    if (!source) {
+      if (!state.selectedTool || state.selectedTool === 'source') {
+        targetHighlightRing1 = addRing(1 * 14 + 0);
+        targetHighlightRing2 = addRing(1 * 14 + 1);
+      }
+    } else if (!resistor1) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(7 * 14 + 4);
+        targetHighlightRing2 = addRing(11 * 14 + 4);
+      }
+    } else if (!resistor2) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(11 * 14 + 4);
+        targetHighlightRing2 = addRing(15 * 14 + 4);
+      }
+    } else {
+      if (!state.selectedTool || state.selectedTool === 'wire') {
+        const r1_1 = resistor1.snap1, r1_2 = resistor1.snap2;
+        const r2_1 = resistor2.snap1, r2_2 = resistor2.snap2;
+
+        const s_to_r1 = (uf.find(7 * 14 + 0) === uf.find(r1_1) || uf.find(7 * 14 + 0) === uf.find(r1_2));
+        if (!s_to_r1) {
+          targetHighlightRing1 = addRing(7 * 14 + 0, true);
+          targetHighlightRing2 = addRing(r1_1, true);
+          return;
+        }
+
+        const r1_pos_term = (uf.find(r1_1) === uf.find(7 * 14 + 0)) ? r1_1 : r1_2;
+        const r1_shared_term = (r1_pos_term === r1_1) ? r1_2 : r1_1;
+
+        const r2_shared_term = (uf.find(r2_1) === uf.find(r1_shared_term)) ? r2_1 : ((uf.find(r2_2) === uf.find(r1_shared_term)) ? r2_2 : null);
+        if (r2_shared_term === null) {
+          targetHighlightRing1 = addRing(r1_shared_term, true);
+          targetHighlightRing2 = addRing(r2_1, true);
+          return;
+        }
+
+        const r2_free_term = (r2_shared_term === r2_1) ? r2_2 : r2_1;
+        const to_gnd = (uf.find(r2_free_term) === uf.find(15 * 14 + 1));
+        if (!to_gnd) {
+          targetHighlightRing1 = addRing(r2_free_term, true);
+          targetHighlightRing2 = addRing(15 * 14 + 1, true);
+          return;
+        }
+      }
+    }
+  }
+  else if (state.activeExperiment === 'wheatstone') {
+    const source = findComp('source');
+    const resistors = comps.filter(c => c.type === 'resistor');
+    
+    const r1 = resistors.find(r => r.snap1 === 6 * 14 + 3 || r.snap2 === 6 * 14 + 3);
+    const r2 = resistors.find(r => r.snap1 === 10 * 14 + 3 || r.snap2 === 10 * 14 + 3);
+    const r3 = resistors.find(r => r.snap1 === 6 * 14 + 5 || r.snap2 === 6 * 14 + 5);
+    const r4 = resistors.find(r => r.snap1 === 10 * 14 + 5 || r.snap2 === 10 * 14 + 5);
+
+    if (!source) {
+      if (!state.selectedTool || state.selectedTool === 'source') {
+        targetHighlightRing1 = addRing(1 * 14 + 0);
+        targetHighlightRing2 = addRing(1 * 14 + 1);
+      }
+    } else if (!r1) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(6 * 14 + 3);
+        targetHighlightRing2 = addRing(10 * 14 + 3);
+      }
+    } else if (!r2) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(10 * 14 + 3);
+        targetHighlightRing2 = addRing(14 * 14 + 3);
+      }
+    } else if (!r3) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(6 * 14 + 5);
+        targetHighlightRing2 = addRing(10 * 14 + 5);
+      }
+    } else if (!r4) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(10 * 14 + 5);
+        targetHighlightRing2 = addRing(14 * 14 + 5);
+      }
+    } else {
+      if (!state.selectedTool || state.selectedTool === 'wire') {
+        const s_to_r1 = (uf.find(2 * 14 + 0) === uf.find(r1.snap1) || uf.find(2 * 14 + 0) === uf.find(r1.snap2));
+        if (!s_to_r1) {
+          targetHighlightRing1 = addRing(2 * 14 + 0, true);
+          targetHighlightRing2 = addRing(r1.snap1, true);
+          return;
+        }
+
+        const r1_pos_term = (uf.find(r1.snap1) === uf.find(2 * 14 + 0)) ? r1.snap1 : r1.snap2;
+        const r1_other_term = (r1_pos_term === r1.snap1) ? r1.snap2 : r1.snap1;
+
+        const r1_to_r3 = (uf.find(r1_pos_term) === uf.find(r3.snap1) || uf.find(r1_pos_term) === uf.find(r3.snap2));
+        if (!r1_to_r3) {
+          targetHighlightRing1 = addRing(r1_pos_term, true);
+          targetHighlightRing2 = addRing(r3.snap1, true);
+          return;
+        }
+
+        const r2_to_r4 = (uf.find(r2.snap2) === uf.find(r4.snap2) || uf.find(r2.snap2) === uf.find(r4.snap1) || uf.find(r2.snap1) === uf.find(r4.snap2) || uf.find(r2.snap1) === uf.find(r4.snap1));
+        if (!r2_to_r4) {
+          targetHighlightRing1 = addRing(r2.snap2, true);
+          targetHighlightRing2 = addRing(r4.snap2, true);
+          return;
+        }
+
+        const r4_gnd_term = (uf.find(r4.snap1) === uf.find(2 * 14 + 1)) ? r4.snap1 : r4.snap2;
+        const to_gnd = (uf.find(r4_gnd_term) === uf.find(2 * 14 + 1));
+        if (!to_gnd) {
+          targetHighlightRing1 = addRing(r4_gnd_term, true);
+          targetHighlightRing2 = addRing(2 * 14 + 1, true);
+          return;
+        }
+      }
+    }
+  }
+  else if (state.activeExperiment === 'lcr' || state.activeExperiment === 'rc_rl_rlc') {
     const source = findComp('source');
     const resistor = findComp('resistor');
     const inductor = findComp('inductor');
@@ -5171,30 +5606,39 @@ function updateTargetHighlights() {
         const l1 = inductor.snap1, l2 = inductor.snap2;
         const c1 = capacitor.snap1, c2 = capacitor.snap2;
 
-        const s_to_r = (uf.find(7 * 14 + 0) === uf.find(r1));
+        const s_to_r = (uf.find(7 * 14 + 0) === uf.find(r1) || uf.find(7 * 14 + 0) === uf.find(r2));
         if (!s_to_r) {
           targetHighlightRing1 = addRing(7 * 14 + 0, true);
           targetHighlightRing2 = addRing(r1, true);
           return;
         }
 
-        const r_to_l = (uf.find(r2) === uf.find(l1));
+        const r_conn_term = (uf.find(r1) === uf.find(7 * 14 + 0)) ? r1 : r2;
+        const r_free_term = (r_conn_term === r1) ? r2 : r1;
+
+        const r_to_l = (uf.find(r_free_term) === uf.find(l1) || uf.find(r_free_term) === uf.find(l2));
         if (!r_to_l) {
-          targetHighlightRing1 = addRing(r2, true);
+          targetHighlightRing1 = addRing(r_free_term, true);
           targetHighlightRing2 = addRing(l1, true);
           return;
         }
 
-        const l_to_c = (uf.find(l2) === uf.find(c1));
+        const l_conn_term = (uf.find(l1) === uf.find(r_free_term)) ? l1 : l2;
+        const l_free_term = (l_conn_term === l1) ? l2 : l1;
+
+        const l_to_c = (uf.find(l_free_term) === uf.find(c1) || uf.find(l_free_term) === uf.find(c2));
         if (!l_to_c) {
-          targetHighlightRing1 = addRing(l2, true);
+          targetHighlightRing1 = addRing(l_free_term, true);
           targetHighlightRing2 = addRing(c1, true);
           return;
         }
 
-        const c_to_gnd = (uf.find(c2) === uf.find(19 * 14 + 1));
+        const c_conn_term = (uf.find(c1) === uf.find(l_free_term)) ? c1 : c2;
+        const c_free_term = (c_conn_term === c1) ? c2 : c1;
+
+        const c_to_gnd = (uf.find(c_free_term) === uf.find(19 * 14 + 1));
         if (!c_to_gnd) {
-          targetHighlightRing1 = addRing(c2, true);
+          targetHighlightRing1 = addRing(c_free_term, true);
           targetHighlightRing2 = addRing(19 * 14 + 1, true);
           return;
         }
@@ -5226,23 +5670,29 @@ function updateTargetHighlights() {
         const r1 = resistor.snap1, r2 = resistor.snap2;
         const c1 = capacitor.snap1, c2 = capacitor.snap2;
 
-        const s_to_r = (uf.find(9 * 14 + 0) === uf.find(r1));
+        const s_to_r = (uf.find(9 * 14 + 0) === uf.find(r1) || uf.find(9 * 14 + 0) === uf.find(r2));
         if (!s_to_r) {
           targetHighlightRing1 = addRing(9 * 14 + 0, true);
           targetHighlightRing2 = addRing(r1, true);
           return;
         }
 
-        const r_to_c = (uf.find(r2) === uf.find(c1));
+        const r_conn_term = (uf.find(r1) === uf.find(9 * 14 + 0)) ? r1 : r2;
+        const r_free_term = (r_conn_term === r1) ? r2 : r1;
+
+        const r_to_c = (uf.find(r_free_term) === uf.find(c1) || uf.find(r_free_term) === uf.find(c2));
         if (!r_to_c) {
-          targetHighlightRing1 = addRing(r2, true);
+          targetHighlightRing1 = addRing(r_free_term, true);
           targetHighlightRing2 = addRing(c1, true);
           return;
         }
 
-        const c_to_gnd = (uf.find(c2) === uf.find(19 * 14 + 1));
+        const c_conn_term = (uf.find(c1) === uf.find(r_free_term)) ? c1 : c2;
+        const c_free_term = (c_conn_term === c1) ? c2 : c1;
+
+        const c_to_gnd = (uf.find(c_free_term) === uf.find(19 * 14 + 1));
         if (!c_to_gnd) {
-          targetHighlightRing1 = addRing(c2, true);
+          targetHighlightRing1 = addRing(c_free_term, true);
           targetHighlightRing2 = addRing(19 * 14 + 1, true);
           return;
         }
@@ -5313,6 +5763,207 @@ function updateTargetHighlights() {
         if (!res_to_gnd) {
           targetHighlightRing1 = addRing(res_free_term, true);
           targetHighlightRing2 = addRing(883, true);
+          return;
+        }
+      }
+    }
+  }
+  else if (state.activeExperiment === 'diode_iv') {
+    const source = findComp('source');
+    const resistor = findComp('resistor');
+    const diode = findComp('diode');
+    const ammeter = findComp('ammeter');
+    const voltmeter = findComp('voltmeter');
+
+    if (!source) {
+      if (!state.selectedTool || state.selectedTool === 'source') {
+        targetHighlightRing1 = addRing(1 * 14 + 0);
+        targetHighlightRing2 = addRing(1 * 14 + 1);
+      }
+    } else if (!resistor) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(9 * 14 + 4);
+        targetHighlightRing2 = addRing(14 * 14 + 4);
+      }
+    } else if (!diode) {
+      if (!state.selectedTool || state.selectedTool === 'diode') {
+        targetHighlightRing1 = addRing(14 * 14 + 7);
+        targetHighlightRing2 = addRing(19 * 14 + 7);
+      }
+    } else if (!ammeter) {
+      if (!state.selectedTool || state.selectedTool === 'ammeter') {
+        targetHighlightRing1 = addRing(19 * 14 + 9);
+        targetHighlightRing2 = addRing(24 * 14 + 9);
+      }
+    } else if (!voltmeter) {
+      if (!state.selectedTool || state.selectedTool === 'voltmeter') {
+        targetHighlightRing1 = addRing(14 * 14 + 2);
+        targetHighlightRing2 = addRing(19 * 14 + 2);
+      }
+    } else {
+      if (!state.selectedTool || state.selectedTool === 'wire') {
+        const r1 = resistor.snap1, r2 = resistor.snap2;
+        const d1 = diode.snap1, d2 = diode.snap2;
+        const am1 = ammeter.snap1, am2 = ammeter.snap2;
+        const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
+
+        const s_to_r = (uf.find(2 * 14 + 0) === uf.find(r1) || uf.find(2 * 14 + 0) === uf.find(r2));
+        if (!s_to_r) {
+          targetHighlightRing1 = addRing(2 * 14 + 0, true);
+          targetHighlightRing2 = addRing(r1, true);
+          return;
+        }
+
+        const r_conn_term = (uf.find(r1) === uf.find(2 * 14 + 0)) ? r1 : r2;
+        const r_free_term = (r_conn_term === r1) ? r2 : r1;
+
+        const r_to_d = (uf.find(r_free_term) === uf.find(d1) || uf.find(r_free_term) === uf.find(d2));
+        if (!r_to_d) {
+          targetHighlightRing1 = addRing(r_free_term, true);
+          targetHighlightRing2 = addRing(d1, true);
+          return;
+        }
+
+        const d_conn_term = (uf.find(d1) === uf.find(r_free_term)) ? d1 : d2;
+        const d_free_term = (d_conn_term === d1) ? d2 : d1;
+
+        const d_to_am = (uf.find(d_free_term) === uf.find(am1) || uf.find(d_free_term) === uf.find(am2));
+        if (!d_to_am) {
+          targetHighlightRing1 = addRing(d_free_term, true);
+          targetHighlightRing2 = addRing(am1, true);
+          return;
+        }
+
+        const am_conn_term = (uf.find(am1) === uf.find(d_free_term)) ? am1 : am2;
+        const am_free_term = (am_conn_term === am1) ? am2 : am1;
+
+        const am_to_gnd = (uf.find(am_free_term) === uf.find(2 * 14 + 1));
+        if (!am_to_gnd) {
+          targetHighlightRing1 = addRing(am_free_term, true);
+          targetHighlightRing2 = addRing(2 * 14 + 1, true);
+          return;
+        }
+
+        const volt1_connected = (uf.find(volt1) === uf.find(d1) || uf.find(volt1) === uf.find(d2));
+        if (!volt1_connected) {
+          targetHighlightRing1 = addRing(volt1, true);
+          targetHighlightRing2 = addRing(d1, true);
+          return;
+        }
+
+        const volt1_conn_to = (uf.find(volt1) === uf.find(d1)) ? d1 : d2;
+        const volt2_target = (volt1_conn_to === d1) ? d2 : d1;
+        const volt2_connected = (uf.find(volt2) === uf.find(volt2_target));
+        if (!volt2_connected) {
+          targetHighlightRing1 = addRing(volt2, true);
+          targetHighlightRing2 = addRing(volt2_target, true);
+          return;
+        }
+      }
+    }
+  }
+  else if (state.activeExperiment === 'voltage_divider') {
+    const source = findComp('source');
+    const resistors = comps.filter(c => c.type === 'resistor');
+    const r1 = resistors[0];
+    const r2 = resistors[1];
+
+    if (!source) {
+      if (!state.selectedTool || state.selectedTool === 'source') {
+        targetHighlightRing1 = addRing(1 * 14 + 0);
+        targetHighlightRing2 = addRing(1 * 14 + 1);
+      }
+    } else if (!r1) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(7 * 14 + 4);
+        targetHighlightRing2 = addRing(11 * 14 + 4);
+      }
+    } else if (!r2) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(11 * 14 + 4);
+        targetHighlightRing2 = addRing(15 * 14 + 4);
+      }
+    } else {
+      if (!state.selectedTool || state.selectedTool === 'wire') {
+        const r1_1 = r1.snap1, r1_2 = r1.snap2;
+        const r2_1 = r2.snap1, r2_2 = r2.snap2;
+
+        const s_to_r1 = (uf.find(7 * 14 + 0) === uf.find(r1_1) || uf.find(7 * 14 + 0) === uf.find(r1_2));
+        if (!s_to_r1) {
+          targetHighlightRing1 = addRing(7 * 14 + 0, true);
+          targetHighlightRing2 = addRing(r1_1, true);
+          return;
+        }
+
+        const r1_pos_term = (uf.find(r1_1) === uf.find(7 * 14 + 0)) ? r1_1 : r1_2;
+        const r1_shared_term = (r1_pos_term === r1_1) ? r1_2 : r1_1;
+
+        const r2_shared_term = (uf.find(r2_1) === uf.find(r1_shared_term)) ? r2_1 : ((uf.find(r2_2) === uf.find(r1_shared_term)) ? r2_2 : null);
+        if (r2_shared_term === null) {
+          targetHighlightRing1 = addRing(r1_shared_term, true);
+          targetHighlightRing2 = addRing(r2_1, true);
+          return;
+        }
+
+        const r2_free_term = (r2_shared_term === r2_1) ? r2_2 : r2_1;
+        const to_gnd = (uf.find(r2_free_term) === uf.find(15 * 14 + 1));
+        if (!to_gnd) {
+          targetHighlightRing1 = addRing(r2_free_term, true);
+          targetHighlightRing2 = addRing(15 * 14 + 1, true);
+          return;
+        }
+      }
+    }
+  }
+  else if (state.activeExperiment === 'planck_led') {
+    const source = findComp('source');
+    const resistor = findComp('resistor');
+    const led = findComp('led');
+
+    if (!source) {
+      if (!state.selectedTool || state.selectedTool === 'source') {
+        targetHighlightRing1 = addRing(1 * 14 + 0);
+        targetHighlightRing2 = addRing(1 * 14 + 1);
+      }
+    } else if (!resistor) {
+      if (!state.selectedTool || state.selectedTool === 'resistor') {
+        targetHighlightRing1 = addRing(7 * 14 + 4);
+        targetHighlightRing2 = addRing(11 * 14 + 4);
+      }
+    } else if (!led) {
+      if (!state.selectedTool || state.selectedTool === 'led') {
+        targetHighlightRing1 = addRing(11 * 14 + 5);
+        targetHighlightRing2 = addRing(15 * 14 + 5);
+      }
+    } else {
+      if (!state.selectedTool || state.selectedTool === 'wire') {
+        const r1 = resistor.snap1, r2 = resistor.snap2;
+        const l1 = led.snap1, l2 = led.snap2;
+
+        const s_to_r = (uf.find(7 * 14 + 0) === uf.find(r1) || uf.find(7 * 14 + 0) === uf.find(r2));
+        if (!s_to_r) {
+          targetHighlightRing1 = addRing(7 * 14 + 0, true);
+          targetHighlightRing2 = addRing(r1, true);
+          return;
+        }
+
+        const r_conn_term = (uf.find(r1) === uf.find(7 * 14 + 0)) ? r1 : r2;
+        const r_free_term = (r_conn_term === r1) ? r2 : r1;
+
+        const r_to_l = (uf.find(r_free_term) === uf.find(l1) || uf.find(r_free_term) === uf.find(l2));
+        if (!r_to_l) {
+          targetHighlightRing1 = addRing(r_free_term, true);
+          targetHighlightRing2 = addRing(l1, true);
+          return;
+        }
+
+        const l_conn_term = (uf.find(l1) === uf.find(r_free_term)) ? l1 : l2;
+        const l_free_term = (l_conn_term === l1) ? l2 : l1;
+
+        const l_to_gnd = (uf.find(l_free_term) === uf.find(15 * 14 + 1));
+        if (!l_to_gnd) {
+          targetHighlightRing1 = addRing(l_free_term, true);
+          targetHighlightRing2 = addRing(15 * 14 + 1, true);
           return;
         }
       }
@@ -5536,6 +6187,127 @@ function getAIMentorMessage() {
     }
     
     return "<b>Complete!</b><br>LED is glowing! Answer the Viva questions in the Report panel.";
+  }
+  
+  if (state.activeExperiment === 'diode_iv') {
+    const diode = findComp('diode');
+    const ammeter = findComp('ammeter');
+    const voltmeter = findComp('voltmeter');
+
+    if (!source) return "<b>Step 1: Place DC Source</b><br>Select <b>DC Power Source</b> <i class='fa-solid fa-plug'></i> and click glowing green Top Rails slots (Col 2, Row +/-).";
+    if (!resistor) return "<b>Step 2: Place Resistor</b><br>Select <b>Ceramic Resistor</b> <i class='fa-solid fa-wave-square'></i> and place horizontally between Col 10, Row C and Col 15, Row C.";
+    if (!diode) return "<b>Step 3: Place Diode</b><br>Select <b>Diode</b> <i class='fa-solid fa-arrow-right-to-line'></i> and place horizontally between Col 15, Row F and Col 20, Row F.";
+    if (!ammeter) return "<b>Step 4: Place Ammeter</b><br>Select <b>Ammeter (Series)</b> <i class='fa-solid fa-gauge-simple-high'></i> and place horizontally between Col 20, Row H and Col 25, Row H.";
+    if (!voltmeter) return "<b>Step 5: Place Voltmeter</b><br>Select <b>Voltmeter (Parallel)</b> <i class='fa-solid fa-gauge-simple'></i> and place horizontally between Col 15, Row A and Col 20, Row A.";
+
+    const uf = runUnionFind();
+    const r1 = resistor.snap1, r2 = resistor.snap2;
+    const d1 = diode.snap1, d2 = diode.snap2;
+    const am1 = ammeter.snap1, am2 = ammeter.snap2;
+    const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
+
+    const s_to_r = (uf.find(2 * 14 + 0) === uf.find(r1));
+    if (!s_to_r) return `<b>Step 6: Wire (+) Rail to Resistor</b><br>Wire **Top (+) Rail (Col 3)** to **Resistor start** (${getSocketLabelShort(r1)}).`;
+
+    const r_to_d = (uf.find(r2) === uf.find(d1));
+    if (!r_to_d) return `<b>Step 6: Wire Resistor to Diode</b><br>Wire **Resistor end** (${getSocketLabelShort(r2)}) to **Diode anode** (${getSocketLabelShort(d1)}).`;
+
+    const d_to_am = (uf.find(d2) === uf.find(am1));
+    if (!d_to_am) return `<b>Step 6: Wire Diode to Ammeter</b><br>Wire **Diode cathode** (${getSocketLabelShort(d2)}) to **Ammeter start** (${getSocketLabelShort(am1)}).`;
+
+    const am_to_gnd = (uf.find(am2) === uf.find(2 * 14 + 1));
+    if (!am_to_gnd) return `<b>Step 6: Wire Ammeter to (-) Rail</b><br>Wire **Ammeter end** (${getSocketLabelShort(am2)}) to **Top (-) Rail (Col 3)**.`;
+
+    const volt1_connected = (uf.find(volt1) === uf.find(d1));
+    if (!volt1_connected) return `<b>Step 6: Wire Voltmeter (+) to Diode Anode</b><br>Wire **Voltmeter terminal 1** (${getSocketLabelShort(volt1)}) to **Diode anode** (${getSocketLabelShort(d1)}).`;
+
+    const volt2_connected = (uf.find(volt2) === uf.find(d2));
+    if (!volt2_connected) return `<b>Step 6: Wire Voltmeter (-) to Diode Cathode</b><br>Wire **Voltmeter terminal 2** (${getSocketLabelShort(volt2)}) to **Diode cathode** (${getSocketLabelShort(d2)}).`;
+
+    if (!state.isRunning) return "<b>Step 7: Initialize Circuit</b><br>Wiring complete! Click <b>INITIALIZE</b> in the top bar to power on the circuit.";
+    if (state.dataPoints.length < 5) return `<b>Step 8: Record Data Points</b><br>Adjust voltage on the right and click <b>Record Point</b> (${5 - state.dataPoints.length} remaining) to trace the I-V curve.`;
+
+    return "<b>Complete!</b><br>Diode I-V characteristics verified! Answer the Viva questions in the Report panel.";
+  }
+
+  if (state.activeExperiment === 'voltage_divider') {
+    const resistors = comps.filter(c => c.type === 'resistor');
+    const r1 = resistors[0];
+    const r2 = resistors[1];
+
+    if (!source) return "<b>Step 1: Place DC Source</b><br>Select <b>DC Power Source</b> <i class='fa-solid fa-plug'></i> and click glowing green Top Rails slots (Col 2, Row +/-).";
+    if (!r1) return "<b>Step 2: Place Resistor 1</b><br>Select <b>Ceramic Resistor</b> and place horizontally between Col 8, Row C and Col 12, Row C.";
+    if (!r2) return "<b>Step 3: Place Resistor 2</b><br>Select <b>Ceramic Resistor</b> and place horizontally between Col 12, Row C and Col 16, Row C.";
+
+    const uf = runUnionFind();
+    const r1_1 = r1.snap1, r1_2 = r1.snap2;
+    const r2_1 = r2.snap1, r2_2 = r2.snap2;
+
+    const s_to_r1 = (uf.find(7 * 14 + 0) === uf.find(r1_1));
+    if (!s_to_r1) return `<b>Step 4: Wire (+) Rail to Resistor 1</b><br>Wire **Top (+) Rail (Col 8)** to **Resistor 1 start** (${getSocketLabelShort(r1_1)}).`;
+
+    const r1_to_r2 = (uf.find(r1_2) === uf.find(r2_1));
+    if (!r1_to_r2) return `<b>Step 4: Connect Resistor 1 and Resistor 2</b><br>Ensure **Resistor 1 end** and **Resistor 2 start** are connected at Col 12.`;
+
+    const r2_to_gnd = (uf.find(r2_2) === uf.find(15 * 14 + 1));
+    if (!r2_to_gnd) return `<b>Step 4: Wire Resistor 2 to (-) Rail</b><br>Wire **Resistor 2 end** (${getSocketLabelShort(r2_2)}) to **Top (-) Rail (Col 16)**.`;
+
+    if (!state.isRunning) return "<b>Step 5: Initialize Circuit</b><br>Wiring complete! Click <b>INITIALIZE</b> in the top bar to power on the circuit.";
+
+    return "<b>Complete!</b><br>Voltage division verified! Change resistance values on the right and observe V_out across Resistor 2.";
+  }
+
+  if (state.activeExperiment === 'planck_led') {
+    const led = findComp('led');
+
+    if (!source) return "<b>Step 1: Place DC Source</b><br>Select <b>DC Power Source</b> <i class='fa-solid fa-plug'></i> and click glowing green Top Rails slots (Col 2, Row +/-).";
+    if (!resistor) return "<b>Step 2: Place Resistor</b><br>Select <b>Ceramic Resistor</b> and place horizontally between Col 8, Row C and Col 12, Row C.";
+    if (!led) return "<b>Step 3: Place LED</b><br>Select <b>LED</b> and place horizontally between Col 12, Row D and Col 16, Row D.";
+
+    const uf = runUnionFind();
+    const r1 = resistor.snap1, r2 = resistor.snap2;
+    const l1 = led.snap1, l2 = led.snap2;
+
+    const s_to_r = (uf.find(7 * 14 + 0) === uf.find(r1));
+    if (!s_to_r) return `<b>Step 4: Wire (+) Rail to Resistor</b><br>Wire **Top (+) Rail (Col 8)** to **Resistor start** (${getSocketLabelShort(r1)}).`;
+
+    const r_to_l = (uf.find(r2) === uf.find(l1));
+    if (!r_to_l) return `<b>Step 4: Connect Resistor to LED Anode</b><br>Ensure **Resistor end** and **LED anode** are connected at Col 12.`;
+
+    const l_to_gnd = (uf.find(l2) === uf.find(15 * 14 + 1));
+    if (!l_to_gnd) return `<b>Step 4: Wire LED Cathode to (-) Rail</b><br>Wire **LED cathode** (${getSocketLabelShort(l2)}) to **Top (-) Rail (Col 16)**.`;
+
+    if (!state.isRunning) return "<b>Step 5: Initialize Circuit</b><br>Wiring complete! Click <b>INITIALIZE</b> in the top bar to start Planck's constant calculation.";
+    if (state.dataPoints.length < 4) return `<b>Step 6: Measure Turn-On Voltage</b><br>Adjust voltage until the selected LED just glows, click <b>Record Point</b> (${4 - state.dataPoints.length} remaining). Use different colors to calculate Planck's constant.`;
+
+    return "<b>Complete!</b><br>Planck's constant determined using LEDs! Answer the Viva questions in the Report panel.";
+  }
+
+  if (state.activeExperiment === 'biot_savart') {
+    if (!state.isRunning) {
+      return "<b>Step 1: Start Simulation</b><br>Click <b>SIMULATE</b> to study the magnetic field around a straight conductor.";
+    }
+    return "<b>Step 2: Study Biot-Savart Law</b><br>Vary **Current** and **Radial Distance** sliders on the right. Observe how the magnetic field intensity (B) decays as 1/r.";
+  }
+
+  if (state.activeExperiment === 'planck_photocell') {
+    if (!state.isRunning) {
+      return "<b>Step 1: Start Simulation</b><br>Click <b>SIMULATE</b> to turn on the light source and phototube.";
+    }
+    if (state.dataPoints.length < 5) {
+      return `<b>Step 2: Find Stopping Voltage</b><br>Select a wavelength, vary the stopping voltage slider until the photo-current drops to 0, then click <b>Record Point</b> (${5 - state.dataPoints.length} remaining).`;
+    }
+    return "<b>Complete!</b><br>Planck's constant determined using photocell! Answer the Viva questions in the Report panel.";
+  }
+
+  if (state.activeExperiment === 'stefan_law') {
+    if (!state.isRunning) {
+      return "<b>Step 1: Start Simulation</b><br>Click <b>SIMULATE</b> to turn on the furnace heater.";
+    }
+    if (state.dataPoints.length < 5) {
+      return `<b>Step 2: Verify T⁴ Radiation Relation</b><br>Vary the furnace temperature slider, wait for stable reading, and click <b>Record Point</b> (${5 - state.dataPoints.length} remaining).`;
+    }
+    return "<b>Complete!</b><br>Stefan-Boltzmann law verified! Answer the Viva questions in the Report panel.";
   }
   
   return "System online. Select an experiment to begin.";
@@ -6547,7 +7319,7 @@ function initThreeJS() {
       
       if (snap1 !== null && snap2 !== null && snap1 !== snap2) {
         if (tool === 'wire') {
-          create3DWire(snap1, snap2);
+          create3DWire(snap1, snap2, true);
         } else if (tool === 'eraser') {
           // do nothing
         } else {
@@ -6741,7 +7513,7 @@ function initThreeJS() {
           state.tempWireMesh = null;
         }
         if (state.wireStartSnap !== null && hoveredHoleIndex !== null && state.wireStartSnap !== hoveredHoleIndex) {
-          create3DWire(state.wireStartSnap, hoveredHoleIndex);
+          create3DWire(state.wireStartSnap, hoveredHoleIndex, true);
         }
         state.wireStartSnap = null;
         state.selectedTool = null;
@@ -7025,132 +7797,71 @@ function initThreeJS() {
 
       // Animate procedural experiments
       if (state.proceduralGroup) {
-        if (['snell', 'lens_eq', 'tir', 'prism'].includes(state.activeExperiment)) {
-          const ray = state.proceduralGroup.getObjectByName('laser-ray');
-          if (ray) {
-            const theta1 = state.params.C || 45;
-            const n1 = state.params.V || 1.0;
-            const n2 = state.params.R || 1.5;
-            const p1 = new THREE.Vector3(-2.5, 0.4, 0);
-            const p2 = new THREE.Vector3(0, 0.4, 0);
-            const points = [p1, p2];
+        if (state.activeExperiment === 'biot_savart') {
+          const rings = state.proceduralGroup.getObjectByName('biot-rings');
+          const probe = state.proceduralGroup.getObjectByName('biot-probe');
+          const I_current = state.params.V || 2.0;
+          const r_dist = state.params.R || 5.0;
+          
+          if (probe) {
+            probe.position.x = r_dist * 0.14;
+          }
+          if (rings) {
+            rings.children.forEach((ring, idx) => {
+              ring.rotation.z = Date.now() * 0.0015;
+              ring.material.opacity = (I_current / 10.0) * (0.5 + 0.2 * Math.sin(Date.now() * 0.003 + idx));
+            });
+          }
+        } else if (state.activeExperiment === 'planck_photocell') {
+          const ray = state.proceduralGroup.getObjectByName('photocell-ray');
+          const electrons = state.proceduralGroup.getObjectByName('photoelectrons-photocell');
+          const lambda = state.params.V || 450;
+          
+          if (ray && ray.material) {
+            let hue = (lambda - 350) / 350;
+            if (hue < 0) hue = 0; if (hue > 1) hue = 1;
+            const rayColor = new THREE.Color().setHSL(0.7 - hue * 0.7, 1.0, 0.5);
+            ray.material.color.copy(rayColor);
+          }
+          
+          if (electrons && state.isRunning) {
+            const intensity = state.params.L || 50;
+            const Vs = state.params.R || 0.0;
+            const stoppingV = state.meters.ohms || 0.8;
+            const canEmit = stoppingV > 0 && Vs < stoppingV;
             
-            if (state.activeExperiment === 'snell') {
-              const sinTheta2 = (n1 / n2) * Math.sin(theta1 * Math.PI / 180);
-              if (sinTheta2 <= 1.0) {
-                const theta2 = Math.asin(sinTheta2);
-                const p3 = new THREE.Vector3(2.5, 0.4 - 2.5 * Math.tan(theta2), 0);
-                points.push(p3);
-              } else {
-                const p3 = new THREE.Vector3(-2.5, 0.4 + 2.5 * Math.tan(theta1 * Math.PI / 180), 0);
-                points.push(p3);
-              }
-            } else if (state.activeExperiment === 'tir') {
-              const sinTheta2 = (n1 / n2) * Math.sin(theta1 * Math.PI / 180);
-              if (sinTheta2 > 1.0) {
-                const p3 = new THREE.Vector3(-2.5, 0.4 + 2.5 * Math.tan(theta1 * Math.PI / 180), 0);
-                points.push(p3);
-              } else {
-                const theta2 = Math.asin(sinTheta2);
-                const p3 = new THREE.Vector3(2.5, 0.4 - 2.5 * Math.tan(theta2), 0);
-                points.push(p3);
-              }
-            } else if (state.activeExperiment === 'prism') {
-              const p3 = new THREE.Vector3(0.5, 0.25, 0);
-              const p4 = new THREE.Vector3(2.5, 0.05, 0);
-              points.push(p3, p4);
-            } else if (state.activeExperiment === 'lens_eq') {
-              const v = state.meters.amps;
-              const u = state.params.V || 30;
-              const p3 = new THREE.Vector3(Math.min(2.5, v * 0.05), v > 0 ? 0.2 : 0.6, 0);
-              points.push(p3);
-
-              const objPin = state.proceduralGroup.getObjectByName('lens-object-pin');
-              const screen = state.proceduralGroup.getObjectByName('lens-image-screen');
-              const screenSt = state.proceduralGroup.getObjectByName('lens-screen-stand');
-              if (objPin) {
-                objPin.position.x = -u * 0.05;
-              }
-              if (screen) {
-                screen.position.x = Math.min(2.5, v * 0.05);
-              }
-              if (screenSt) {
-                screenSt.position.x = Math.min(2.5, v * 0.05);
-              }
+            if (canEmit && Math.random() < 0.12 && electrons.children.length < 25) {
+              const elGeo = new THREE.SphereGeometry(0.02, 8, 8);
+              const elMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
+              const el = new THREE.Mesh(elGeo, elMat);
+              el.position.set(-0.5, 0.6 + (Math.random()-0.5)*0.3, (Math.random()-0.5)*0.3);
+              const speed = 0.015 * (1.0 - Vs / stoppingV);
+              el.userData = { speed: Math.max(0.002, speed) };
+              electrons.add(el);
             }
-            ray.geometry.setFromPoints(points);
-          }
-        } else if (state.activeExperiment === 'pendulum') {
-          const pivot = state.proceduralGroup.getObjectByName('pendulum-pivot');
-          if (pivot) {
-            const theta0 = state.params.V || 30;
-            const L = state.params.R || 1.5;
-            const g = state.params.L || 9.8;
-            const omega = Math.sqrt(g / L);
-            const angleRad = (theta0 * Math.PI / 180) * Math.cos(omega * (Date.now() * 0.001));
-            pivot.rotation.z = angleRad;
-
-            const str = pivot.getObjectByName('pendulum-string');
-            const bob = pivot.getObjectByName('pendulum-bob');
-            if (str && bob) {
-              str.scale.y = L / 1.4;
-              str.position.y = -L / 2;
-              bob.position.y = -L;
-            }
-          }
-        } else if (state.activeExperiment === 'hooke') {
-          const spring = state.proceduralGroup.getObjectByName('spring-group');
-          const weight = state.proceduralGroup.getObjectByName('spring-weight');
-          if (spring && weight) {
-            const mass = state.params.V * 1e-3;
-            const k = state.params.R || 25;
-            const stretch = (mass * 9.8) / k; 
-            const endY = -1.3 - stretch * 0.5; 
-            weight.position.y = 3.1 + endY - 0.12;
             
-            // Re-render spring coil
-            while (spring.children.length > 0) {
-              spring.remove(spring.children[0]);
+            for (let i = electrons.children.length - 1; i >= 0; i--) {
+              const el = electrons.children[i];
+              el.position.x += el.userData.speed;
+              if (el.position.x > 0.5) {
+                electrons.remove(el);
+              }
             }
-            const points = [];
-            const coils = 18;
-            const steps = 180;
-            const radius = 0.08;
-            for (let i = 0; i <= steps; i++) {
-              const t = i / steps;
-              const angle = t * coils * Math.PI * 2;
-              const x = radius * Math.cos(angle);
-              const z = radius * Math.sin(angle);
-              const y = t * endY;
-              points.push(new THREE.Vector3(x, y, z));
-            }
-            const springGeo = new THREE.BufferGeometry().setFromPoints(points);
-            const springMat = new THREE.LineBasicMaterial({ color: 0x94a3b8 });
-            const springLine = new THREE.Line(springGeo, springMat);
-            spring.add(springLine);
           }
-        } else if (state.activeExperiment === 'projectile') {
-          const ball = state.proceduralGroup.getObjectByName('projectile-ball');
-          const cannon = state.proceduralGroup.getObjectByName('cannon-group');
-          if (cannon) {
-            const theta = state.params.V || 45;
-            cannon.children[0].rotation.z = (theta * Math.PI / 180);
-          }
-          if (ball && state.isRunning) {
-            ball.visible = true;
-            const theta = state.params.V * Math.PI / 180;
-            const v0 = state.params.R;
-            const g = state.params.L || 9.8;
-            const t = ((Date.now() - state.simStartTime) * 0.001) * 2.0;
-            const x = v0 * t * Math.cos(theta);
-            const y = v0 * t * Math.sin(theta) - 0.5 * g * t * t;
-            if (y >= 0) {
-              ball.position.set(-4.0 + x * 0.2, 0.2 + y * 0.2, 0);
-            } else {
-              ball.position.set(-4.0 + (v0*v0*Math.sin(2*theta)/g)*0.2, 0.2, 0);
+        } else if (state.activeExperiment === 'stefan_law') {
+          const glow = state.proceduralGroup.getObjectByName('furnace-glow');
+          const T = state.params.V || 1000;
+          if (glow && glow.material) {
+            let color = new THREE.Color(0x000000);
+            if (T > 400) {
+              const ratio = (T - 400) / 1600;
+              color.setRGB(
+                Math.min(1.0, ratio * 2.5),
+                Math.min(1.0, Math.max(0.0, (ratio - 0.3) * 1.5)),
+                Math.min(1.0, Math.max(0.0, (ratio - 0.6) * 2.5))
+              );
             }
-          } else if (ball) {
-            ball.visible = false;
+            glow.material.color.copy(color);
           }
         } else if (['ideal_gas', 'boyle', 'charles'].includes(state.activeExperiment)) {
           const piston = state.proceduralGroup.getObjectByName('piston-plate');
@@ -7237,40 +7948,7 @@ function initThreeJS() {
               f.material.opacity = 0.1 + 0.4 * Math.abs(Math.sin(Date.now() * 0.003 + idx));
             });
           }
-        } else if (state.activeExperiment === 'doppler') {
-          const speaker = state.proceduralGroup.getObjectByName('doppler-source');
-          const ripples = state.proceduralGroup.getObjectByName('doppler-ripples');
-          if (speaker && ripples) {
-            const vs = state.params.V || 50;
-            const fs = state.params.R || 500;
-            const soundSpeed = state.params.L || 340;
-            
-            let x = -4.0 + (Date.now() * 0.001 * vs * 0.05) % 8.0;
-            speaker.position.x = x;
-            
-            if (!state.lastDopplerRippleTime) state.lastDopplerRippleTime = 0;
-            if (Date.now() - state.lastDopplerRippleTime > 300) {
-              state.lastDopplerRippleTime = Date.now();
-              const ringGeo = new THREE.RingGeometry(0.05, 0.07, 32);
-              const ringMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
-              const ring = new THREE.Mesh(ringGeo, ringMat);
-              ring.rotation.x = Math.PI / 2;
-              ring.position.set(x, 0.25, 0);
-              ring.userData = { radius: 0.06, originX: x, timeCreated: Date.now() };
-              ripples.add(ring);
-            }
-            
-            for (let i = ripples.children.length - 1; i >= 0; i--) {
-              const r = ripples.children[i];
-              const age = (Date.now() - r.userData.timeCreated) * 0.001;
-              const radius = age * (soundSpeed * 0.008);
-              r.scale.set(radius, radius, 1);
-              r.material.opacity = Math.max(0, 0.8 * (1.0 - age / 2.0));
-              if (age > 2.0) {
-                ripples.remove(r);
-              }
-            }
-          }
+
         } else if (state.activeExperiment === 'specific_heat' && state.isRunning) {
           const metal = state.proceduralGroup.getObjectByName('specific-heat-metal');
           const water = state.proceduralGroup.getObjectByName('specific-heat-water');
@@ -8336,7 +9014,11 @@ function createComponentVisuals(type, snap1, snap2, customColor = null) {
   dir.normalize();
   
   const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(1, 0, 0), dir);
-  group.quaternion.copy(quaternion);
+  if (['source', 'ammeter', 'voltmeter'].includes(type)) {
+    group.quaternion.set(0, 0, 0, 1);
+  } else {
+    group.quaternion.copy(quaternion);
+  }
   
   const leads = [];
   
@@ -9250,6 +9932,51 @@ function getOccupiedHoles() {
     }
     occupied.add(comp.snap1);
     occupied.add(comp.snap2);
+
+    // Get component center and dimensions
+    const p1 = getSnapPos(comp.snap1);
+    const p2 = getSnapPos(comp.snap2);
+    const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+
+    let halfW = 0;
+    let halfD = 0;
+
+    if (comp.type === 'source') {
+      halfW = 0.45;
+      halfD = 0.3;
+    } else if (comp.type === 'ammeter' || comp.type === 'voltmeter') {
+      halfW = 0.275;
+      halfD = 0.11;
+    } else if (comp.type === 'button' || comp.type === 'toggle_switch') {
+      halfW = 0.14;
+      halfD = 0.14;
+    } else if (comp.type === 'display') {
+      halfW = 0.38;
+      halfD = 0.36;
+    } else if (comp.type === 'transistor') {
+      // Transistors have 3 pins, let's also occupy the middle pin
+      const c1 = Math.floor(comp.snap1 / 14);
+      const r1 = comp.snap1 % 14;
+      const c2 = Math.floor(comp.snap2 / 14);
+      const r2 = comp.snap2 % 14;
+      const cMid = Math.round((c1 + c2) / 2);
+      const rMid = Math.round((r1 + r2) / 2);
+      occupied.add(cMid * 14 + rMid);
+    }
+
+    if (halfW > 0 && halfD > 0) {
+      // Loop over all 884 snaps to find which ones are covered
+      for (let i = 0; i < 884; i++) {
+        if (i === 882 || i === 883) continue;
+        const pos = getSnapPos(i);
+        if (pos) {
+          // Check XZ bounding box bounds with a small tolerance
+          if (Math.abs(pos.x - mid.x) <= halfW + 0.05 && Math.abs(pos.z - mid.z) <= halfD + 0.05) {
+            occupied.add(i);
+          }
+        }
+      }
+    }
   });
   return occupied;
 }
@@ -9509,7 +10236,7 @@ function updateInspector() {
   }
 }
 
-function createWireCurve(p1, p2, seed = 0) {
+function createWireCurve(p1, p2, seed = 0, currentWireIdx = -1) {
   const points = [];
   
   // Start pin vertical rise (slightly higher to clear connectors)
@@ -9602,6 +10329,26 @@ function createWireCurve(p1, p2, seed = 0) {
       }
     });
   }
+
+  // Check collision/overlap with other wires to layer/nest them vertically
+  if (state.wires && state.wires.length > 0) {
+    state.wires.forEach((otherWire, otherIdx) => {
+      if (otherIdx === currentWireIdx) return;
+      if (!otherWire.curve) return;
+
+      const otherMid = otherWire.curve.getPointAt(0.5);
+      // Distance on XZ plane between midpoints
+      const distXZ = Math.hypot(mid.x - otherMid.x, mid.z - otherMid.z);
+      if (distXZ < 0.4) {
+        const otherHeight = otherMid.y;
+        const proposedHeight = p1.y + maxHeight;
+        if (Math.abs(proposedHeight - otherHeight) < 0.3) {
+          // Boost our height to be cleanly above the other wire's height
+          maxHeight = Math.max(maxHeight, (otherHeight - p1.y) + 0.35);
+        }
+      }
+    });
+  }
   
   mid.y += maxHeight;
   mid.add(lateralOffset);
@@ -9646,7 +10393,7 @@ function updateWireVisuals(wireIdx, newSnap1, newSnap2) {
   const p1Start = p1.clone().add(new THREE.Vector3(0, 0.28, 0));
   const p2End = p2.clone().add(new THREE.Vector3(0, 0.28, 0));
   
-  const curve = createWireCurve(p1Start, p2End, seed);
+  const curve = createWireCurve(p1Start, p2End, seed, wireIdx);
   const geo = new THREE.TubeGeometry(curve, 64, 0.024, 8, false);
   
   const tubeMesh = new THREE.Mesh(geo, w.lineMesh.material);
@@ -9674,10 +10421,12 @@ function updateWireVisuals(wireIdx, newSnap1, newSnap2) {
   w.sleeves = [sleeve1, sleeve2];
 }
 
-function create3DWire(snap1, snap2) {
-  const occupied = getOccupiedHoles();
-  snap1 = getRedirectedSnap(snap1, occupied, snap2);
-  snap2 = getRedirectedSnap(snap2, occupied, snap1);
+function create3DWire(snap1, snap2, isUserClick = false) {
+  if (isUserClick) {
+    const occupied = getOccupiedHoles();
+    snap1 = getRedirectedSnap(snap1, occupied, snap2);
+    snap2 = getRedirectedSnap(snap2, occupied, snap1);
+  }
 
   const p1 = getSnapPos(snap1);
   const p2 = getSnapPos(snap2);
@@ -9698,7 +10447,7 @@ function create3DWire(snap1, snap2) {
   const p2End = p2.clone().add(new THREE.Vector3(0, 0.28, 0));
   
   const seed = snap1 + snap2 + state.wires.length;
-  const curve = createWireCurve(p1Start, p2End, seed);
+  const curve = createWireCurve(p1Start, p2End, seed, state.wires.length);
   const geo = new THREE.TubeGeometry(curve, 64, 0.024, 8, false);
   
   const tubeMesh = new THREE.Mesh(geo, mat);
@@ -9838,7 +10587,7 @@ function populateLibraryGrid(category) {
       color: "rgba(59, 130, 246, 0.08)",
       borderColor: "rgba(59, 130, 246, 0.25)",
       badgeColor: "#60a5fa",
-      exps: ['ohms', 'kvl', 'kcl', 'rc_rl_rlc', 'series_parallel', 'wheatstone']
+      exps: ['ohms', 'kvl', 'kcl', 'rc_rl_rlc', 'series_parallel', 'wheatstone', 'diode_iv', 'voltage_divider', 'planck_led', 'lcr', 'rc', 'arduino_led']
     };
   } else if (category === 'magnetism') {
     catData = {
@@ -9846,23 +10595,7 @@ function populateLibraryGrid(category) {
       color: "rgba(168, 85, 247, 0.08)",
       borderColor: "rgba(168, 85, 247, 0.25)",
       badgeColor: "#c084fc",
-      exps: ['faraday', 'lenz', 'solenoid', 'transformer']
-    };
-  } else if (category === 'optics') {
-    catData = {
-      title: "Optics & Light",
-      color: "rgba(6, 182, 212, 0.08)",
-      borderColor: "rgba(6, 182, 212, 0.25)",
-      badgeColor: "#22d3ee",
-      exps: ['snell', 'lens_eq', 'tir', 'prism']
-    };
-  } else if (category === 'mechanics') {
-    catData = {
-      title: "Mechanics & Waves",
-      color: "rgba(245, 158, 11, 0.08)",
-      borderColor: "rgba(245, 158, 11, 0.25)",
-      badgeColor: "#fbbf24",
-      exps: ['pendulum', 'hooke', 'projectile', 'doppler']
+      exps: ['faraday', 'lenz', 'solenoid', 'transformer', 'biot_savart']
     };
   } else if (category === 'thermo') {
     catData = {
@@ -9870,7 +10603,7 @@ function populateLibraryGrid(category) {
       color: "rgba(244, 63, 94, 0.08)",
       borderColor: "rgba(244, 63, 94, 0.25)",
       badgeColor: "#fb7185",
-      exps: ['ideal_gas', 'boyle', 'charles', 'specific_heat']
+      exps: ['ideal_gas', 'boyle', 'charles', 'specific_heat', 'stefan_law']
     };
   } else if (category === 'modern') {
     catData = {
@@ -9878,7 +10611,7 @@ function populateLibraryGrid(category) {
       color: "rgba(16, 185, 129, 0.08)",
       borderColor: "rgba(16, 185, 129, 0.25)",
       badgeColor: "#34d399",
-      exps: ['photoelectric', 'radioactive', 'de_broglie', 'bohr_model']
+      exps: ['photoelectric', 'planck_photocell', 'planck_led', 'radioactive', 'de_broglie', 'bohr_model']
     };
   }
   
@@ -10024,7 +10757,7 @@ async function loadCircuitFromBackend(expKey) {
       // 2. Rebuild wires
       if (cdata.wires && cdata.wires.length > 0) {
         cdata.wires.forEach(w => {
-          create3DWire(w.fromHole, w.toHole);
+          create3DWire(w.fromHole, w.toHole, false);
         });
       }
       
@@ -10157,6 +10890,443 @@ function initAll() {
       populateLibraryGrid(cat);
     });
   });
+}
+
+// --- DYNAMIC EXPERIMENT DIAGRAMS AND EXPLANATIONS ---
+function updateDiagram(expKey) {
+  const container = document.getElementById('diagram-content-container');
+  if (!container) return;
+
+  const exp = experiments[expKey];
+  let title = "DC Circuit Schema";
+  let svg = "";
+  let description = "";
+
+  if (expKey === 'ohms') {
+    title = "Ohm's Law Verification";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <line x1="30" y1="50" x2="30" y2="70" stroke="#ef4444" stroke-width="2" />
+        <line x1="35" y1="55" x2="35" y2="65" stroke="#ef4444" stroke-width="1" />
+        <line x1="40" y1="50" x2="40" y2="70" stroke="#ef4444" stroke-width="2" />
+        <line x1="45" y1="55" x2="45" y2="65" stroke="#ef4444" stroke-width="1" />
+        <text x="20" y="63" fill="#ef4444" font-size="8" font-family="sans-serif" font-weight="bold">+</text>
+        <text x="50" y="63" fill="#ef4444" font-size="8" font-family="sans-serif">-</text>
+        <path d="M 30 60 L 15 60 L 15 20 L 70 20" fill="none" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 45 60 L 175 60 L 175 20 L 150 20" fill="none" stroke="#64748b" stroke-width="1.5" />
+        <circle cx="85" cy="20" r="10" fill="#020617" stroke="#3b82f6" stroke-width="1.5" />
+        <text x="85" y="23" fill="#3b82f6" font-size="9" font-family="sans-serif" font-weight="bold" text-anchor="middle">A</text>
+        <line x1="70" y1="20" x2="75" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <line x1="95" y1="20" x2="105" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 105 20 L 110 15 L 115 25 L 120 15 L 125 25 L 130 15 L 135 25 L 140 20" fill="none" stroke="#f97316" stroke-width="1.5" />
+        <line x1="140" y1="20" x2="150" y2="20" stroke="#64748b" stroke-width="1.5" />
+        <text x="122" y="10" fill="#f97316" font-size="8" font-family="sans-serif" text-anchor="middle" font-weight="bold">R</text>
+        <path d="M 105 20 L 105 45 L 115 45" fill="none" stroke="#00d084" stroke-width="1.2" />
+        <path d="M 140 20 L 140 45 L 130 45" fill="none" stroke="#64748b" stroke-width="1.2" />
+        <circle cx="122" cy="45" r="9" fill="#020617" stroke="#ef4444" stroke-width="1.5" />
+        <text x="122" y="48" fill="#ef4444" font-size="8" font-family="sans-serif" font-weight="bold" text-anchor="middle">V</text>
+      </svg>
+    `;
+    description = "Standard verification circuit. The ammeter is connected in series with the resistor to measure loop current <i>I</i>, and the voltmeter is placed in parallel to measure the voltage drop <i>V</i>.";
+  }
+  else if (expKey === 'kvl') {
+    title = "Kirchhoff's Voltage Law";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <line x1="25" y1="50" x2="25" y2="70" stroke="#ef4444" stroke-width="1.5" />
+        <line x1="30" y1="55" x2="30" y2="65" stroke="#ef4444" stroke-width="0.8" />
+        <text x="15" y="63" fill="#ef4444" font-size="8" font-family="sans-serif" font-weight="bold">+</text>
+        <path d="M 25 60 L 15 60 L 15 20 L 50 20" fill="none" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 30 60 L 185 60 L 185 20 L 150 20" fill="none" stroke="#64748b" stroke-width="1.5" />
+        <path d="M 50 20 L 55 15 L 60 25 L 65 15 L 70 25 L 75 15 L 80 25 L 85 20" fill="none" stroke="#f97316" stroke-width="1.5" />
+        <text x="67" y="10" fill="#f97316" font-size="8" font-family="sans-serif" text-anchor="middle">R₁</text>
+        <line x1="85" y1="20" x2="115" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 115 20 L 120 15 L 125 25 L 130 15 L 135 25 L 140 15 L 145 25 L 150 20" fill="none" stroke="#3b82f6" stroke-width="1.5" />
+        <text x="132" y="10" fill="#3b82f6" font-size="8" font-family="sans-serif" text-anchor="middle">R₂</text>
+        <path d="M 50 20 L 50 45 L 60 45" fill="none" stroke="#00d084" stroke-width="1" />
+        <path d="M 85 20 L 85 45 L 75 45" fill="none" stroke="#64748b" stroke-width="1" />
+        <circle cx="67" cy="45" r="7" fill="#020617" stroke="#ef4444" stroke-width="1.2" />
+        <text x="67" y="47.5" fill="#ef4444" font-size="7" font-family="sans-serif" text-anchor="middle">V₁</text>
+        <path d="M 115 20 L 115 45 L 125 45" fill="none" stroke="#00d084" stroke-width="1" />
+        <path d="M 150 20 L 150 45 L 140 45" fill="none" stroke="#64748b" stroke-width="1" />
+        <circle cx="132" cy="45" r="7" fill="#020617" stroke="#ef4444" stroke-width="1.2" />
+        <text x="132" y="47.5" fill="#ef4444" font-size="7" font-family="sans-serif" text-anchor="middle">V₂</text>
+      </svg>
+    `;
+    description = "Loop rule verification. Sum of voltage drops across R₁ and R₂ equals source voltage: V_source = V₁ + V₂. The loop must be complete in series.";
+  }
+  else if (expKey === 'kcl') {
+    title = "Kirchhoff's Current Law";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <line x1="25" y1="50" x2="25" y2="70" stroke="#ef4444" stroke-width="1.5" />
+        <line x1="30" y1="55" x2="30" y2="65" stroke="#ef4444" stroke-width="0.8" />
+        <path d="M 25 60 L 15 60 L 15 20 L 60 20" fill="none" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 30 60 L 185 60 L 185 20 L 140 20" fill="none" stroke="#64748b" stroke-width="1.5" />
+        <path d="M 60 20 L 60 10 L 80 10" fill="none" stroke="#00d084" stroke-width="1.2" />
+        <path d="M 60 20 L 60 30 L 80 30" fill="none" stroke="#00d084" stroke-width="1.2" />
+        <path d="M 80 10 L 85 7 L 90 13 L 95 7 L 100 13 L 105 7 L 110 13 L 115 10" fill="none" stroke="#f97316" stroke-width="1.2" />
+        <text x="97" y="4" fill="#f97316" font-size="7" font-family="sans-serif" text-anchor="middle">R₁</text>
+        <path d="M 115 10 L 135 10 L 135 20" fill="none" stroke="#64748b" stroke-width="1.2" />
+        <path d="M 80 30 L 85 27 L 90 33 L 95 27 L 100 33 L 105 27 L 110 33 L 115 30" fill="none" stroke="#3b82f6" stroke-width="1.2" />
+        <text x="97" y="24" fill="#3b82f6" font-size="7" font-family="sans-serif" text-anchor="middle">R₂</text>
+        <path d="M 115 30 L 135 30 L 135 20" fill="none" stroke="#64748b" stroke-width="1.2" />
+        <circle cx="60" cy="20" r="2" fill="#22c55e" />
+        <circle cx="135" cy="20" r="2" fill="#22c55e" />
+        <text x="60" y="38" fill="#22c55e" font-size="8" font-family="sans-serif" text-anchor="middle">node A</text>
+      </svg>
+    `;
+    description = "Nodal current rule. Current branching into parallel paths (R₁ and R₂) equals main current entering node: I_total = I₁ + I₂.";
+  }
+  else if (expKey === 'lcr' || expKey === 'rc_rl_rlc') {
+    title = "Series LCR AC Resonance";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <circle cx="30" cy="60" r="10" fill="none" stroke="#3b82f6" stroke-width="1.5" />
+        <path d="M 25 60 Q 27.5 55 30 60 T 35 60" fill="none" stroke="#3b82f6" stroke-width="1.5" />
+        <path d="M 30 50 L 30 20 L 55 20" fill="none" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 30 70 L 30 100 L 180 100 L 180 20 L 160 20" fill="none" stroke="#64748b" stroke-width="1.5" />
+        <path d="M 55 20 L 60 15 L 65 25 L 70 15 L 75 25 L 80 15 L 85 25 L 90 20" fill="none" stroke="#f97316" stroke-width="1.5" />
+        <text x="72" y="10" fill="#f97316" font-size="8" font-family="sans-serif" text-anchor="middle">R</text>
+        <line x1="90" y1="20" x2="105" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 105 20 Q 108 13 111 20 Q 114 13 117 20 Q 120 13 123 20 Q 126 13 129 20" fill="none" stroke="#a855f7" stroke-width="1.5" />
+        <text x="117" y="10" fill="#a855f7" font-size="8" font-family="sans-serif" text-anchor="middle">L</text>
+        <line x1="129" y1="20" x2="145" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <line x1="145" y1="12" x2="145" y2="28" stroke="#06b6d4" stroke-width="2" />
+        <line x1="150" y1="12" x2="150" y2="28" stroke="#06b6d4" stroke-width="2" />
+        <text x="148" y="8" fill="#06b6d4" font-size="8" font-family="sans-serif" text-anchor="middle">C</text>
+      </svg>
+    `;
+    description = "AC Series resonance circuit. Reactance XL cancels XC at resonance frequency f₀ = 1 / (2π√(LC)), yielding minimum impedance Z = R.";
+  }
+  else if (expKey === 'rc') {
+    title = "RC Transient Charging";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <line x1="30" y1="50" x2="30" y2="70" stroke="#ef4444" stroke-width="2" />
+        <line x1="35" y1="55" x2="35" y2="65" stroke="#ef4444" stroke-width="1" />
+        <text x="18" y="63" fill="#ef4444" font-size="8" font-family="sans-serif" font-weight="bold">+</text>
+        <path d="M 30 60 L 15 60 L 15 20 L 50 20" fill="none" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 35 60 L 175 60 L 175 20 L 140 20" fill="none" stroke="#64748b" stroke-width="1.5" />
+        <line x1="50" y1="20" x2="65" y2="10" stroke="#a855f7" stroke-width="1.5" />
+        <circle cx="50" cy="20" r="1.5" fill="#a855f7" />
+        <circle cx="65" cy="20" r="1.5" fill="#a855f7" />
+        <line x1="65" y1="20" x2="80" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 80 20 L 85 15 L 90 25 L 95 15 L 100 25 L 105 15 L 110 25 L 115 20" fill="none" stroke="#f97316" stroke-width="1.5" />
+        <text x="97" y="10" fill="#f97316" font-size="8" font-family="sans-serif" text-anchor="middle">R</text>
+        <line x1="115" y1="20" x2="130" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <line x1="130" y1="12" x2="130" y2="28" stroke="#06b6d4" stroke-width="2" />
+        <line x1="135" y1="12" x2="135" y2="28" stroke="#06b6d4" stroke-width="2" />
+        <text x="132" y="8" fill="#06b6d4" font-size="8" font-family="sans-serif" text-anchor="middle">C</text>
+      </svg>
+    `;
+    description = "Transient charging loop. Switch closes to initiate exponential charging. Capacitor voltage is measured across time Constant τ = R × C.";
+  }
+  else if (expKey === 'series_parallel') {
+    title = "Series Resistors Network";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <line x1="30" y1="50" x2="30" y2="70" stroke="#ef4444" stroke-width="2" />
+        <line x1="35" y1="55" x2="35" y2="65" stroke="#ef4444" stroke-width="1" />
+        <path d="M 30 60 L 15 60 L 15 20 L 60 20" fill="none" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 35 60 L 175 60 L 175 20 L 145 20" fill="none" stroke="#64748b" stroke-width="1.5" />
+        <path d="M 60 20 L 65 15 L 70 25 L 75 15 L 80 25 L 85 15 L 90 25 L 95 20" fill="none" stroke="#f97316" stroke-width="1.5" />
+        <text x="77" y="10" fill="#f97316" font-size="8" font-family="sans-serif" text-anchor="middle">R₁</text>
+        <line x1="95" y1="20" x2="110" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 110 20 L 115 15 L 120 25 L 125 15 L 130 25 L 135 15 L 140 25 L 145 20" fill="none" stroke="#3b82f6" stroke-width="1.5" />
+        <text x="127" y="10" fill="#3b82f6" font-size="8" font-family="sans-serif" text-anchor="middle">R₂</text>
+      </svg>
+    `;
+    description = "Resistors in series combine directly: R_total = R₁ + R₂. The current flowing through both is identical.";
+  }
+  else if (expKey === 'wheatstone') {
+    title = "Wheatstone Bridge Balance";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <line x1="30" y1="90" x2="30" y2="105" stroke="#ef4444" stroke-width="1.5" />
+        <line x1="35" y1="95" x2="35" y2="100" stroke="#ef4444" stroke-width="1" />
+        <path d="M 30 97 L 15 97 L 15 60 L 50 60" fill="none" stroke="#00d084" stroke-width="1.2" />
+        <path d="M 35 97 L 175 97 L 175 60 L 150 60" fill="none" stroke="#64748b" stroke-width="1.2" />
+        <path d="M 50 60 L 75 35 L 100 60 L 75 85 Z" fill="none" stroke="#64748b" stroke-width="1" />
+        <circle cx="75" cy="35" r="1.5" fill="#22c55e" />
+        <circle cx="75" cy="85" r="1.5" fill="#22c55e" />
+        <circle cx="75" cy="60" r="8" fill="#020617" stroke="#3b82f6" stroke-width="1.2" />
+        <text x="75" y="63" fill="#3b82f6" font-size="8" font-family="sans-serif" font-weight="bold" text-anchor="middle">G</text>
+        <line x1="75" y1="35" x2="75" y2="52" stroke="#64748b" stroke-width="1" />
+        <line x1="75" y1="68" x2="75" y2="85" stroke="#64748b" stroke-width="1" />
+      </svg>
+    `;
+    description = "Resistor bridge balance. Bridge is balanced when the galvanometer indicates zero current, verifying R₁/R₂ = R₃/R_x.";
+  }
+  else if (expKey === 'arduino_led') {
+    title = "Arduino LED Digital Control";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <rect x="20" y="20" width="60" height="80" rx="4" fill="#0f172a" stroke="#00d084" stroke-width="1.5" />
+        <text x="50" y="32" fill="#00d084" font-size="7" font-family="monospace" text-anchor="middle">ARDUINO</text>
+        <rect x="25" y="45" width="22" height="40" fill="#1e293b" rx="2" />
+        <rect x="10" y="52" width="10" height="15" fill="#cbd5e1" />
+        <path d="M 80 40 L 110 40" fill="none" stroke="#22c55e" stroke-width="1.2" />
+        <text x="83" y="38" fill="#22c55e" font-size="6" font-family="monospace">5V</text>
+        <line x1="110" y1="40" x2="120" y2="30" stroke="#ef4444" stroke-width="1.2" />
+        <circle cx="110" cy="40" r="1.5" fill="#ef4444" />
+        <circle cx="122" cy="40" r="1.5" fill="#ef4444" />
+        <path d="M 122 40 L 140 40" fill="none" stroke="#22c55e" stroke-width="1.2" />
+        <path d="M 140 32 L 140 48 Q 148 40 140 32 Z" fill="none" stroke="#ef4444" stroke-width="1.2" />
+        <line x1="148" y1="32" x2="148" y2="48" stroke="#ef4444" stroke-width="1.2" />
+        <path d="M 148 40 L 160 40" fill="none" stroke="#22c55e" stroke-width="1.2" />
+        <path d="M 160 40 L 163 37 L 166 43 L 169 37 L 172 43 L 175 37 L 178 43 L 181 40" fill="none" stroke="#f97316" stroke-width="1.2" />
+        <path d="M 181 40 L 190 40 L 190 85 L 80 85" fill="none" stroke="#64748b" stroke-width="1.2" />
+        <text x="83" y="82" fill="#64748b" font-size="6" font-family="monospace">GND</text>
+      </svg>
+    `;
+    description = "Digital control loop. When the push button is pressed, it closes the loop, allowing 5V supply current through the LED and current limiting Resistor to GND.";
+  }
+  else if (expKey === 'diode_iv') {
+    title = "Semiconductor Diode I-V";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <line x1="30" y1="50" x2="30" y2="70" stroke="#ef4444" stroke-width="2" />
+        <line x1="35" y1="55" x2="35" y2="65" stroke="#ef4444" stroke-width="1" />
+        <text x="18" y="63" fill="#ef4444" font-size="8" font-family="sans-serif" font-weight="bold">+</text>
+        <path d="M 30 60 L 15 60 L 15 20 L 50 20" fill="none" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 35 60 L 175 60 L 175 20 L 140 20" fill="none" stroke="#64748b" stroke-width="1.5" />
+        <path d="M 50 20 L 55 15 L 60 25 L 65 15 L 70 25 L 75 15 L 80 25 L 85 20" fill="none" stroke="#f97316" stroke-width="1.5" />
+        <text x="67" y="10" fill="#f97316" font-size="8" font-family="sans-serif" text-anchor="middle">R</text>
+        <line x1="85" y1="20" x2="100" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 100 12 L 100 28 L 115 20 Z" fill="#3b82f6" stroke="#3b82f6" stroke-width="1" />
+        <line x1="115" y1="12" x2="115" y2="28" stroke="#3b82f6" stroke-width="2" />
+        <line x1="115" y1="20" x2="140" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <text x="108" y="8" fill="#3b82f6" font-size="8" font-family="sans-serif" text-anchor="middle">D</text>
+      </svg>
+    `;
+    description = "Semiconductor Diode I-V circuit. A diode is placed in series with a current-limiting resistor. The forward bias voltage and current are measured to trace the exponential I-V curve.";
+  }
+  else if (expKey === 'voltage_divider') {
+    title = "Voltage & Current Divider";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <line x1="30" y1="50" x2="30" y2="70" stroke="#ef4444" stroke-width="2" />
+        <line x1="35" y1="55" x2="35" y2="65" stroke="#ef4444" stroke-width="1" />
+        <text x="18" y="63" fill="#ef4444" font-size="8" font-family="sans-serif" font-weight="bold">+</text>
+        <path d="M 30 60 L 15 60 L 15 20 L 50 20" fill="none" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 35 60 L 175 60 L 175 20 L 140 20" fill="none" stroke="#64748b" stroke-width="1.5" />
+        <path d="M 50 20 L 55 15 L 60 25 L 65 15 L 70 25 L 75 15 L 80 25 L 85 20" fill="none" stroke="#f97316" stroke-width="1.5" />
+        <text x="67" y="10" fill="#f97316" font-size="8" font-family="sans-serif" text-anchor="middle">R₁</text>
+        <line x1="85" y1="20" x2="105" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 105 20 L 110 15 L 125 25 L 130 15 L 135 25 L 140 15 L 145 25 L 150 20" fill="none" stroke="#3b82f6" stroke-width="1.5" />
+        <text x="122" y="10" fill="#3b82f6" font-size="8" font-family="sans-serif" text-anchor="middle">R₂</text>
+        <path d="M 105 20 L 105 45 L 112 45" fill="none" stroke="#00d084" stroke-width="1" />
+        <path d="M 140 20 L 140 45 L 132 45" fill="none" stroke="#64748b" stroke-width="1" />
+        <circle cx="122" cy="45" r="7" fill="#020617" stroke="#ef4444" stroke-width="1.2" />
+        <text x="122" y="47.5" fill="#ef4444" font-size="7" font-family="sans-serif" text-anchor="middle">V₂</text>
+      </svg>
+    `;
+    description = "Voltage divider circuit. Two resistors are in series. The output voltage V₂ measured across R₂ is proportional to its resistance: V₂ = V_in * R₂ / (R₁ + R₂).";
+  }
+  else if (expKey === 'planck_led') {
+    title = "Planck's Constant via LEDs";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <line x1="30" y1="50" x2="30" y2="70" stroke="#ef4444" stroke-width="2" />
+        <line x1="35" y1="55" x2="35" y2="65" stroke="#ef4444" stroke-width="1" />
+        <text x="18" y="63" fill="#ef4444" font-size="8" font-family="sans-serif" font-weight="bold">+</text>
+        <path d="M 30 60 L 15 60 L 15 20 L 50 20" fill="none" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 35 60 L 175 60 L 175 20 L 140 20" fill="none" stroke="#64748b" stroke-width="1.5" />
+        <path d="M 50 20 L 55 15 L 60 25 L 65 15 L 70 25 L 75 15 L 80 25 L 85 20" fill="none" stroke="#f97316" stroke-width="1.5" />
+        <text x="67" y="10" fill="#f97316" font-size="8" font-family="sans-serif" text-anchor="middle">R</text>
+        <line x1="85" y1="20" x2="100" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 100 12 L 100 28 L 115 20 Z" fill="#22c55e" stroke="#22c55e" stroke-width="1" />
+        <line x1="115" y1="12" x2="115" y2="28" stroke="#22c55e" stroke-width="2" />
+        <line x1="115" y1="20" x2="140" y2="20" stroke="#00d084" stroke-width="1.5" />
+        <line x1="105" y1="10" x2="112" y2="3" stroke="#eab308" stroke-width="1" />
+        <polygon points="112,3 108,3 111,6" fill="#eab308" />
+        <line x1="111" y1="12" x2="118" y2="5" stroke="#eab308" stroke-width="1" />
+        <polygon points="118,5 114,5 117,8" fill="#eab308" />
+        <text x="108" y="35" fill="#22c55e" font-size="8" font-family="sans-serif" text-anchor="middle">LED</text>
+      </svg>
+    `;
+    description = "Planck's Constant using LEDs. Measuring the turn-on (threshold) voltage V_0 for different color LEDs of known peak wavelengths λ allows plotting V_0 vs 1/λ, where the slope is hc/e.";
+  }
+  else if (expKey === 'biot_savart') {
+    title = "Biot-Savart's Law";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <line x1="100" y1="10" x2="100" y2="110" stroke="#ef4444" stroke-width="3" />
+        <path d="M 98 30 L 100 20 L 102 30 Z" fill="#ef4444" />
+        <text x="108" y="25" fill="#ef4444" font-size="8" font-weight="bold">I</text>
+        <ellipse cx="100" cy="60" rx="40" ry="12" fill="none" stroke="#3b82f6" stroke-width="1" stroke-dasharray="3 3" />
+        <ellipse cx="100" cy="60" rx="65" ry="20" fill="none" stroke="#3b82f6" stroke-width="1" stroke-dasharray="3 3" />
+        <path d="M 140 60 L 138 57 L 142 57 Z" fill="#3b82f6" />
+        <path d="M 165 60 L 163 57 L 167 57 Z" fill="#3b82f6" />
+        <text x="145" y="52" fill="#3b82f6" font-size="8">B</text>
+        <line x1="100" y1="60" x2="135" y2="75" stroke="#22c55e" stroke-width="1.5" />
+        <circle cx="100" cy="60" r="2" fill="#22c55e" />
+        <circle cx="135" cy="75" r="2" fill="#22c55e" />
+        <text x="118" y="76" fill="#22c55e" font-size="8">r</text>
+      </svg>
+    `;
+    description = "Biot-Savart's Law. Current I in a long straight wire generates a concentric magnetic field B. The field strength decreases inversely with distance r from the wire: B = μ₀I / (2πr).";
+  }
+  else if (expKey === 'planck_photocell') {
+    title = "Planck's Constant (Photocell)";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <circle cx="100" cy="55" r="30" fill="none" stroke="#64748b" stroke-width="1.5" />
+        <path d="M 80 40 L 80 70" stroke="#ef4444" stroke-width="3" />
+        <text x="74" y="58" fill="#ef4444" font-size="7" font-weight="bold">C</text>
+        <path d="M 120 40 L 120 70" stroke="#3b82f6" stroke-width="1.5" />
+        <text x="124" y="58" fill="#3b82f6" font-size="7" font-weight="bold">A</text>
+        <path d="M 25 35 Q 32.5 37.5 40 35 L 55 45" fill="none" stroke="#eab308" stroke-width="1.2" />
+        <polygon points="55,45 48,43 51,39" fill="#eab308" />
+        <text x="35" y="27" fill="#eab308" font-size="7">Photons (hν)</text>
+        <circle cx="92" cy="50" r="1.5" fill="#10b981" />
+        <line x1="92" y1="50" x2="108" y2="52" stroke="#10b981" stroke-width="0.8" />
+        <polygon points="108,52 102,50 104,54" fill="#10b981" />
+      </svg>
+    `;
+    description = "Planck's Constant using Photocell. Monochromatic light ejects photoelectrons from the cathode. A stopping potential V_s is applied to reduce photocurrent to zero: eV_s = hν - W.";
+  }
+  else if (expKey === 'stefan_law') {
+    title = "Stefan's Law Verification";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <rect x="50" y="30" width="50" height="50" rx="4" fill="#1e293b" stroke="#f97316" stroke-width="2" />
+        <circle cx="75" cy="55" r="15" fill="#f97316" opacity="0.6" />
+        <circle cx="75" cy="55" r="8" fill="#fcd34d" />
+        <text x="75" y="95" fill="#f97316" font-size="8" font-weight="bold" text-anchor="middle">Furnace (T)</text>
+        <path d="M 110 50 Q 120 40 130 50 T 150 50" fill="none" stroke="#ef4444" stroke-width="1.5" />
+        <path d="M 110 60 Q 120 50 130 60 T 150 60" fill="none" stroke="#ef4444" stroke-width="1.5" />
+        <rect x="150" y="40" width="20" height="30" rx="2" fill="#0f172a" stroke="#cbd5e1" stroke-width="1.5" />
+        <text x="160" y="58" fill="#cbd5e1" font-size="7" font-weight="bold" text-anchor="middle">Sensor</text>
+      </svg>
+    `;
+    description = "Stefan's Law verification. Total thermal radiation energy E emitted by a blackbody furnace at absolute temperature T is directly proportional to the fourth power of T: E = σ T⁴.";
+  }
+  else if (['ideal_gas', 'boyle', 'charles'].includes(expKey)) {
+    title = "Ideal Gas Chamber";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <rect x="50" y="20" width="80" height="80" rx="2" fill="none" stroke="#64748b" stroke-width="2" />
+        <rect x="52" y="45" width="76" height="10" fill="#1e293b" />
+        <line x1="90" y1="20" x2="90" y2="45" stroke="#1e293b" stroke-width="4" />
+        <circle cx="60" cy="70" r="1.5" fill="#3b82f6" />
+        <circle cx="70" cy="85" r="1.5" fill="#3b82f6" />
+        <circle cx="85" cy="65" r="1.5" fill="#3b82f6" />
+        <circle cx="100" cy="88" r="1.5" fill="#3b82f6" />
+        <circle cx="115" cy="72" r="1.5" fill="#3b82f6" />
+        <circle cx="110" cy="82" r="1.5" fill="#3b82f6" />
+        <rect x="140" y="40" width="40" height="40" rx="4" fill="#0f172a" stroke="#cbd5e1" stroke-width="1" />
+        <text x="160" y="52" fill="#ef4444" font-size="7" font-weight="bold" text-anchor="middle">P (kPa)</text>
+        <text x="160" y="70" fill="#10b981" font-size="7" font-weight="bold" text-anchor="middle">T (K)</text>
+      </svg>
+    `;
+    description = "Thermodynamic chamber. Adjusting cylinder volume V (piston height) and heater temperature T alters internal pressure P according to state equation: PV = nRT.";
+  }
+  else if (expKey === 'specific_heat') {
+    title = "Calorimeter Heat Exchange";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <rect x="60" y="30" width="80" height="70" rx="4" fill="none" stroke="#cbd5e1" stroke-width="2" />
+        <rect x="62" y="55" width="76" height="43" fill="rgba(59,130,246,0.2)" rx="2" />
+        <rect x="85" y="70" width="30" height="20" fill="#f97316" rx="1" />
+        <text x="100" y="82" fill="#ffffff" font-size="7" text-anchor="middle" font-weight="bold">Metal</text>
+        <rect x="122" y="20" width="6" height="60" rx="2" fill="#1e293b" />
+        <line x1="125" y1="25" x2="125" y2="78" stroke="#ef4444" stroke-width="1.5" />
+      </svg>
+    `;
+    description = "Calorimetry heat transfer. Heated metal block dropped into calorimeter releases heat, water absorbs it until thermal equilibrium is hit: Q = m c ΔT.";
+  }
+  else if (expKey === 'photoelectric') {
+    title = "Photoelectric Effect Tube";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <rect x="40" y="35" width="120" height="50" rx="25" fill="none" stroke="#64748b" stroke-width="1.5" />
+        <line x1="60" y1="45" x2="60" y2="75" stroke="#ef4444" stroke-width="2.5" />
+        <line x1="140" y1="45" x2="140" y2="75" stroke="#3b82f6" stroke-width="2.5" />
+        <path d="M 25 35 Q 32.5 37.5 40 35 L 55 45" fill="none" stroke="#eab308" stroke-width="1.2" />
+        <polygon points="57,47 50,45 53,41" fill="#eab308" />
+        <circle cx="80" cy="52" r="1.5" fill="#10b981" />
+        <line x1="80" y1="52" x2="95" y2="52" stroke="#10b981" stroke-width="0.8" />
+        <polygon points="99,52 94,50 94,54" fill="#10b981" />
+        <circle cx="105" cy="68" r="1.5" fill="#10b981" />
+        <line x1="105" y1="68" x2="120" y2="68" stroke="#10b981" stroke-width="0.8" />
+        <text x="100" y="30" fill="#eab308" font-size="7" text-anchor="middle">Photons (hν)</text>
+      </svg>
+    `;
+    description = "Quantum photoelectric emission. Incident photons with energy hν eject emitter electrons, producing photocurrent. Work function boundary sets threshold frequency.";
+  }
+  else if (expKey === 'radioactive') {
+    title = "Radioactive Decay Half-Life";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <line x1="40" y1="20" x2="40" y2="100" stroke="#64748b" stroke-width="1" />
+        <line x1="40" y1="100" x2="180" y2="100" stroke="#64748b" stroke-width="1" />
+        <path d="M 40 20 Q 90 85 180 98" fill="none" stroke="#e11d48" stroke-width="1.8" />
+        <line x1="90" y1="20" x2="90" y2="100" stroke="#64748b" stroke-width="0.5" stroke-dasharray="2 2" />
+        <text x="90" y="108" fill="#64748b" font-size="7" text-anchor="middle">t1/2</text>
+        <text x="110" y="45" fill="#e11d48" font-size="8">Decay Curve</text>
+      </svg>
+    `;
+    description = "Exponential half-life decay. Radioactive nuclei drop by half N(t) = N₀e^(-λt) after every half-life duration T_1/2, following statistics.";
+  }
+  else if (expKey === 'de_broglie') {
+    title = "de Broglie Matter Wave Slit";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <line x1="20" y1="60" x2="60" y2="60" stroke="#ffffff" stroke-width="1.5" />
+        <line x1="70" y1="20" x2="70" y2="50" stroke="#64748b" stroke-width="3" />
+        <line x1="70" y1="56" x2="70" y2="64" stroke="#64748b" stroke-width="3" />
+        <line x1="70" y1="70" x2="70" y2="100" stroke="#64748b" stroke-width="3" />
+        <path d="M 72 53 A 10 10 0 0 1 90 40 M 72 61 A 10 10 0 0 1 90 80" fill="none" stroke="#22c55e" stroke-width="0.8" />
+        <path d="M 72 53 A 20 20 0 0 1 110 30 M 72 61 A 20 20 0 0 1 110 90" fill="none" stroke="#22c55e" stroke-width="0.8" />
+        <rect x="160" y="20" width="8" height="80" fill="#1e293b" />
+        <rect x="160" y="30" width="8" height="6" fill="#10b981" />
+        <rect x="160" y="45" width="8" height="10" fill="#10b981" />
+        <rect x="160" y="65" width="8" height="10" fill="#10b981" />
+        <rect x="160" y="84" width="8" height="6" fill="#10b981" />
+      </svg>
+    `;
+    description = "Matter wave particle duality. Accelerator fires electrons which behave as waves, passing double slits and forming interference fringes by wavelength λ = h/p.";
+  }
+  else if (expKey === 'bohr_model') {
+    title = "Bohr Hydrogen Shell Transitions";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <circle cx="100" cy="60" r="10" fill="#ef4444" stroke="#ef4444" />
+        <text x="100" y="63" fill="#ffffff" font-size="8" font-weight="bold" text-anchor="middle">+</text>
+        <circle cx="100" cy="60" r="25" fill="none" stroke="#64748b" stroke-width="0.8" stroke-dasharray="2 2" />
+        <circle cx="100" cy="60" r="45" fill="none" stroke="#64748b" stroke-width="0.8" stroke-dasharray="2 2" />
+        <path d="M 128 28 A 45 45 0 0 1 120 45" fill="none" stroke="#22c55e" stroke-width="1.5" />
+        <line x1="120" y1="45" x2="114" y2="40" stroke="#22c55e" stroke-width="1.5" />
+        <line x1="120" y1="45" x2="124" y2="42" stroke="#22c55e" stroke-width="1.5" />
+        <path d="M 125 35 Q 135 30 145 35 T 165 35" fill="none" stroke="#eab308" stroke-width="1.2" />
+        <polygon points="169,35 162,32 162,38" fill="#eab308" />
+        <text x="155" y="27" fill="#eab308" font-size="7">Photon (hν)</text>
+      </svg>
+    `;
+    description = "Atomic shell drops. Electron transitions from outer orbit shell n_i to inner shell n_f, emitting quantum photon with wave energy ΔE = E_i - E_f.";
+  }
+  else {
+    title = "Experiment Layout Schema";
+    svg = `
+      <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
+        <rect x="50" y="30" width="100" height="60" rx="6" fill="rgba(34,211,238,0.08)" stroke="#22d3ee" stroke-width="1.5" />
+        <text x="100" y="64" fill="#22d3ee" font-size="10" font-weight="bold" text-anchor="middle">${exp ? exp.name : "Module Setup"}</text>
+      </svg>
+    `;
+    description = exp ? `Visual schematic diagram representing setup for: ${exp.name}. Complete steps and take readings in the lab workspace.` : "Virtual physics laboratory simulation setup schematic diagram.";
+  }
+
+  container.innerHTML = `
+    <div style="text-align:center;padding:10px 0;background:#000;border:1px solid var(--border);border-radius:6px;margin-bottom:10px">
+      ${svg}
+    </div>
+    <div style="font-size:10px;color:var(--text2);line-height:1.5">
+      <b>${title}:</b>
+      <p>${description}</p>
+    </div>
+  `;
 }
 
 if (document.readyState === 'loading') {

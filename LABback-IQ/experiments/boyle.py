@@ -22,6 +22,6 @@ class BoyleExperiment(BaseExperiment):
             'I': vol,
             'phi': 0.0,
             'f0': internal_energy,
-            'P_out': pressure,
+            'V': pressure,
             'P': moles
         }

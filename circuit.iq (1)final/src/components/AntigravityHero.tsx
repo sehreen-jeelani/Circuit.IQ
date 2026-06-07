@@ -97,7 +97,7 @@ function FloatingComponent({ position, type, index, delay, progressRef, isLogo }
     }
   });
 
-  const subdivisions = highFidelityMode ? 6 : 4;
+  const subdivisions = highFidelityMode ? 32 : 16;
 
   return (
     <group ref={meshRef} position={position} scale={0.8}>
