@@ -34,11 +34,14 @@ Circuit.IQ is a premium, interactive WebGL-based physics sandbox. Students can d
 
 *   **26 Interactive Experiments**: Spanning Electricity, Semiconductors, Electromagnetism, Modern Physics, and Thermodynamics.
 *   **3D Breadboard Simulator**: Full drag-and-drop workflow for resistors, capacitors, LEDs, diodes, and switches.
-*   **Intelligent AI Assistant**: Ask questions directly to an AI PhysicsBot connected to Gemini (with offline fallback formulas).
+*   **Intelligent AI Assistant**: Context-aware [PhysicsBotPanel.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/circuit.iq%20(1)final/src/components/PhysicsBotPanel.tsx) inside the lab simulator reads your current components, wires, and parameters, using Gemini AI to diagnose faults.
+*   **Global PhysicsBot AI Console**: Homepage terminal-like AI playground ([LandingPage.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/circuit.iq%20(1)final/src/pages/LandingPage.tsx)) featuring command suggestions (`$ ohms-solver`, `$ lcr-resonance`) and smart matching that recommends and auto-loads specific 3D simulations.
 *   **Rich Measurements**: Integrated digital meters (V, I, Z, P), a functional dual-channel oscilloscope, and live V-I graphs.
-*   **Automated Lab Reports**: Click to download a comprehensive PDF report with your observation tables, graph screenshot, Viva Q&A, and auto-generated grade.
-*   **Auto-Save & Persistence**: Restores your exact component placements and wire routes upon refresh (backed by local SQLite or cloud Supabase).
-*   **Live Attendance & Presence Lock**: Integrated webcam session manager utilizing client-side TensorFlow.js (COCO-SSD) to automatically verify student presence, lock/unlock the lab workspace, and auto-pause simulations when a student leaves the camera frame.
+*   **Automated Lab Reports**: Click to print a formatted PDF report with aim, apparatus, theory, key formulas, observation tables, graded viva Q&A, and auto-generated grade.
+*   **Dual-Database Adapter Engine**: Automatic zero-setup synchronization between local SQLite (`circuit_iq.db`) and cloud Supabase (PostgreSQL), pre-seeded with student profiles and circuit data.
+*   **Live Attendance & Presence Lock**: Webcam session manager utilizing client-side TensorFlow.js (COCO-SSD) to automatically verify student presence, lock/unlock the lab workspace, and auto-pause simulations when a student leaves the camera frame.
+*   **Offline Heuristic Fallback**: Intelligent keyword-based tutoring fallback that ensures students get structured formulas and guidance even without a configured `GEMINI_API_KEY`.
+*   **Support & Diagnostics Portal**: Multi-category ticketing system for bug reports and feature requests with Resend API email dispatching.
 
 ---
 
@@ -62,6 +65,35 @@ Circuit.IQ includes a professional, classroom-grade attendance and presence veri
    * Professors can monitor active sessions in real-time, end them, and download a detailed `.txt` text log file for academic auditing.
 
 ---
+
+## 🤖 Global PhysicsBot AI Console
+
+The homepage features a terminal-style chatbot interface dedicated to general physics tutoring:
+*   **Structured Queries**: Calls the `/api/physics-bot` endpoint to retrieve concise explanations, formulas, and recommended simulation modules.
+*   **Quick Shortcuts**: Students can click pre-set command buttons (like `ohms-solver`, `lcr-resonance`, `ideal-gas`, and `photoelectric-effect`) to instantly query common physics topics.
+*   **Interactive Simulation Launch**: If a query is related to one of the 26 simulator experiments, the AI provides a button to automatically load and launch that simulation inside the virtual lab.
+*   **Offline Keyword Parser**: If `GEMINI_API_KEY` is not set, a local keyword parser evaluates questions (matching words like "ohm", "lcr", "pendulum", "snell", "gas") and responds with structured formulas and local instructions.
+
+---
+
+## 💾 Database Sync & Dual Adapters
+
+The Flask backend is equipped with a hybrid database layer ([database.py](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/database.py)) that provides a zero-setup local dev experience while remaining cloud-ready:
+*   **SQLite Fallback**: If no Supabase environment variables are configured in `.env`, the app automatically initializes `circuit_iq.db` locally.
+*   **Automatic Seeding**: Seeds a default student profile (Aisha Rahman) and a sample series circuit layout on first boot so the lab is fully usable immediately.
+*   **Table Schemas**:
+    *   `profiles`: Tracks student names, universities, semesters, graduation years, roles, and active statuses.
+    *   `circuits`: Stores coordinate coordinates, tag arrays, placement configurations, and wire arrays as JSONB.
+    *   `experiment_logs`: Records experiment duration, scores, and feedback for grading.
+
+---
+
+## 📞 Support & Ticketing System
+
+A modular contact page ([ContactPage.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/circuit.iq%20(1)final/src/pages/ContactPage.tsx)) is integrated into the client portal to handle feedback and bug submissions:
+*   **Form Validation**: Validates client-side inputs (valid email checks, minimum message length).
+*   **API Ticket Logging**: Sends a request to `/api/contact` which creates a unique UUID-based Ticket ID.
+*   **Resend API Integration**: If `RESEND_API_KEY` is provided, emails the submission to the designated administrative email (`CONTACT_TO_EMAIL`), falling back to standard stdout logging in the Flask terminal on empty keys.
 
 ## 🚀 Quick Start (3 Steps)
 

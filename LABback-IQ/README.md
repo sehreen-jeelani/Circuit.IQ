@@ -122,42 +122,77 @@ Copy `.env.example` → `.env` and fill in what you need:
 
 ### AI PhysicsBot
 
-**`POST /api/physicsbot/ask`** — Ask a physics question
-
+**`POST /api/physicsbot/ask`** — Ask a contextual question from inside the 3D simulation panel.
 ```json
 // Request:
-{ "question": "What is Ohm's Law?" }
+{
+  "question": "Why is my diode not conducting?",
+  "experiment": "diode_iv",
+  "circuit_state": {
+    "placed_components": [{"type": "diode", "id": "d1"}],
+    "wires": [],
+    "params": {"V": 5},
+    "readings": {"I": 0}
+  }
+}
 
 // Response:
 {
-  "answer": "Ohm's Law states that current is proportional to voltage...",
-  "formulas": [{ "name": "Ohm's Law", "expr": "V = I × R" }],
-  "recommended_experiment": "ohms"
+  "answer": "Your diode is reverse-biased because the anode is connected to the negative terminal..."
+}
+```
+
+**`POST /api/physics-bot`** — Ask a general physics question on the landing page portal.
+```json
+// Request:
+{
+  "question": "Tell me about Ohm's Law."
+}
+
+// Response (JSON mode):
+{
+  "explanation": "Ohm's Law states that the current through a conductor...",
+  "formulas": [{"name": "Ohm's Law", "expr": "V = I × R"}],
+  "recommendedExp": "ohms"
 }
 ```
 
 ---
 
-### Circuit Storage
+### Circuit & User Database
 
-| Endpoint | Method | What it does |
-|----------|--------|-------------|
-| `/api/db/save-circuit` | POST | Save component positions + wires + params |
-| `/api/db/load-circuit` | GET | Load a saved circuit (params: `experiment_type`, `user_id`) |
-| `/api/db/experiment-log` | POST | Record an experiment result with score |
-| `/api/db/experiment-logs` | GET | Get past experiment attempts |
-| `/api/db/profile` | GET | Get student profile |
-| `/api/db/profile` | POST | Create or update student profile |
+| Endpoint | Method | Role / Description |
+|----------|--------|--------------------|
+| `/api/db/save-circuit` | POST | Saves components list, wire paths, and slider parameters to DB |
+| `/api/db/load-circuit` | GET | Fetches the saved layout (query parameters: `user_id`, `experiment_type`) |
+| `/api/db/save-log` | POST | Records a new experiment attempt (duration, score, feedback, notes) |
+| `/api/db/get-logs` | GET | Lists past attempts for a user (query parameters: `user_id`, optional `experiment_type`) |
+| `/api/db/profile` | GET | Retrieves student profile (university, semester, graduation year) |
+| `/api/db/profile` | POST | Creates or updates student profile details |
 
 ---
 
-### Other
+### Attendance & Session Management
 
-| Endpoint | Method | What it does |
-|----------|--------|-------------|
-| `/api/contact` | POST | Submit support ticket (sends email) |
-| `/api/attendance/students` | GET | List student records |
-| `/api/attendance/mark` | POST | Mark attendance |
+| Endpoint | Method | Role / Description |
+|----------|--------|--------------------|
+| `/api/admin/login` | POST | Authenticates professor and returns a UUID auth token |
+| `/api/admin/session/create` | POST | Creates a lab session for a group (returns session join code) |
+| `/api/admin/session/list` | GET | Lists all active and past sessions managed by the admin |
+| `/api/admin/session/<session_id>/delete` | DELETE | Deletes a session from the list |
+| `/api/session/join` | POST | Checks a student in to the session using join code and registration number |
+| `/api/session/<session_id>/status` | GET | Polls the current session state (waiting, active, paused, ended) |
+| `/api/session/<session_id>/presence` | POST | Receives webcam person count from client-side TensorFlow.js loop |
+| `/api/session/<session_id>/end` | POST | Concludes session and compiles attendance logs |
+| `/api/session/<session_id>/log` | GET | Exports final student audit timeline log |
+
+---
+
+### Support Ticket System
+
+| Endpoint | Method | Role / Description |
+|----------|--------|--------------------|
+| `/api/contact` | POST | Accepts contact form submission and dispatches notification via Resend API |
 
 ---
 
