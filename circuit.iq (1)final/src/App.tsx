@@ -54,10 +54,10 @@ export default function App() {
 ) : activeTab === 'attendance' ? (
   <div className="fixed inset-0 bg-[#070B14] overflow-y-auto z-[999]">
   <AttendanceSystem
-  onLabUnlock={(sessionId) => {
-    setLabOpen(true);
-    setActiveTab('home');
-  }}
+ onLabUnlock={(sessionId) => {
+  setActiveTab('home');
+  setTimeout(() => setLabOpen(true), 300);
+}}
 />
 </div>
 ) : (

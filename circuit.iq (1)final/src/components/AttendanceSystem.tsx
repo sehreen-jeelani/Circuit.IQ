@@ -242,6 +242,8 @@ function AdminPanelView({ token, onLogout }: { token: string; onLogout: () => vo
   const [sessions, setSessions] = useState<any[]>([]);
   const [creating, setCreating] = useState(false);
   const [created, setCreated] = useState<string | null>(null);
+  const [createdRegNumbers, setCreatedRegNumbers] = useState<string[]>([]);
+  const [checkedInLocal, setCheckedInLocal] = useState<string[]>([]);
   const [log, setLog] = useState<any | null>(null);
 
   // Form state
@@ -284,6 +286,7 @@ function AdminPanelView({ token, onLogout }: { token: string; onLogout: () => vo
       const data = await res.json();
       if (res.ok) {
         setCreated(data.session_id);
+        setCreatedRegNumbers([...regNumbers]);
         setGroupName(''); setRegNumbers([]); setRegInput('');
         loadSessions();
       }
@@ -362,17 +365,55 @@ function AdminPanelView({ token, onLogout }: { token: string; onLogout: () => vo
       {tab === 'create' && (
         <div className="space-y-4">
           {created && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 flex items-center gap-3"
-            >
-              <CheckCircle2 size={20} className="text-emerald-400 shrink-0" />
-              <div>
-                <p className="text-emerald-300 font-semibold">Session Created!</p>
-                <p className="text-slate-400 text-sm">Share code with students: <span className="text-white font-bold tracking-widest">{created}</span></p>
-              </div>
-              <button onClick={() => setCreated(null)} className="ml-auto text-slate-500 hover:text-slate-300"><XCircle size={16} /></button>
-            </motion.div>
-          )}
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+    className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 space-y-3"
+  >
+    <div className="flex items-center gap-3">
+      <CheckCircle2 size={20} className="text-emerald-400 shrink-0" />
+      <div className="flex-1">
+        <p className="text-emerald-300 font-semibold">Session Created!</p>
+        <p className="text-slate-400 text-sm">Code: <span className="text-white font-bold tracking-widest">{created}</span></p>
+      </div>
+      <button onClick={() => { setCreated(null); setCreatedRegNumbers([]); setCheckedInLocal([]); }} className="text-slate-500 hover:text-slate-300"><XCircle size={16} /></button>
+    </div>
+    <div className="border-t border-white/10 pt-3">
+      <p className="text-xs text-slate-500 tracking-widest uppercase mb-2">Mark Attendance</p>
+      <div className="space-y-2">
+        {createdRegNumbers.map((r) => {
+          const isPresent = checkedInLocal.includes(r);
+          return (
+            <div key={r} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
+              <span className={`text-sm font-mono ${isPresent ? 'text-emerald-400' : 'text-slate-300'}`}>{r}</span>
+              <button
+                onClick={async () => {
+                  if (isPresent) return;
+                  await fetch('/api/session/join', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: created, reg_number: r }),
+                  });
+                  const newChecked = [...checkedInLocal, r];
+                  setCheckedInLocal(newChecked);
+                  if (newChecked.length >= createdRegNumbers.length) {
+                    setTimeout(() => {
+                      setCreated(null);
+                      setCreatedRegNumbers([]);
+                      setCheckedInLocal([]);
+                    }, 1500);
+                  }
+                }}
+                className={`text-xs px-3 py-1 rounded-lg border transition-colors ${isPresent ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10 cursor-default' : 'border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10'}`}
+              >
+                {isPresent ? '✓ Present' : 'Mark Present'}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-xs text-slate-600 mt-2 text-center">{checkedInLocal.length}/{createdRegNumbers.length} marked — lab opens when all present</p>
+    </div>
+  </motion.div>
+)}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
@@ -629,9 +670,10 @@ function WebcamMonitorView({ session: initialSession, regNo, onLabUnlock, onLabP
         if (res.ok) {
           const s = data.session as Session;
           setSession(s);
-          if (s.status === 'active') onLabResume?.();
-          if (s.status === 'paused') onLabPause?.();
-          if (s.status === 'active' && !session.started_at) onLabUnlock?.(session.id);
+if (s.status === 'active') {
+  onLabUnlock?.(session.id);
+}
+if (s.status === 'paused') onLabPause?.();
         }
       } catch {}
     }, 3000);
