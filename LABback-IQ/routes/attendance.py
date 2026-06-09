@@ -10,6 +10,7 @@ import os
 import uuid
 from datetime import datetime
 from flask import Blueprint, request, jsonify
+from student_db import validate_enrollment, get_all_students, get_departments, get_semesters
 
 attendance_bp = Blueprint("attendance", __name__)
 
@@ -106,7 +107,7 @@ def join_session():
     if session["status"] == "ended":
         return jsonify({"status": "error", "message": "This session has already ended"}), 400
     if reg_number not in session["reg_numbers"]:
-        return jsonify({"status": "error", "message": f"Registration number {reg_number} not in this group"}), 403
+        return jsonify({"status": "error", "message": f"Enrollment number {reg_number} not in this group"}), 403
     if reg_number in session["checked_in"]:
         return jsonify({"status": "success", "message": "Already checked in", "session": _session_summary(session)}), 200
     session["checked_in"].append(reg_number)
