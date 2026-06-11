@@ -22,6 +22,7 @@
 ================================================================================
 """
 
+from importlib.resources import path
 import os
 import webbrowser
 from flask import Flask, send_from_directory
@@ -61,10 +62,13 @@ def create_app():
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
     def serve_frontend(path):
-        """Serve the built React app and 3D lab. SPA fallback to index.html."""
-        if path and os.path.exists(os.path.join(dist_dir, path)):
-            return send_from_directory(dist_dir, path)
-        return send_from_directory(dist_dir, "index.html")
+                """Serve the built React app and 3D lab. SPA fallback to index.html."""
+                if path.startswith("api/"):
+                    from flask import abort
+                    abort(404)
+                if path and os.path.exists(os.path.join(dist_dir, path)):
+                    return send_from_directory(dist_dir, path)
+                return send_from_directory(dist_dir, "index.html")
 
     return app
 

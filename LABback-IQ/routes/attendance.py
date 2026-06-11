@@ -200,3 +200,15 @@ def _generate_log(s: dict) -> dict:
         "total": len(s["reg_numbers"]),
         "events": s["events"],
     }
+# ── Student lookup (for session creation form) ──────────────────────
+@attendance_bp.route('/students', methods=['GET'])
+def get_students():
+    department = request.args.get('department', 'BTECHDSAI')
+    semester   = int(request.args.get('semester', 2))
+    students   = get_all_students(department, semester)
+    return jsonify({'students': students})
+
+@attendance_bp.route('/departments', methods=['GET'])
+def get_departments_route():
+    from student_db import get_departments
+    return jsonify(get_departments())

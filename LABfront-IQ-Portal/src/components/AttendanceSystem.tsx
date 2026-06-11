@@ -253,10 +253,30 @@ function AdminPanelView({ token, onLogout }: { token: string; onLogout: () => vo
   const [regInput, setRegInput] = useState('');
   const [regNumbers, setRegNumbers] = useState<string[]>([]);
 
+  const [department, setDepartment] = useState('BTECHDSAI');
+const [semester, setSemester] = useState('2');
+const [dbStudents, setDbStudents] = useState<{enrollment: string; name: string}[]>([]);
+const [loadingStudents, setLoadingStudents] = useState(false);
+
   const headers = { 'Content-Type': 'application/json', 'X-Admin-Token': token };
 
   const loadSessions = useCallback(async () => {
     try {
+      useEffect(() => {
+  const loadStudents = async () => {
+    setLoadingStudents(true);
+    try {
+      const res = await fetch(`/api/students?department=${department}&semester=${semester}`);
+      const data = await res.json();
+      if (res.ok) {
+        setDbStudents(data.students);
+        setRegNumbers(data.students.map((s: any) => s.enrollment));
+      }
+    } catch {}
+    finally { setLoadingStudents(false); }
+  };
+  loadStudents();
+}, [department, semester]);
       const res = await fetch('/api/admin/session/list', { headers });
       const data = await res.json();
       if (res.ok) setSessions(data.sessions);
@@ -440,28 +460,40 @@ function AdminPanelView({ token, onLogout }: { token: string; onLogout: () => vo
           </div>
 
           <div>
-            <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">Student Registration Numbers</label>
-            <div className="flex gap-2">
-              <input value={regInput} onChange={(e) => setRegInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && addReg()}
-                placeholder="e.g. 22BCE001 then press Enter"
-                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50"
-              />
-              <button onClick={addReg} className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-xl transition-colors">
-                <Plus size={18} />
-              </button>
-            </div>
-            {regNumbers.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-3">
-                {regNumbers.map((r) => (
-                  <span key={r} className="flex items-center gap-1.5 bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs px-3 py-1.5 rounded-lg">
-                    {r}
-                    <button onClick={() => setRegNumbers(regNumbers.filter((x) => x !== r))} className="hover:text-red-400 transition-colors"><XCircle size={12} /></button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
+  <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">Department</label>
+  <select value={department} onChange={(e) => setDepartment(e.target.value)}
+    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500/50"
+  >
+    <option value="BTECHDSAI" className="bg-gray-900">BTech DS&AI</option>
+    <option value="BTECHCSE" className="bg-gray-900">BTech CSE</option>
+  </select>
+</div>
+<div>
+  <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">Semester</label>
+  <select value={semester} onChange={(e) => setSemester(e.target.value)}
+    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500/50"
+  >
+    <option value="1" className="bg-gray-900">1st Semester</option>
+    <option value="2" className="bg-gray-900">2nd Semester</option>
+  </select>
+</div>
+<div>
+  <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">
+    Students {loadingStudents ? '(Loading...)' : `(${dbStudents.length} loaded)`}
+  </label>
+  <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 max-h-40 overflow-y-auto space-y-1">
+    {dbStudents.length === 0 && (
+      <p className="text-slate-500 text-sm">No students found.</p>
+    )}
+    {dbStudents.map((s) => (
+      <div key={s.enrollment} className="flex items-center justify-between text-sm">
+        <span className="text-slate-300 font-mono">{s.enrollment}</span>
+        <span className="text-slate-400 truncate ml-2">{s.name}</span>
+      </div>
+    ))}
+  </div>
+  <p className="text-xs text-slate-600 mt-1">Auto-loaded from university records</p>
+</div>
 
           <motion.button
             whileTap={{ scale: 0.97 }}
