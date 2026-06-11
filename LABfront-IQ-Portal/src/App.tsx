@@ -51,20 +51,20 @@ export default function App() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           >
             {activeTab === 'contact' ? (
-  <ContactPage />
-) : activeTab === 'attendance' ? (
-  <div className="fixed inset-0 bg-[#070B14] overflow-y-auto z-[999]">
-  <AttendanceSystem
- onLabUnlock={(sessionId) => {
-  setActiveTab('home');
-  setTimeout(() => setLabOpen(true), 300);
-}}
-/>
-</div>
-) : (
+              <ContactPage />
+            ) : activeTab === 'attendance' ? (
+              <div className="fixed inset-0 bg-[#070B14] overflow-y-auto z-[999]">
+                <AttendanceSystem
+                  onLabUnlock={(sessionId) => {
+                    setActiveTab('home');
+                    setTimeout(() => setLabOpen(true), 300);
+                  }}
+                />
+              </div>
+            ) : (
               <LandingPage view={activeTab === 'home' ? 'home' : activeTab} />
             )}
           </motion.div>
@@ -73,8 +73,8 @@ export default function App() {
             key="lab"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
             <LabStudio />
           </motion.div>

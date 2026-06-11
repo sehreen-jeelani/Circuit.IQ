@@ -219,7 +219,13 @@ export default function LandingPage({ view = 'home' }: { view?: 'home' | 'experi
   const blurText = useTransform(scrollY, [0, 600], ["blur(0px)", "blur(10px)"]);
 
   useEffect(() => {
-    const lenis = new Lenis();
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // ultra-smooth exponential ease-out
+      wheelMultiplier: 0.9,
+      touchMultiplier: 1.2,
+      infinite: false,
+    });
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -263,7 +269,13 @@ export default function LandingPage({ view = 'home' }: { view?: 'home' | 'experi
                     <motion.div
                       key={exp.id}
                       layoutId={`exp-card-${exp.id}`}
-                      className="p-6 rounded-2xl border border-slate-200/80 dark:border-white/[0.06] bg-white/90 dark:bg-white/[0.03] backdrop-blur-xl hover:border-indigo-400/40 dark:hover:border-indigo-400/20 transition-all duration-300 flex flex-col justify-between group hover:shadow-xl hover:shadow-indigo-500/[0.07] dark:hover:shadow-indigo-500/[0.04] text-left hover:-translate-y-0.5 relative overflow-hidden"
+                      className="p-6 rounded-2xl border border-slate-200/80 dark:border-white/[0.06] bg-white/90 dark:bg-white/[0.03] backdrop-blur-xl flex flex-col justify-between group text-left relative overflow-hidden"
+                      whileHover={{
+                        y: -5,
+                        borderColor: 'rgba(129, 140, 248, 0.35)',
+                        boxShadow: '0 20px 25px -5px rgba(99, 102, 241, 0.08), 0 10px 10px -5px rgba(99, 102, 241, 0.04)'
+                      }}
+                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                     >
                       <div className="flex flex-col gap-2">
                         <div className="flex justify-between items-start">

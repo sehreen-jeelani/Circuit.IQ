@@ -587,7 +587,7 @@ function GridLogoScene({ progressRef }: { progressRef: React.MutableRefObject<{v
         trigger: "#simulation-section",
         start: "top bottom",
         end: "center center",
-        scrub: 0.2,
+        scrub: 0.8,
       }
     });
 
@@ -603,7 +603,7 @@ function GridLogoScene({ progressRef }: { progressRef: React.MutableRefObject<{v
             trigger: "#simulation-section",
             start: "top bottom",
             end: "center center",
-            scrub: 0.2,
+            scrub: 0.8,
           }
         }
       );
@@ -643,7 +643,7 @@ function GridLogoScene({ progressRef }: { progressRef: React.MutableRefObject<{v
       let rawEase = delayedProgress === 1 ? 1 : (delayedProgress < 0.5 ? 4 * delayedProgress * delayedProgress * delayedProgress : 1 - Math.pow(-2 * delayedProgress + 2, 3) / 2);
       
       // Snap to 1 early to prevent micro-jiggles and vibration when near the end of the scroll
-      let easeProgress = rawEase > 0.95 ? 1 : rawEase;
+      let easeProgress = rawEase > 0.99 ? 1 : rawEase;
 
       let targetX = comp.endPos[0];
       let targetY = comp.endPos[1];
@@ -729,7 +729,7 @@ function Rig({ progressRef }: { progressRef: React.MutableRefObject<{value: numb
     const targetY = baseCamY + mouse.y * mouseMultY;
     const targetZ = baseCamZ;
 
-    camera.position.lerp(vec.set(targetX, targetY, targetZ), 0.05);
+    camera.position.lerp(vec.set(targetX, targetY, targetZ), 0.035);
     camera.lookAt(target);
   });
 }
