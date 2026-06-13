@@ -269,15 +269,16 @@ const experiments = {
   ohms: {
     name: "Ohm's Law Verification",
     aim: "Verify the relation between V, I, and R in a DC circuit.",
-    apparatus: "DC Power Supply (0-30V), Resistor (100Ω), Ammeter, Voltmeter, Breadboard.",
+    apparatus: "DC Power Supply (0-30V), Resistor (100Ω), Ammeter, Voltmeter, Breadboard, connecting wires.",
     req: ['source', 'resistor'],
     steps: [
-      { id: 1, text: "Place the ceramic resistor horizontally between rows C and D." },
-      { id: 2, text: "Mount the DC power supply and wire positive terminal to resistor start." },
-      { id: 3, text: "Wire ammeter in series, voltmeter in parallel across resistor." },
-      { id: 4, text: "Click Initialize and record multiple data points using the graph panel." }
+      { id: 1, text: "Place the 100Ω ceramic resistor horizontally across the breadboard terminal strips." },
+      { id: 2, text: "Connect the positive terminal of the DC Power Supply to the start pin of the resistor." },
+      { id: 3, text: "Wire the Ammeter in series and the Voltmeter in parallel across the resistor." },
+      { id: 4, text: "Connect the resistor/ammeter loop back to the negative terminal (GND) of the power supply." },
+      { id: 5, text: "Click Initialize, adjust voltage from 0V to 15V, and record data points using the graph panel." }
     ],
-    theory: "<h3>Ohm's Law</h3><p>Current is directly proportional to voltage and inversely proportional to resistance: V = IR.</p>",
+    theory: "<h3>Ohm's Law</h3><p>At its core, Ohm's Law describes the fundamental relationship between Voltage, Current, and Resistance in an electrical circuit. Named after Georg Simon Ohm, the law states that the current flowing through a conductor is directly proportional to the voltage applied across it, provided all physical conditions and temperature remain constant: <b>V = I × R</b>.</p><p><b>Microscopic View:</b> In a conductor, free electrons drift under an applied electric field. As they drift, they collide with vibrating lattice atoms. These collisions scatter the electrons, creating resistance and dissipating electrical energy as heat (Joule heating). If temperature increases, lattice vibrations increase, leading to more collisions and higher resistance. Hence, the temperature must remain constant to maintain linearity.</p>",
     formulas: [
       { name: "Ohm's Law", expr: "V = I × R" },
       { name: "Current", expr: "I = V / R" }
@@ -285,41 +286,47 @@ const experiments = {
   },
   kvl: {
     name: "Kirchhoff's Voltage Law",
-    aim: "Verify algebraic sum of voltages in closed loop is zero.",
-    apparatus: "DC Supply, Resistors, Multimeters, Wires.",
+    aim: "Verify that the algebraic sum of voltages in a closed series loop is zero.",
+    apparatus: "DC Power Supply, Resistors (100Ω, 200Ω), Voltmeters, Breadboard, Wires.",
     req: ['source', 'resistor'],
     steps: [
-      { id: 1, text: "Form a closed loop with DC supply and two resistors in series." },
-      { id: 2, text: "Measure voltage drop across each resistor." },
-      { id: 3, text: "Verify that their sum matches the supply voltage." }
+      { id: 1, text: "Place two resistors (100Ω and 200Ω) in series on the breadboard." },
+      { id: 2, text: "Connect the positive supply terminal to the first resistor, and the second resistor's end to GND." },
+      { id: 3, text: "Connect Voltmeters in parallel across each resistor to measure V1 and V2." },
+      { id: 4, text: "Connect a Voltmeter across the supply to measure Vs." },
+      { id: 5, text: "Power the circuit and record values. Verify that the sum of the drops equals the source voltage (Vs = V1 + V2)." }
     ],
-    theory: "<h3>Kirchhoff's Voltage Law (KVL)</h3><p>Sum of potential drops in any closed loop is zero: ΣV = 0.</p>",
+    theory: "<h3>Kirchhoff's Voltage Law (KVL)</h3><p>Kirchhoff's Voltage Law states that the algebraic sum of all potential differences (voltages) around any closed loop in a circuit must equal zero: <b>ΣV = 0</b>. KVL is a direct consequence of the <b>Conservation of Energy</b>.</p><p>As charge moves through a closed loop, the energy gained at voltage sources must equal the energy dissipated across passive elements (resistors). Because the electrostatic field is conservative, returning to the starting point results in zero net change in electrical potential.</p>",
     formulas: [{ name: "KVL Sum", expr: "Vs - V1 - V2 = 0" }]
   },
   kcl: {
     name: "Kirchhoff's Current Law",
-    aim: "Verify current entering junction equals current exiting.",
-    apparatus: "DC Supply, Resistors, Ammeters.",
+    aim: "Verify that the total current entering a junction equals the sum of currents leaving it.",
+    apparatus: "DC Power Supply, Resistors (100Ω, 200Ω), Ammeters, Breadboard, Wires.",
     req: ['source', 'resistor'],
     steps: [
-      { id: 1, text: "Connect two parallel resistors branching from a single junction." },
-      { id: 2, text: "Measure current in the main branch and each sub-branch." },
-      { id: 3, text: "Verify main current equals the sum of branch currents." }
+      { id: 1, text: "Connect the entrance leads of two parallel resistors to a single junction node on the breadboard." },
+      { id: 2, text: "Connect the exit leads of both resistors back to the negative ground rail." },
+      { id: 3, text: "Connect an Ammeter in series before the junction to measure the total current (I_total)." },
+      { id: 4, text: "Connect Ammeters in series with each parallel branch to measure branch currents (I1 and I2)." },
+      { id: 5, text: "Adjust the source voltage and record current readings. Verify that I_total = I1 + I2." }
     ],
-    theory: "<h3>Kirchhoff's Current Law (KCL)</h3><p>Nodal charge conservation dictates that incoming current matches outgoing current: ΣI_in = ΣI_out.</p>",
+    theory: "<h3>Kirchhoff's Current Law (KCL)</h3><p>Kirchhoff's Current Law states that the total current entering a junction node must exactly equal the total current leaving that node: <b>ΣI_in = ΣI_out</b>. This is a direct consequence of the <b>Conservation of Charge</b>.</p><p>Since electric charge cannot accumulate or disappear at a node, the sum of all currents meeting at a junction is zero. This principle is fundamental for analyzing parallel circuits and nodal network analysis.</p>",
     formulas: [{ name: "KCL Sum", expr: "I_total = I1 + I2" }]
   },
   rc_rl_rlc: {
     name: "LCR AC Impedance Analysis",
-    aim: "Study total impedance and phase angle in LCR circuits.",
-    apparatus: "AC Generator, Resistor, Inductor, Capacitor.",
+    aim: "Study total impedance and phase angle in LCR series circuits.",
+    apparatus: "AC Function Generator, Resistor, Inductor, Capacitor, Oscilloscope.",
     req: ['source', 'resistor', 'inductor', 'capacitor'],
     steps: [
-      { id: 1, text: "Place R, L, and C in a single series path." },
-      { id: 2, text: "Wire them to the AC supply." },
-      { id: 3, text: "Observe reactances and phase angle change with frequency." }
+      { id: 1, text: "Place a resistor, inductor, and capacitor in series on the breadboard." },
+      { id: 2, text: "Connect the series network to the AC function generator." },
+      { id: 3, text: "Connect oscilloscope probes across the source and the components to observe amplitude and phase shift." },
+      { id: 4, text: "Vary the generator frequency from 10Hz to 1kHz." },
+      { id: 5, text: "Record voltage, current, and phase difference at various frequencies to observe reactance variation." }
     ],
-    theory: "<h3>LCR AC Circuit</h3><p>AC resistance is called impedance Z. It incorporates inductive XL and capacitive XC reactances.</p>",
+    theory: "<h3>LCR AC Circuit</h3><p>In AC circuits containing resistors (R), inductors (L), and capacitors (C), the opposition to current is called <b>Impedance (Z)</b>. It accounts for both resistance and frequency-dependent reactances (XL and XC): <b>Z = √[R² + (XL - XC)²]</b>.</p><p>Inductive reactance XL = 2πfL causes voltage to lead current by 90°, while capacitive reactance XC = 1/(2πfC) causes voltage to lag current by 90°. The phase angle φ between total voltage and current is given by: <b>tan(φ) = (XL - XC) / R</b>.</p>",
     formulas: [
       { name: "Impedance", expr: "Z = √[R² + (XL-XC)²]" },
       { name: "Resonance", expr: "f₀ = 1 / (2π√(LC))" }
@@ -327,107 +334,131 @@ const experiments = {
   },
   lcr: {
     name: "Series LCR Resonance",
-    aim: "Determine resonant frequency of LCR series circuit.",
-    apparatus: "AC Generator, Resistor, Inductor, Capacitor.",
+    aim: "Determine the resonant frequency of an LCR series circuit.",
+    apparatus: "AC Function Generator, Resistor, Inductor, Capacitor, Ammeter.",
     req: ['source', 'resistor', 'inductor', 'capacitor'],
     steps: [
-      { id: 1, text: "Assemble Series LCR path and connect AC supply." },
-      { id: 2, text: "Vary frequency and find point of maximum current." }
+      { id: 1, text: "Connect a resistor, inductor, and capacitor in series with the AC power supply." },
+      { id: 2, text: "Connect an AC ammeter in series to measure circuit current." },
+      { id: 3, text: "Vary the AC frequency in steps around the expected theoretical resonant frequency f₀." },
+      { id: 4, text: "Record the current for each frequency. Locate the frequency where current is maximized." },
+      { id: 5, text: "Plot frequency vs current to observe the sharp resonance curve." }
     ],
-    theory: "<h3>Series Resonance</h3><p>Resonance occurs when XL = XC, yielding Z = R (minimum impedance) and maximum current.</p>",
+    theory: "<h3>Series Resonance</h3><p>Series resonance occurs in an LCR circuit when the inductive reactance equals the capacitive reactance (<b>XL = XC</b>). At this specific frequency, their reactances cancel each other out, making the circuit purely resistive.</p><p>Under resonance, the impedance drops to its minimum value (<b>Z = R</b>), and the current reaches its maximum value. The resonant frequency is calculated as: <b>f₀ = 1 / (2π√(LC))</b>. The phase angle φ becomes 0°, meaning voltage and current are in phase.</p>",
     formulas: [{ name: "Resonance Freq", expr: "f₀ = 1 / (2π√(LC))" }]
   },
   rc: {
     name: "RC Time Constant",
-    aim: "Measure transient capacitor charging rate.",
-    apparatus: "DC Supply, Resistor, Capacitor, Oscilloscope.",
+    aim: "Measure the transient capacitor charging rate and verify the RC time constant.",
+    apparatus: "DC Power Supply, Resistor, Capacitor, Oscilloscope, Switch.",
     req: ['source', 'resistor', 'capacitor'],
     steps: [
-      { id: 1, text: "Place Resistor and Capacitor in series to DC source." },
-      { id: 2, text: "Observe exponential curve on scope when powered." }
+      { id: 1, text: "Connect a resistor and a capacitor in series across a DC voltage source." },
+      { id: 2, text: "Connect an oscilloscope probe across the capacitor to capture the voltage transient." },
+      { id: 3, text: "Close the switch to start the charging process." },
+      { id: 4, text: "Record voltage values at different time intervals to calculate the experimental time constant." }
     ],
-    theory: "<h3>RC Charging</h3><p>Time constant τ = RC defines charging rate to 63.2% capacity.</p>",
+    theory: "<h3>RC Transient Response</h3><p>When a DC voltage is applied to an RC series circuit, the capacitor does not charge instantly. Instead, its voltage increases exponentially: <b>V_C(t) = V_s(1 - e^(-t/τ))</b>.</p><p>The <b>time constant (τ = RC)</b> represents the time required for the capacitor voltage to reach approximately <b>63.2%</b> of its maximum value. During discharge, it drops to 36.8% in one time constant. After 5τ, the capacitor is considered fully charged (~99.3%).</p>",
     formulas: [{ name: "Time Constant", expr: "τ = R × C" }]
   },
   series_parallel: {
     name: "Series & Parallel Loads",
-    aim: "Compare equivalent resistors network load values.",
-    apparatus: "Resistors, Multimeters, Power Supply.",
+    aim: "Compare equivalent resistances of series and parallel resistor networks.",
+    apparatus: "DC Supply, Resistors, Multimeter, Breadboard.",
     req: ['source', 'resistor'],
     steps: [
-      { id: 1, text: "Measure total equivalent resistance in series and parallel links." }
+      { id: 1, text: "Place two resistors on the breadboard." },
+      { id: 2, text: "Connect them in series and measure the total resistance using a multimeter." },
+      { id: 3, text: "Re-arrange the resistors in parallel and measure the total resistance." },
+      { id: 4, text: "Connect the networks to a DC supply and measure current/voltage to verify equivalent resistance via Ohm's law." }
     ],
-    theory: "<h3>Resistor Combinations</h3><p>Series combines additively, Parallel combines reciprocally.</p>",
+    theory: "<h3>Resistor Combinations</h3><p>In a <b>series</b> combination, the same current flows through each resistor, and the total resistance is the sum of individual resistances: <b>R_eq = R1 + R2 + ...</b>.</p><p>In a <b>parallel</b> combination, the voltage across each resistor is the same, and the reciprocal of the total resistance is the sum of the reciprocals: <b>1/R_eq = 1/R1 + 1/R2 + ...</b>. Parallel connections always yield an equivalent resistance smaller than the smallest individual resistor.</p>",
     formulas: [{ name: "Parallel Sum", expr: "1/R_eq = 1/R1 + 1/R2" }]
   },
   wheatstone: {
     name: "Wheatstone Bridge Balance",
-    aim: "Measure unknown resistance via bridge balancing.",
-    apparatus: "Wheatstone resistor bridge array, galvanometer.",
+    aim: "Measure an unknown resistance using a balanced Wheatstone Bridge.",
+    apparatus: "Wheatstone Bridge array (resistors R1, R2, R3, Rx), Galvanometer, DC Power Supply.",
     req: ['source', 'resistor'],
     steps: [
-      { id: 1, text: "Adjust R3 slider until bridge galvanometer indicates zero." }
+      { id: 1, text: "Set up the Wheatstone bridge layout on the breadboard with resistors R1, R2, variable resistor R3, and unknown resistor Rx." },
+      { id: 2, text: "Connect a galvanometer across the central nodes." },
+      { id: 3, text: "Connect a DC supply to the opposite outer nodes of the diamond." },
+      { id: 4, text: "Adjust the variable resistor R3 slider until the galvanometer reading is exactly zero (null deflection)." },
+      { id: 5, text: "Record the resistance values at balance and calculate the unknown resistance Rx." }
     ],
-    theory: "<h3>Wheatstone Bridge</h3><p>Bridge is balanced when voltage ratios are equal, nulling detector current.</p>",
+    theory: "<h3>Wheatstone Bridge</h3><p>A Wheatstone Bridge is an electrical circuit used to measure an unknown electrical resistance by balancing two legs of a bridge circuit. It consists of four resistors arranged in a diamond shape.</p><p>When the bridge is balanced, no current flows through the galvanometer in the center branch, meaning the potentials at the detector nodes are equal. The balance condition is: <b>Rx = R3 × (R2 / R1)</b>.</p>",
     formulas: [{ name: "Balance", expr: "Rx = R3 × (R2 / R1)" }]
   },
   faraday: {
     name: "Faraday's Induction Law",
-    aim: "Induce emf via moving magnetic fields.",
-    apparatus: "Magnet, Coil, Voltmeter, Optical Bench.",
+    aim: "Verify Faraday's Law of Electromagnetic Induction by inducing emf in a coil.",
+    apparatus: "Bar Magnet, Coil of Wire, Voltmeter/Galvanometer, Speed Controller.",
     req: [],
     steps: [
-      { id: 1, text: "Animate magnet motion using the velocity slider." },
-      { id: 2, text: "Observe the generated voltage pulses." }
+      { id: 1, text: "Set up a multi-turn coil connected to a sensitive center-zero voltmeter." },
+      { id: 2, text: "Move the bar magnet towards the coil and observe the direction and magnitude of the induced voltage pulse." },
+      { id: 3, text: "Vary the speed of movement using the slider and record the peak induced voltage." },
+      { id: 4, text: "Repeat the motion in the opposite direction and observe the polarities." }
     ],
-    theory: "<h3>Faraday's Law</h3><p>Changing magnetic flux induces electromotive force in a conductor loop.</p>",
+    theory: "<h3>Faraday's Law</h3><p>Faraday's Law of Electromagnetic Induction states that a change in magnetic flux passing through a conducting loop induces an electromotive force (EMF) in the loop: <b>E = -N (ΔΦ / Δt)</b>, where N is the number of turns and Φ is the magnetic flux.</p><p>The magnitude of the induced voltage is directly proportional to the rate of change of magnetic flux. Movement of a magnetic field relative to a stationary conductor causes a flow of current.</p>",
     formulas: [{ name: "EMF", expr: "E = -N (ΔΦ / Δt)" }]
   },
   lenz: {
     name: "Lenz's Law Demonstration",
-    aim: "Study induced magnetic field polarity directions.",
-    apparatus: "Magnet, Coil, Voltmeter.",
+    aim: "Demonstrate Lenz's Law and the conservation of energy in electromagnetic induction.",
+    apparatus: "Bar Magnet, Conducting Coil, Voltmeter, Motion Slider.",
     req: [],
     steps: [
-      { id: 1, text: "Observe direction of induced voltage as magnet enters and exits coil." }
+      { id: 1, text: "Place a copper coil connected to a voltmeter." },
+      { id: 2, text: "Push the North pole of a magnet into the coil and note the direction of the induced current (it creates an opposing North pole)." },
+      { id: 3, text: "Pull the North pole out and observe that the induced current reverses (creating an attracting South pole)." },
+      { id: 4, text: "Measure and record induced voltages at various insertion velocities to verify energy conservation." }
     ],
-    theory: "<h3>Lenz's Law</h3><p>Induced current direction opposes the magnetic flux change that created it.</p>",
+    theory: "<h3>Lenz's Law</h3><p>Lenz's Law states that the direction of an induced current will always be such that it creates a magnetic field that opposes the change in magnetic flux that produced it. This is expressed by the negative sign in Faraday's Law: <b>E = -N(dΦ/dt)</b>.</p><p>This law is a direct consequence of the <b>Conservation of Energy</b>. If the induced field assisted the change, it would create an infinite energy loop, violating thermodynamic principles.</p>",
     formulas: [{ name: "Flux opposition", expr: "Direction opposes dΦ/dt" }]
   },
   solenoid: {
     name: "Solenoid Magnetic Field",
-    aim: "Measure B-field inside current-carrying solenoid.",
-    apparatus: "Solenoid coil, Gaussmeter.",
+    aim: "Measure the magnetic field strength inside a current-carrying solenoid.",
+    apparatus: "Solenoid Coil, Variable DC Power Supply, Gaussmeter Probe, Ammeter.",
     req: [],
     steps: [
-      { id: 1, text: "Adjust current and turns parameters to calculate magnetic flux density." }
+      { id: 1, text: "Connect a solenoid to a variable DC supply in series with an ammeter." },
+      { id: 2, text: "Position the Gaussmeter probe inside the center of the solenoid." },
+      { id: 3, text: "Adjust current and turns parameters to calculate magnetic flux density." },
+      { id: 4, text: "Record the magnetic field reading (B) in Gauss or Tesla." }
     ],
-    theory: "<h3>Solenoid Field</h3><p>Uniform B field inside depends on turns density and current.</p>",
+    theory: "<h3>Solenoid Field</h3><p>A solenoid is a long coil of wire wrapped in a helix. When an electric current passes through it, a nearly uniform magnetic field is created inside the coil, directed along its axis.</p><p>The magnetic flux density (B) inside a long, ideal solenoid is given by: <b>B = μ₀ × (N / L) × I</b>, where μ₀ is the permeability of free space, N is the number of turns, L is the length of the solenoid, and I is the current. The field outside is extremely weak.</p>",
     formulas: [{ name: "B Field", expr: "B = μ₀ n I" }]
   },
   transformer: {
     name: "AC Transformer Ratio",
-    aim: "Study voltage conversion ratios of transformers.",
-    apparatus: "AC primary coil, secondary coupling coil.",
+    aim: "Study the voltage and current conversion ratios in an AC transformer.",
+    apparatus: "AC Source, Primary and Secondary Coils, AC Voltmeters.",
     req: [],
     steps: [
-      { id: 1, text: "Vary primary vs secondary turns ratio and observe output voltage changes." }
+      { id: 1, text: "Connect the primary coil of the transformer to an AC voltage source." },
+      { id: 2, text: "Connect voltmeters to both the primary (input) and secondary (output) terminals." },
+      { id: 3, text: "Vary the turns ratio (Np and Ns) on the control panel." },
+      { id: 4, text: "Observe and record voltage conversion values to verify the turns law." }
     ],
-    theory: "<h3>Transformers</h3><p>Inductive coupling scales voltage based on coil turn ratios.</p>",
+    theory: "<h3>Transformers</h3><p>A transformer is a static device that transfers electrical energy between circuits through electromagnetic induction. It consists of primary and secondary coils wound on a common ferromagnetic core.</p><p>An alternating current in the primary coil creates a changing magnetic flux in the core, inducing an AC voltage in the secondary coil. The relation is dictated by the turns ratio: <b>Vs / Vp = Ns / Np</b>. Step-up transformers increase voltage (Ns > Np), while step-down transformers decrease it (Ns < Np).</p>",
     formulas: [{ name: "Turns Law", expr: "Vs / Vp = Ns / Np" }]
   },
   diode_iv: {
     name: "Diode I-V Characteristics",
-    aim: "Verify the I-V characteristics of a semiconductor diode (PN Junction).",
-    apparatus: "DC Power Supply (0-5V), Diode (1N4007), Resistor (100Ω), Ammeter, Voltmeter, Breadboard.",
+    aim: "Verify the forward and reverse bias I-V characteristics of a PN junction diode.",
+    apparatus: "DC Power Supply, PN Junction Diode (1N4007), Resistor (100Ω), Voltmeters, Ammeter, Breadboard.",
     req: ['source', 'resistor', 'diode', 'ammeter', 'voltmeter'],
     steps: [
-      { id: 1, text: "Place the PN Junction diode and series resistor on the breadboard." },
-      { id: 2, text: "Connect DC power supply positive to resistor start." },
-      { id: 3, text: "Connect voltmeter in parallel with the diode to measure barrier voltage." },
-      { id: 4, text: "Connect ammeter in series to measure forward bias current." }
+      { id: 1, text: "Mount a silicon diode and a series current-limiting resistor on the breadboard." },
+      { id: 2, text: "Connect the positive terminal of a variable DC supply to the diode anode (forward bias)." },
+      { id: 3, text: "Place a voltmeter in parallel with the diode to measure barrier voltage (V_d)." },
+      { id: 4, text: "Place an ammeter in series to measure diode current (I_d)." },
+      { id: 5, text: "Vary the input voltage and record current and voltage to plot the exponential curve." }
     ],
-    theory: "<h3>Diode Characteristics</h3><p>A diode conducts current primarily in one direction. In forward bias, current increases exponentially after overcoming the barrier potential (~0.7V for Silicon).</p>",
+    theory: "<h3>Diode Characteristics</h3><p>A semiconductor diode is a PN junction that allows current to flow easily in one direction (forward bias) but blocks it in the opposite direction (reverse bias). The I-V relation is given by the Shockley equation: <b>I = Is * (e^(Vd / n*Vt) - 1)</b>.</p><p>In forward bias, current remains negligible until voltage overcomes the internal junction barrier potential (approx 0.7V for silicon). Above this barrier, current increases exponentially. In reverse bias, only a tiny leakage current flows until breakdown voltage is reached.</p>",
     formulas: [
       { name: "Shockley Eq", expr: "I = I_s * (e^(V_d / n V_t) - 1)" },
       { name: "Barrier Potential", expr: "V_barrier ≈ 0.7 V" }
@@ -436,14 +467,15 @@ const experiments = {
   voltage_divider: {
     name: "Voltage & Current Divider",
     aim: "Verify the voltage division rule in series and current division in parallel circuits.",
-    apparatus: "DC Power Supply (0-30V), Resistors (100Ω, 200Ω), Wires, Breadboard.",
+    apparatus: "DC Power Supply, Resistors (100Ω, 200Ω), Multimeters, Breadboard, Wires.",
     req: ['source', 'resistor'],
     steps: [
-      { id: 1, text: "Place two resistors in series across the power rails." },
-      { id: 2, text: "Measure output voltage across the second resistor." },
-      { id: 3, text: "Verify the ratio corresponds to R2 / (R1 + R2)." }
+      { id: 1, text: "Connect two resistors (100Ω and 200Ω) in series across a DC source." },
+      { id: 2, text: "Measure the voltage drop across the second resistor and compare it with the theoretical voltage divider equation." },
+      { id: 3, text: "Re-wire the resistors in parallel across the supply and measure the current in each branch." },
+      { id: 4, text: "Record and verify that currents distribute inversely to resistance values." }
     ],
-    theory: "<h3>Voltage Divider</h3><p>Voltage distributes across series components in proportion to their resistances: V_out = V_in * [R2 / (R1 + R2)].</p>",
+    theory: "<h3>Voltage Divider</h3><p>The <b>Voltage Divider Rule</b> states that the voltage drop across any resistor in a series circuit is proportional to its resistance relative to the total resistance: <b>V_out = V_in * (R2 / (R1 + R2))</b>.</p><p>The <b>Current Divider Rule</b> states that the current entering a parallel junction divides in inverse proportion to the branch resistances: <b>I1 = I_total * (R2 / (R1 + R2))</b>.</p>",
     formulas: [
       { name: "Voltage Division", expr: "V_out = V_in * (R2 / (R1 + R2))" },
       { name: "Current Division", expr: "I1 = I_total * (R2 / (R1 + R2))" }
@@ -452,14 +484,15 @@ const experiments = {
   planck_led: {
     name: "Planck's Constant using LEDs",
     aim: "Determine Planck's constant by measuring the turn-on voltage of different colored LEDs.",
-    apparatus: "DC Supply (0-5V), Red/Green/Blue/Yellow LEDs, Resistor (150Ω), Breadboard.",
+    apparatus: "DC Supply, LEDs (Red, Green, Blue, Yellow), Resistor, Breadboard, Voltmeter, Ammeter.",
     req: ['source', 'resistor', 'led'],
     steps: [
-      { id: 1, text: "Connect the selected LED in series with a 150Ω resistor." },
-      { id: 2, text: "Slowly increase voltage until the LED just starts to glow." },
-      { id: 3, text: "Record threshold turn-on voltage V_d for each color wavelength λ." }
+      { id: 1, text: "Place a colored LED in series with a 150Ω resistor on the breadboard." },
+      { id: 2, text: "Connect a voltmeter across the LED terminals and an ammeter in series." },
+      { id: 3, text: "Slowly increase the supply voltage until the LED just begins to glow and conduct current." },
+      { id: 4, text: "Record the threshold voltage V_th and the corresponding wavelength for Red, Yellow, Green, and Blue LEDs." }
     ],
-    theory: "<h3>Planck's Constant via LEDs</h3><p>The energy of emitted photons is E = h*c/λ, which equals the energy barrier e*V_th. Thus, h = (e * V_th * λ) / c.</p>",
+    theory: "<h3>Planck's Constant via LEDs</h3><p>An LED emits light when electrons recombine with holes across the semiconductor bandgap. The energy of the emitted photon is <b>E = h × c / λ</b>, where h is Planck's constant, c is the speed of light, and λ is the emission wavelength.</p><p>The threshold voltage (V_th) at which the LED starts conducting and emitting light corresponds to this bandgap energy: <b>e × V_th ≈ h × (c / λ)</b>. Measuring V_th for various wavelengths allows us to calculate Planck's constant: <b>h = (e × V_th × λ) / c</b>.</p>",
     formulas: [
       { name: "Planck Relation", expr: "e × V_th = h × ν" },
       { name: "Planck's Constant", expr: "h = (e × V_th × λ) / c" }
@@ -471,24 +504,28 @@ const experiments = {
     apparatus: "Straight conductor rod, variable high-current source, Teslameter probe.",
     req: [],
     steps: [
-      { id: 1, text: "Vary the current slider and observe concentric magnetic field lines." },
-      { id: 2, text: "Adjust the distance probe and record the magnetic field strength B." }
+      { id: 1, text: "Position a straight conductor rod connected to a high-current DC source." },
+      { id: 2, text: "Place a magnetic field sensor probe at a radial distance from the wire." },
+      { id: 3, text: "Increase current and record magnetic field B." },
+      { id: 4, text: "Keep current constant and vary distance r, recording B to verify Biot-Savart's law." }
     ],
-    theory: "<h3>Biot-Savart's Law</h3><p>Magnetic field B around a straight wire is directly proportional to current I and inversely proportional to radial distance r: B = μ₀I / (2πr).</p>",
+    theory: "<h3>Biot-Savart's Law</h3><p>Biot-Savart's Law describes the magnetic field generated by a constant electric current. For a long, straight, current-carrying conductor, the magnetic field strength (B) at a radial distance (r) is given by: <b>B = (μ₀ × I) / (2π × r)</b>.</p><p>The field B is directly proportional to the current I and inversely proportional to the radial distance r from the wire. The magnetic field lines form concentric circles centered on the wire, as described by the right-hand rule.</p>",
     formulas: [
       { name: "Biot-Savart Straight", expr: "B = (μ₀ × I) / (2π × r)" }
     ]
   },
   planck_photocell: {
     name: "Planck's Constant (Photocell)",
-    aim: "Find Planck's constant using photoelectric effect in a vacuum photocell.",
+    aim: "Find Planck's constant using the photoelectric effect in a vacuum photocell.",
     apparatus: "Monochromatic light source, vacuum phototube, stopping voltage supply.",
     req: [],
     steps: [
-      { id: 1, text: "Vary light wavelength and measure stopping voltage Vs where current drops to zero." },
-      { id: 2, text: "Plot Vs vs 1/λ and find the slope to compute h/e." }
+      { id: 1, text: "Align the light source to shine on the vacuum photocell emitter cathode." },
+      { id: 2, text: "Apply a retarding stopping voltage Vs using the DC supply." },
+      { id: 3, text: "Select a wavelength and adjust Vs until the photocurrent drops to zero." },
+      { id: 4, text: "Repeat for multiple wavelengths and use the slope of Vs vs frequency to compute Planck's constant." }
     ],
-    theory: "<h3>Planck's Photocell Method</h3><p>Stopping voltage Vs prevents the highest energy electrons from reaching the collector: e*Vs = h*f - Φ.</p>",
+    theory: "<h3>Planck's Photocell Method</h3><p>The photoelectric effect is the emission of electrons when light shines on a metal surface. According to Einstein's equation: <b>e × Vs = h × f - Φ</b>, where Vs is the stopping voltage, f is the light frequency, h is Planck's constant, and Φ is the metal's work function.</p><p>The stopping voltage Vs is the retarding potential that drops the photocurrent to zero by repelling even the most energetic electrons. Plotting Vs vs frequency f yields a straight line with slope <b>h/e</b>, allowing calculation of h.</p>",
     formulas: [
       { name: "Einstein equation", expr: "e × Vs = h × f − Φ" }
     ]
@@ -499,203 +536,333 @@ const experiments = {
     apparatus: "Electric blackbody furnace, optical radiation pyrometer.",
     req: [],
     steps: [
-      { id: 1, text: "Increase blackbody furnace temperature and observe radiation spectrum glow." },
-      { id: 2, text: "Measure radiated power output P and confirm relation to T⁴." }
+      { id: 1, text: "Place a blackbody radiation receiver facing the furnace aperture." },
+      { id: 2, text: "Increase the blackbody furnace temperature in steps of 100K." },
+      { id: 3, text: "Record absolute temperature T (K) and measured radiated power P (W)." },
+      { id: 4, text: "Plot Log(P) vs Log(T) to confirm the slope is approximately 4, verifying the T⁴ relation." }
     ],
-    theory: "<h3>Stefan-Boltzmann Law</h3><p>Total power radiated per unit area of a blackbody is proportional to fourth power of absolute temperature: E = σ * ε * A * T⁴.</p>",
+    theory: "<h3>Stefan-Boltzmann Law</h3><p>The Stefan-Boltzmann Law states that the total energy radiated per unit surface area of a blackbody per unit time is directly proportional to the fourth power of its absolute temperature: <b>P = σ × ε × A × T⁴</b>.</p><p>Here, σ is the Stefan-Boltzmann constant (5.6703 × 10⁻⁸ W/m²K⁴), ε is the emissivity of the material, A is the surface area, and T is the temperature in Kelvin. Real objects emit less than ideal blackbodies, scaling with emissivity ε.</p>",
     formulas: [
       { name: "Stefan's Law", expr: "P = σ × ε × A × T⁴" }
     ]
   },
   ideal_gas: {
     name: "Ideal Gas State Equation",
-    aim: "Verify P-V-T thermodynamic relationships.",
-    apparatus: "Confined gas cylinder, piston, manometer.",
+    aim: "Verify P-V-T thermodynamic relationships of an ideal gas.",
+    apparatus: "Confined gas cylinder, piston, manometer, thermometer.",
     req: [],
     steps: [
-      { id: 1, text: "Vary volume and temperature sliders, measuring pressure changes." }
+      { id: 1, text: "Set the volume of the gas chamber using the piston slider." },
+      { id: 2, text: "Set the heater temperature using the thermostat slider." },
+      { id: 3, text: "Record the resulting pressure on the chamber manometer." },
+      { id: 4, text: "Vary volume and temperature independently, verifying that PV/T remains constant." }
     ],
-    theory: "<h3>Gas Laws</h3><p>Gas state connects pressure, volume, temperature, and moles n.</p>",
+    theory: "<h3>Ideal Gas State Equation</h3><p>The state of an ideal gas is defined by its pressure (P), volume (V), absolute temperature (T), and amount of substance in moles (n). These properties are related by the Ideal Gas Law: <b>P × V = n × R × T</b>.</p><p>R is the universal gas constant (8.314 J/mol·K). The law combines Boyle's, Charles's, and Avogadro's laws. It assumes gas molecules do not exert intermolecular forces and behave as point masses undergoing elastic collisions.</p>",
     formulas: [{ name: "State Equation", expr: "P V = n R T" }]
   },
   boyle: {
     name: "Boyle's Constant Temp Law",
-    aim: "Verify P-V inverse pressure volume relations.",
-    apparatus: "Gas chamber, volume piston.",
+    aim: "Verify P-V inverse pressure-volume relationships at constant temperature.",
+    apparatus: "Gas chamber, volume piston, manometer.",
     req: [],
     steps: [
-      { id: 1, text: "Vary volume slider and confirm P × V constant product." }
+      { id: 1, text: "Select the constant temperature setting on the gas chamber." },
+      { id: 2, text: "Vary the volume slider in steps (e.g. 5L, 4L, 3L, 2L)." },
+      { id: 3, text: "Record the pressure reading from the manometer at each step." },
+      { id: 4, text: "Plot pressure vs 1/Volume and verify the straight-line relationship (P × V = constant)." }
     ],
-    theory: "<h3>Boyle's Law</h3><p>Pressure is inversely proportional to volume at constant temperature.</p>",
+    theory: "<h3>Boyle's Law</h3><p>Boyle's Law states that for a fixed mass of gas at a constant temperature, the volume (V) of the gas is inversely proportional to its pressure (P): <b>P ∝ 1/V</b> or <b>P × V = constant</b>.</p><p>As volume decreases, the gas molecules collide with the chamber walls more frequently, increasing the average pressure exerted. The product of pressure and volume remains constant as long as temperature is stable.</p>",
     formulas: [{ name: "Boyle's", expr: "P1 × V1 = P2 × V2" }]
   },
   charles: {
     name: "Charles's Constant Pres Law",
-    aim: "Verify V-T volume temperature linear relations.",
-    apparatus: "Heated cylinder, movable piston.",
+    aim: "Verify V-T volume-temperature linear relationships at constant pressure.",
+    apparatus: "Heated cylinder, movable piston, temperature controller.",
     req: [],
     steps: [
-      { id: 1, text: "Heat gas chamber and watch piston expand volume linearly." }
+      { id: 1, text: "Select the constant pressure mode on the gas cylinder piston." },
+      { id: 2, text: "Heat the gas chamber in steps of 20K." },
+      { id: 3, text: "Record the temperature and resulting expanded volume at each step." },
+      { id: 4, text: "Verify the linear relationship and plot Volume vs Temperature." }
     ],
-    theory: "<h3>Charles's Law</h3><p>Gas volume is directly proportional to temperature at constant pressure.</p>",
+    theory: "<h3>Charles's Law</h3><p>Charles's Law states that for a fixed mass of gas at constant pressure, the volume (V) of the gas is directly proportional to its absolute temperature (T in Kelvin): <b>V ∝ T</b> or <b>V / T = constant</b>.</p><p>Heating a gas increases the average kinetic energy of its molecules, causing them to move faster and expand the volume to maintain constant pressure against the piston. Absolute zero (-273.15°C) is theoretically the temperature at which gas volume drops to zero.</p>",
     formulas: [{ name: "Charles's", expr: "V1 / T1 = V2 / T2" }]
   },
   specific_heat: {
     name: "Specific Heat Capacity",
-    aim: "Measure copper thermal specific heat.",
-    apparatus: "Calorimeter beaker, thermometer, copper weights.",
+    aim: "Measure copper thermal specific heat using calorimetry.",
+    apparatus: "Calorimeter beaker, thermometer, copper weights, water, heater.",
     req: [],
     steps: [
-      { id: 1, text: "Drop heated metal into calorimeter and measure final mixture temperature." }
+      { id: 1, text: "Set the mass and temperature of the copper block." },
+      { id: 2, text: "Record the initial temperature of the water in the calorimeter (T_w)." },
+      { id: 3, text: "Drop the heated metal block into the calorimeter." },
+      { id: 4, text: "Stir the water and record the final equilibrium mixture temperature (T_f) to calculate specific heat." }
     ],
-    theory: "<h3>Calorimetry</h3><p>Heat lost by metal block equals heat gained by water: Q = mcΔT.</p>",
+    theory: "<h3>Calorimetry</h3><p>The specific heat capacity (c) is the amount of heat required to raise the temperature of 1g of a substance by 1°C. According to the law of conservation of energy: <b>Heat Lost by Metal = Heat Gained by Water + Calorimeter</b>.</p><p>The heat transferred (Q) is given by: <b>Q = m × c × ΔT</b>. By dropping a heated copper block of mass (m_m) and temperature (T_m) into a calorimeter with water (m_w) at room temperature (T_w), the mixture reaches thermal equilibrium at temperature T_f.</p>",
     formulas: [{ name: "Heat Transfer", expr: "Q = m × c × ΔT" }]
   },
   photoelectric: {
     name: "Photoelectric Effect",
-    aim: "Determine stopping voltage vs light wavelength.",
-    apparatus: "Vacuum photo tube, voltage collector source.",
+    aim: "Determine stopping voltage vs light frequency and verify threshold work function.",
+    apparatus: "Vacuum phototube, voltage collector source, monochromatic light generator.",
     req: [],
     steps: [
-      { id: 1, text: "Vary light frequency slider and find threshold work function boundary." }
+      { id: 1, text: "Vary the light frequency and observe when photocurrent begins to flow (above threshold)." },
+      { id: 2, text: "Apply and adjust the stopping voltage until the photocurrent is nullified." },
+      { id: 3, text: "Record light frequency (Hz) and corresponding stopping voltage (V)." },
+      { id: 4, text: "Verify that stopping voltage is independent of light intensity." }
     ],
-    theory: "<h3>Photoelectric</h3><p>Light quanta eject electrons. Energy KE increases linearly with frequency.</p>",
+    theory: "<h3>Photoelectric Effect</h3><p>The photoelectric effect is the emission of electrons from a metal plate when illuminated by light of high frequency. Albert Einstein explained this using light quanta (photons). The maximum kinetic energy of emitted photoelectrons is: <b>K_max = h × f - Φ</b>.</p><p>Here, f is the frequency of light, h is Planck's constant, and Φ is the work function (minimum energy required to eject an electron). The threshold frequency f₀ is given by Φ/h; light below this frequency cannot eject electrons, regardless of intensity.</p>",
     formulas: [{ name: "Energy Max", expr: "Kmax = h × ν - Φ" }]
   },
   radioactive: {
     name: "Radioactive Decay Half-Life",
-    aim: "Verify nuclei exponential decay rate.",
-    apparatus: "Radioactive core grid, Geiger counter.",
+    aim: "Verify nuclei exponential decay rate and measure half-life.",
+    apparatus: "Radioactive core grid, Geiger counter, timer.",
     req: [],
     steps: [
-      { id: 1, text: "Verify remaining parent nuclei drops by half after every half-life interval." }
+      { id: 1, text: "Load a radioactive isotope sample with an initial quantity N₀." },
+      { id: 2, text: "Start the timer and record the remaining count of parent nuclei (N) at regular time intervals." },
+      { id: 3, text: "Observe the activity rate drop as parent nuclei decay." },
+      { id: 4, text: "Calculate the half-life from the recorded exponential decay curve." }
     ],
-    theory: "<h3>Decay Law</h3><p>Nuclei decay is random, scaling with remaining atoms count: N = N0 e^(-λt).</p>",
+    theory: "<h3>Decay Law</h3><p>Radioactive decay is a random process at the level of single atoms, but a sample of material decays exponentially over time. The rate of decay is proportional to the number of remaining parent nuclei (N): <b>N(t) = N₀ × e^(-λ × t)</b>.</p><p>The decay constant (λ) is related to the <b>half-life (T_1/2)</b>, which is the time required for half of the nuclei in a sample to decay: <b>T_1/2 = ln(2) / λ ≈ 0.693 / λ</b>. The activity (A = λN) also decays exponentially.</p>",
     formulas: [{ name: "Decay Law", expr: "N(t) = N0 e^(-λ × t)" }]
   },
   de_broglie: {
     name: "de Broglie matter wave",
-    aim: "Measure wave characteristics of moving masses.",
-    apparatus: "Mass velocity accelerator.",
+    aim: "Measure wave characteristics of moving masses and verify matter wavelength.",
+    apparatus: "Mass velocity accelerator, diffraction analyzer.",
     req: [],
     steps: [
-      { id: 1, text: "Vary velocity and verify matter wavelength changes." }
+      { id: 1, text: "Set the particle mass and accelerate it to a specific velocity using the slider." },
+      { id: 2, text: "Measure the wavelength of the resulting matter wave from the diffraction pattern." },
+      { id: 3, text: "Record velocity and matter wavelength to verify the inverse momentum relationship (λ = h/p)." }
     ],
-    theory: "<h3>de Broglie Wavelength</h3><p>Moving particles display matter wave behaviors inversely matching momentum.</p>",
+    theory: "<h3>de Broglie Wavelength</h3><p>In 1924, Louis de Broglie proposed that all moving matter exhibits wave-like properties. The wavelength associated with a particle of mass (m) moving with velocity (v) is: <b>λ = h / p = h / (m × v)</b>.</p><p>Here, p is the momentum of the particle and h is Planck's constant. For electrons accelerated through a potential difference V, the momentum is p = √(2 × m × e × V), yielding: <b>λ = h / √(2 × m × e × V)</b>.</p>",
     formulas: [{ name: "Wavelength", expr: "λ = h / (m × v)" }]
   },
   bohr_model: {
     name: "Bohr Hydrogen atom transitions",
-    aim: "Calculate transition shell wavelengths.",
-    apparatus: "Bohr atomic orbital model display.",
+    aim: "Calculate energy gaps and emitted spectral wavelengths during orbital transitions.",
+    apparatus: "Bohr atomic orbital model display, spectrometer.",
     req: [],
     steps: [
-      { id: 1, text: "Animate quantum electron shell drops and measure spectral wavelengths." }
+      { id: 1, text: "Select the initial electron orbit level (n_i) and final orbit level (n_f)." },
+      { id: 2, text: "Trigger the quantum transition and observe the emitted photon animation." },
+      { id: 3, text: "Record the orbital energy gap ΔE in electron-volts (eV) and calculate the wavelength." },
+      { id: 4, text: "Observe Lyman (nf=1), Balmer (nf=2), and Paschen (nf=3) transitions." }
     ],
-    theory: "<h3>Bohr Atom</h3><p>Electrons reside in quantized shells. Orbital drops emit discrete photons.</p>",
+    theory: "<h3>Bohr Atom</h3><p>Niels Bohr proposed that electrons in an atom reside in stable, quantized circular orbits with discrete energy levels: <b>E_n = -13.6 / n² eV</b>, where n is the principal quantum number.</p><p>An electron can transition between orbits. When dropping from a higher energy level (n_i) to a lower level (n_f), it emits a photon with energy: <b>ΔE = E_i - E_f = 13.6 × (1/n_f² - 1/n_i²) eV</b>. The wavelength λ is given by: <b>λ = h × c / ΔE</b>.</p>",
     formulas: [{ name: "Transition energy", expr: "ΔE = 13.6 (1/n_f² - 1/n_i²) eV" }]
   },
   arduino_led: {
     name: "Arduino LED Control",
-    aim: "Control an LED using a switch and an Arduino power loop.",
+    aim: "Control an LED using a push button and an Arduino power loop.",
     apparatus: "Arduino Uno board, Push Button, Red LED, Current-limiting Resistor (150Ω), Breadboard, connecting wires.",
     req: ['source', 'button', 'led', 'resistor'],
     steps: [
       { id: 1, text: "Connect DC power supply to Arduino Uno." },
-      { id: 2, text: "Mount Push Button switch across center ravine (Col 12)." },
+      { id: 2, text: "Mount Push Button switch across center breadboard ravine." },
       { id: 3, text: "Mount LED and resistor in series on the board." },
       { id: 4, text: "Complete wiring: Arduino 5V -> switch -> LED -> resistor -> GND." },
       { id: 5, text: "Click Initialize to power board, then hold switch to light LED." }
     ],
-    theory: "<h3>Microcontroller Power Loop</h3><p>Using the Arduino 5V power output, a current-limiting resistor protects the LED while a series switch closes the circuit loop to Ground.</p>",
-    formulas: [
-      { name: "Current Limit", expr: "I = (V_pin - V_led) / R" }
-    ]
+    theory: "<h3>Microcontroller Power Loop</h3><p>A microcontroller circuit controls peripherals through input/output pins. In this experiment, the Arduino 5V pin acts as the power supply source and GND acts as the common ground.</p><p>A series loop is constructed containing a push-button switch, an LED, and a current-limiting resistor. The resistor value is calculated using Ohm's Law to prevent exceeding the LED's forward current rating: <b>R = (V_pin - V_led) / I</b>. The switch controls the continuity of the loop.</p>",
+    formulas: [{ name: "Current Limit", expr: "I = (V_pin - V_led) / R" }]
   }
 };
 
 const assessmentQuestions = {
   ohms: [
-    { q: "State the mathematical formulation of Ohm's Law.", options: ["V = I / R", "I = V / R", "R = I / V", "V = I² R"], correct: 1, explanation: "Ohm's Law is I = V/R." },
-    { q: "Ohm's Law holds strictly true under which conditions?", options: ["Constant temperature", "Varying temperature", "Varying dimensions", "Always"], correct: 0, explanation: "Temperature must remain constant to keep resistance fixed." }
+    { q: "State the mathematical formulation of Ohm's Law.", options: ["V = I / R", "I = V / R", "R = I / V", "V = I × R"], correct: 3, explanation: "Ohm's Law states that potential difference V across a conductor is product of current I and resistance R: V = I × R." },
+    { q: "Ohm's Law holds strictly true under which conditions?", options: ["Constant temperature", "Varying temperature", "Varying dimensions", "Always"], correct: 0, explanation: "Temperature must remain constant to keep resistance fixed." },
+    { q: "What is the microscopic cause of electrical resistance in metals?", options: ["Electrons colliding with other electrons", "Collisions of drift electrons with vibrating lattice ions", "Repulsion from negative terminals", "Nuclear decay of metal atoms"], correct: 1, explanation: "Resistance arises from the scattering of drift electrons due to frequent collisions with vibrating lattice ions." },
+    { q: "What does the slope of a Current (I) vs Voltage (V) graph represent?", options: ["Resistance R", "Power P", "Conductance G = 1/R", "Charge Q"], correct: 2, explanation: "Since I = (1/R) × V, the slope of I vs V is 1/R, which is conductance (G)." },
+    { q: "If the length of a wire is doubled while maintaining the same cross-sectional area, how does its resistance change?", options: ["It is halved", "It remains unchanged", "It doubles", "It quadruples"], correct: 2, explanation: "Resistance is directly proportional to length (R = ρL/A), so doubling length doubles resistance." }
   ],
   kvl: [
-    { q: "What is Kirchhoff's Voltage Law a statement of?", options: ["Conservation of charge", "Conservation of energy", "Conservation of momentum", "Conservation of mass"], correct: 1, explanation: "KVL is based on conservation of energy; sum of potential differences in loop is zero." }
+    { q: "What is Kirchhoff's Voltage Law a statement of?", options: ["Conservation of charge", "Conservation of energy", "Conservation of momentum", "Conservation of mass"], correct: 1, explanation: "KVL is based on the conservation of energy; the total energy gained equals energy lost in a closed loop." },
+    { q: "In any closed loop, the algebraic sum of all potential drops and rises is equal to:", options: ["Positive maximum", "Source voltage", "Zero", "Infinity"], correct: 2, explanation: "According to KVL, the net sum of potential changes around any closed loop must equal zero." },
+    { q: "If a loop has a 12V battery and two series resistors with drops of 4V and V2, what is V2?", options: ["4V", "8V", "12V", "16V"], correct: 1, explanation: "By KVL, Vs - V1 - V2 = 0 => 12V - 4V - V2 = 0 => V2 = 8V." },
+    { q: "Does KVL apply to AC circuits as well as DC circuits?", options: ["Yes, to both at any instantaneous moment", "Only to DC circuits", "Only to AC circuits", "Only when reactances are zero"], correct: 0, explanation: "KVL applies to any closed loop in any circuit, DC or AC, at every instant of time." },
+    { q: "Why is KVL based on the conservation of energy?", options: ["Because it deals with charge motion", "Because the electrostatic field is conservative", "Because it ignores heat loss", "Because it requires resistors"], correct: 1, explanation: "A conservative electrostatic field means the net work done in moving a charge around a closed loop is zero." }
   ],
   kcl: [
-    { q: "What is Kirchhoff's Current Law a statement of?", options: ["Conservation of charge", "Conservation of energy", "Conservation of mass", "None"], correct: 0, explanation: "KCL represents conservation of charge; total current entering node equals total leaving." }
+    { q: "What is Kirchhoff's Current Law a statement of?", options: ["Conservation of charge", "Conservation of energy", "Conservation of mass", "None"], correct: 0, explanation: "KCL represents conservation of charge; total current entering node equals total leaving." },
+    { q: "At any electrical node, the algebraic sum of currents is:", options: ["Maximum", "Infinite", "Zero", "Equal to total resistance"], correct: 2, explanation: "According to KCL, the net sum of all currents meeting at a junction node is zero." },
+    { q: "In a parallel circuit, if 5A enters a node and branches into R1 (2A) and R2, what is the current in R2?", options: ["7A", "3A", "5A", "2.5A"], correct: 1, explanation: "I_in = I1 + I2 => 5A = 2A + I2 => I2 = 3A." },
+    { q: "Since electric charge cannot accumulate or disappear at a node, KCL applies to:", options: ["All nodes in lumped circuits", "Only nodes with voltage sources", "Only capacitor plates", "Superconducting loops only"], correct: 0, explanation: "Charge conservation prevents accumulation at any junction node in a lumped parameter circuit." },
+    { q: "KCL is most useful in which circuit analysis method?", options: ["Mesh analysis", "Nodal analysis", "Superposition theorem", "Thevenin's theorem"], correct: 1, explanation: "Nodal analysis directly applies KCL at each non-reference node to solve for node voltages." }
   ],
   rc_rl_rlc: [
-    { q: "What is LCR circuit resonance condition?", options: ["XL = XC", "XL > XC", "XL < XC", "Z = 0"], correct: 0, explanation: "Resonance is when inductive and capacitive reactances cancel (XL = XC)." }
+    { q: "What is LCR circuit resonance condition?", options: ["XL = XC", "XL > XC", "XL < XC", "Z = 0"], correct: 0, explanation: "Resonance is when inductive and capacitive reactances cancel (XL = XC)." },
+    { q: "What is the unit of AC circuit impedance?", options: ["Farad", "Henry", "Ohm", "Siemens"], correct: 2, explanation: "Impedance Z represents the total opposition to AC current, measured in Ohms (Ω)." },
+    { q: "Inductive reactance (XL) behaves in which way as AC frequency increases?", options: ["Decreases linearly", "Increases linearly", "Remains constant", "Decreases exponentially"], correct: 1, explanation: "XL = 2πfL, so it is directly proportional to frequency f." },
+    { q: "In a purely capacitive circuit, the voltage relation to current is:", options: ["Leads current by 90°", "Lags current by 90°", "Is in phase with current", "Lags current by 180°"], correct: 1, explanation: "A capacitor opposes changes in voltage, causing voltage to lag current by 90°." },
+    { q: "Total impedance Z of a series RLC circuit is minimum when:", options: ["XL > XC", "XL < XC", "XL = XC", "R = 0"], correct: 2, explanation: "Z = √[R² + (XL - XC)²]. At resonance (XL = XC), the reactive term becomes zero, minimizing Z." }
   ],
   lcr: [
-    { q: "At resonant frequency in LCR series circuit, Z equals:", options: ["R", "0", "Infinity", "XL"], correct: 0, explanation: "At resonance XL = XC, so total impedance Z drops to resistor value R." }
+    { q: "At resonant frequency in LCR series circuit, Z equals:", options: ["R", "0", "Infinity", "XL"], correct: 0, explanation: "At resonance XL = XC, so total impedance Z drops to resistor value R." },
+    { q: "The formula for series resonance frequency is:", options: ["f₀ = 1 / (2π√(LC))", "f₀ = 2π / √(LC)", "f₀ = √(LC) / 2π", "f₀ = 1 / (2πLC)"], correct: 0, explanation: "Resonant frequency f₀ occurs when XL = XC => ωL = 1/(ωC) => f₀ = 1/(2π√(LC))." },
+    { q: "At resonance, the phase angle φ between voltage and current is:", options: ["90°", "45°", "0°", "180°"], correct: 2, explanation: "At resonance, the circuit is purely resistive, so voltage and current are in phase (φ = 0°)." },
+    { q: "The quality factor (Q-factor) of an LCR circuit measures its:", options: ["Resistance only", "Selectivity/sharpness of resonance", "Power dissipation", "Inductance ratio"], correct: 1, explanation: "The Q-factor defines the bandwidth relative to resonant frequency, representing sharpness of resonance." },
+    { q: "If capacitance C in an LCR circuit is increased, the resonant frequency:", options: ["Increases", "Decreases", "Remains unchanged", "Doubles"], correct: 1, explanation: "Since f₀ is inversely proportional to √C, increasing C will decrease f₀." }
   ],
   rc: [
-    { q: "Define time constant of an RC circuit.", options: ["R / C", "R × C", "1 / (R × C)", "C / R"], correct: 1, explanation: "Time constant τ = R × C in seconds." }
+    { q: "Define time constant of an RC circuit.", options: ["R / C", "R × C", "1 / (R × C)", "C / R"], correct: 1, explanation: "Time constant τ = R × C in seconds." },
+    { q: "What percentage of maximum charge does a capacitor reach in one time constant?", options: ["50.0%", "63.2%", "90.0%", "99.3%"], correct: 1, explanation: "At t = τ, V_c = V_s(1 - e⁻¹) = V_s(1 - 0.368) = 63.2% of V_s." },
+    { q: "How many time constants does it take to fully charge a capacitor (~99.3%)?", options: ["1τ", "3τ", "5τ", "10τ"], correct: 2, explanation: "By 5τ, the capacitor charges to V_s(1 - e⁻⁵) ≈ 99.3%, which is practically full charge." },
+    { q: "What is the unit of the time constant (RC)?", options: ["Second", "Ohm", "Farad", "Hertz"], correct: 0, explanation: "The product of Ohms and Farads yields seconds, representing time duration." },
+    { q: "In an RC charging circuit, the initial current at t=0 is:", options: ["Zero", "Maximum", "Half of maximum", "Negative"], correct: 1, explanation: "Initially the capacitor behaves as a short circuit, so I_initial = V_s / R (maximum)." }
   ],
   series_parallel: [
-    { q: "Two 100 Ω resistors in parallel yield an equivalent resistance of:", options: ["200 Ω", "50 Ω", "100 Ω", "25 Ω"], correct: 1, explanation: "1/Req = 1/100 + 1/100 = 2/100 => Req = 50 Ω." }
+    { q: "Two 100 Ω resistors in parallel yield an equivalent resistance of:", options: ["200 Ω", "50 Ω", "100 Ω", "25 Ω"], correct: 1, explanation: "1/Req = 1/100 + 1/100 = 2/100 => Req = 50 Ω." },
+    { q: "Two 100 Ω resistors in series yield an equivalent resistance of:", options: ["200 Ω", "50 Ω", "100 Ω", "25 Ω"], correct: 0, explanation: "Req = R1 + R2 = 100 + 100 = 200 Ω." },
+    { q: "In a series combination of resistors, which parameter remains constant through all resistors?", options: ["Voltage", "Current", "Power", "Conductance"], correct: 1, explanation: "Since there is only one path for current, it must be the same through all series components." },
+    { q: "In a parallel combination of resistors, which parameter remains identical across all branches?", options: ["Current", "Voltage", "Power", "Energy"], correct: 1, explanation: "Parallel components share the same two junction nodes, ensuring equal potential difference (voltage)." },
+    { q: "The equivalent resistance of a parallel combination is always:", options: ["Larger than the largest resistance", "Equal to the average of all resistances", "Smaller than the smallest individual resistance", "Zero"], correct: 2, explanation: "Adding parallel paths decreases overall resistance; thus Req is less than any single branch resistor." }
   ],
   wheatstone: [
-    { q: "Under balanced Wheatstone bridge conditions, galvanometer current is:", options: ["Maximum", "Zero", "Unchanged", "Half"], correct: 1, explanation: "At balance, potential differences across nodes are equal, nulling current." }
+    { q: "Under balanced Wheatstone bridge conditions, galvanometer current is:", options: ["Maximum", "Zero", "Unchanged", "Half"], correct: 1, explanation: "At balance, potential differences across nodes are equal, nulling current." },
+    { q: "The Wheatstone bridge is primarily used to measure:", options: ["High voltages", "Unknown resistances", "AC frequencies", "Magnetic flux"], correct: 1, explanation: "The bridge compares ratios of resistances to determine an unknown resistance accurately." },
+    { q: "What is the balance condition for a Wheatstone bridge with resistors R1, R2, R3, and Rx?", options: ["Rx = R3 * (R1 / R2)", "Rx = R3 * (R2 / R1)", "Rx = R1 * R2 / R3", "Rx = R1 + R2 - R3"], correct: 1, explanation: "The ratio of adjacent arms is equal: R1/R2 = R3/Rx => Rx = R3 * (R2/R1)." },
+    { q: "What happens to the balance point of the bridge if the source voltage is doubled?", options: ["It shifts to double", "It is halved", "It remains unchanged", "It becomes unstable"], correct: 2, explanation: "Balance depends purely on resistance ratios, not on the supply voltage magnitude." },
+    { q: "Galvanometer sensitivity is highest when all four resistances are:", options: ["Very high", "Very low", "Of the same order of magnitude", "Infinitely different"], correct: 2, explanation: "Sensitivity peaks when the arm resistances are close in value." }
   ],
   faraday: [
-    { q: "Induced emf in a coil depends directly on rate of change of:", options: ["Magnetic flux", "Coil mass", "Temperature", "Resistance"], correct: 0, explanation: "Faraday's Law states induced EMF is proportional to change in magnetic flux." }
+    { q: "Induced emf in a coil depends directly on rate of change of:", options: ["Magnetic flux", "Coil mass", "Temperature", "Resistance"], correct: 0, explanation: "Faraday's Law states induced EMF is proportional to change in magnetic flux." },
+    { q: "Faraday's law of induction is represented by the formula:", options: ["E = -N (ΔΦ / Δt)", "E = I R", "E = B l v", "E = -L (dI/dt)"], correct: 0, explanation: "E = -N(dΦ/dt) is the mathematical expression for Faraday's Law." },
+    { q: "If a magnet is held stationary inside a coil, the induced voltage is:", options: ["Maximum", "Minimum", "Zero", "Varies with temperature"], correct: 2, explanation: "Since flux is not changing (dΦ/dt = 0), no EMF is induced." },
+    { q: "Increasing the number of turns in a coil will make the induced EMF:", options: ["Decrease", "Increase", "Remain the same", "Cancel out"], correct: 1, explanation: "EMF is directly proportional to number of turns (N); more turns wrap more flux changes." },
+    { q: "The unit of magnetic flux is:", options: ["Tesla", "Ampere", "Weber", "Henry"], correct: 2, explanation: "Magnetic flux is measured in Webers (Wb). Magnetic field strength is measured in Teslas (T)." }
   ],
   lenz: [
-    { q: "Lenz's Law represents conservation of:", options: ["Charge", "Momentum", "Energy", "Flux"], correct: 2, explanation: "Lenz's law is a consequence of conservation of energy." }
+    { q: "Lenz's Law represents conservation of:", options: ["Charge", "Momentum", "Energy", "Flux"], correct: 2, explanation: "Lenz's law is a consequence of conservation of energy." },
+    { q: "The negative sign in Faraday's induction law equation represents:", options: ["Ohm's Law", "Lenz's Law", "Coulomb's Law", "Ampere's Law"], correct: 1, explanation: "The negative sign indicates that the induced EMF opposes the change in flux (Lenz's Law)." },
+    { q: "When a North pole of a magnet approaches a coil, the face of the coil behaves as a:", options: ["North pole", "South pole", "Neutral pole", "Positive charge"], correct: 0, explanation: "The coil induces a current that creates a North pole to repel the approaching North pole, opposing the motion." },
+    { q: "What is the microscopic cause of electromagnetic damping?", options: ["Atomic decay", "Induced currents creating opposing magnetic forces", "Lattice friction", "Gravity"], correct: 1, explanation: "Induced currents generate opposing magnetic fields that exert mechanical drag forces on the magnet." },
+    { q: "If a magnet is dropped through a long copper pipe, it falls:", options: ["Faster than in free fall", "Slower than in free fall due to opposing induced fields", "At the speed of light", "Exactly the same as in free fall"], correct: 1, explanation: "Eddy currents induced in the copper walls create opposing fields that slow the magnet's descent." }
   ],
   solenoid: [
-    { q: "Magnetic field inside a long solenoid is:", options: ["Directly proportional to current", "Inversely proportional to current", "Zero", "Quadratic to current"], correct: 0, explanation: "B = μ0 n I, so it is directly proportional to I." }
+    { q: "Magnetic field inside a long solenoid is:", options: ["Directly proportional to current", "Inversely proportional to current", "Zero", "Quadratic to current"], correct: 0, explanation: "B = μ0 n I, so it is directly proportional to I." },
+    { q: "The magnetic field inside a long current-carrying solenoid is:", options: ["Non-uniform", "Nearly uniform and directed along the axis", "Radial", "Circular"], correct: 1, explanation: "The internal field lines are parallel, uniform, and align axially." },
+    { q: "What constant represents the magnetic permeability of free space?", options: ["ε₀", "μ₀", "σ", "ρ"], correct: 1, explanation: "μ₀ (4π × 10⁻⁷ H/m) is the permeability of free space." },
+    { q: "If the number of turns per unit length (n) of a solenoid is doubled, how does the B field change?", options: ["It is halved", "It remains same", "It doubles", "It quadruples"], correct: 2, explanation: "B = μ₀ n I. Doubling n doubles the B field." },
+    { q: "The magnetic field outside a very long solenoid is:", options: ["Very strong", "Practically zero", "Equal to internal field", "Concentric"], correct: 1, explanation: "In an ideal long solenoid, the field outside is negligible." }
   ],
   transformer: [
-    { q: "A step-up transformer increases voltage by scaling up:", options: ["Primary turns", "Secondary turns", "Primary current", "Frequency"], correct: 1, explanation: "Vs / Vp = Ns / Np. Scaling up secondary turns Ns increases secondary voltage." }
+    { q: "A step-up transformer increases voltage by scaling up:", options: ["Primary turns", "Secondary turns", "Primary current", "Frequency"], correct: 1, explanation: "Vs / Vp = Ns / Np. Scaling up secondary turns Ns increases secondary voltage." },
+    { q: "Which principle allows transformers to function?", options: ["Self-induction", "Mutual induction", "Thermoelectric effect", "Photoelectric effect"], correct: 1, explanation: "Transformers transfer energy between primary and secondary coils via mutual electromagnetic induction." },
+    { q: "Why can't a transformer operate on a steady DC supply?", options: ["DC has too much voltage", "DC does not create a changing magnetic flux", "DC burns the copper wires", "DC frequency is too high"], correct: 1, explanation: "Transformers require changing flux (AC) to induce EMF in the secondary coil." },
+    { q: "If Ns = 200 and Np = 100, and Vp = 12V AC, what is Vs?", options: ["6V", "12V", "24V", "48V"], correct: 2, explanation: "Vs = Vp * (Ns/Np) = 12 * (200/100) = 24V." },
+    { q: "In an ideal transformer, the output power is:", options: ["Zero", "Double the input power", "Equal to the input power", "Half the input power"], correct: 2, explanation: "An ideal transformer has 100% efficiency, so Pin = Pout." }
   ],
   diode_iv: [
-    { q: "What is the approximate turn-on barrier voltage of a Silicon PN junction diode?", options: ["0.3 V", "0.7 V", "1.1 V", "2.0 V"], correct: 1, explanation: "Silicon diodes generally require about 0.7 V forward bias to start conducting." }
+    { q: "What is the approximate turn-on barrier voltage of a Silicon PN junction diode?", options: ["0.3 V", "0.7 V", "1.1 V", "2.0 V"], correct: 1, explanation: "Silicon diodes generally require about 0.7 V forward bias to start conducting." },
+    { q: "What happens to the depletion layer width under forward bias?", options: ["It widens", "It narrows", "It remains unchanged", "It disappears completely"], correct: 1, explanation: "Forward bias opposes the built-in potential barrier, narrowing the depletion region." },
+    { q: "A diode conducts current easily when it is:", options: ["Reverse biased", "Forward biased", "Unbiased", "Heated"], correct: 1, explanation: "Forward biasing lowers the barrier, allowing charge carriers to cross the junction." },
+    { q: "In reverse bias, the tiny current that flows is called:", options: ["Forward current", "Saturation leakage current", "Breakdown current", "Displacement current"], correct: 1, explanation: "Reverse leakage current flows due to thermally generated minority carriers." },
+    { q: "The equation that describes diode I-V characteristics is:", options: ["Ohm's equation", "Shockley equation", "Einstein equation", "Schrodinger equation"], correct: 1, explanation: "The diode current is modeled by the Shockley diode equation." }
   ],
   voltage_divider: [
-    { q: "In a series voltage divider with R1 = 100Ω and R2 = 200Ω, what fraction of Vin appears across R2?", options: ["1/3", "2/3", "1/2", "1/4"], correct: 1, explanation: "V_R2 = Vin * (R2 / (R1 + R2)) = Vin * (200 / 300) = 2/3 of Vin." }
+    { q: "In a series voltage divider with R1 = 100Ω and R2 = 200Ω, what fraction of Vin appears across R2?", options: ["1/3", "2/3", "1/2", "1/4"], correct: 1, explanation: "V_R2 = Vin * (R2 / (R1 + R2)) = Vin * (200 / 300) = 2/3 of Vin." },
+    { q: "The voltage divider rule is applicable only when components are connected in:", options: ["Parallel", "Series", "Delta", "Star"], correct: 1, explanation: "Voltage division applies to series paths since current is shared." },
+    { q: "The current divider rule is applicable only when components are connected in:", options: ["Series", "Parallel", "Loop", "Bridge"], correct: 1, explanation: "Current division applies to parallel branches since voltage is shared." },
+    { q: "If R1 = R2 in a series voltage divider, the output voltage Vout across R2 is:", options: ["Equal to Vin", "Double Vin", "Half of Vin", "Zero"], correct: 2, explanation: "Vout = Vin * (R / 2R) = Vin / 2." },
+    { q: "In a parallel current divider, the branch with the larger resistance receives:", options: ["More current", "Less current", "Equal current", "No current"], correct: 1, explanation: "Current takes the path of least resistance; thus larger resistance receives smaller current." }
   ],
   planck_led: [
-    { q: "Why do different colored LEDs have different turn-on threshold voltages?", options: ["Different physical sizes", "Different semiconductor energy band gaps matching photon frequencies", "Varying internal resistances", "Different current ratings"], correct: 1, explanation: "Turn-on voltage corresponds to the energy gap Eg = h*f = h*c/λ. Shorter wavelengths (blue) require larger turn-on voltages." }
+    { q: "Why do different colored LEDs have different turn-on threshold voltages?", options: ["Different physical sizes", "Different semiconductor energy band gaps matching photon frequencies", "Varying internal resistances", "Different current ratings"], correct: 1, explanation: "Turn-on voltage corresponds to the energy gap Eg = h*f = h*c/λ. Shorter wavelengths (blue) require larger turn-on voltages." },
+    { q: "The relationship between the energy of emitted photon and frequency is:", options: ["E = h × f", "E = h / f", "E = f / h", "E = h × f²"], correct: 0, explanation: "Photon energy is Planck's constant times frequency: E = h × f." },
+    { q: "Which LED color has the highest threshold voltage?", options: ["Red", "Yellow", "Green", "Blue"], correct: 3, explanation: "Blue light has the shortest wavelength and highest frequency, requiring the largest bandgap voltage (~2.7V)." },
+    { q: "What does 'h' represent in the Planck's LED equation?", options: ["Planck's constant", "Hubble's constant", "Hall coefficient", "Heat capacity"], correct: 0, explanation: "h is Planck's constant (6.626 × 10⁻³⁴ J·s)." },
+    { q: "LED light emission is due to:", options: ["Thermal heating of filament", "Radiative recombination of electron-hole pairs", "Gas ionization", "Nuclear fusion"], correct: 1, explanation: "LEDs emit light via electroluminescence, when injected electrons drop into holes in the valence band." }
   ],
   biot_savart: [
-    { q: "How does the magnetic field B change as you move twice as far from a straight current-carrying wire?", options: ["Doubles", "Halves", "Becomes four times", "Remains unchanged"], correct: 1, explanation: "B is inversely proportional to distance r (B ∝ 1/r), so doubling the distance halves the field." }
+    { q: "How does the magnetic field B change as you move twice as far from a straight current-carrying wire?", options: ["Doubles", "Halves", "Becomes four times", "Remains unchanged"], correct: 1, explanation: "B is inversely proportional to distance r (B ∝ 1/r), so doubling the distance halves the field." },
+    { q: "The magnetic field lines around a straight current-carrying wire are:", options: ["Radial lines", "Concentric circles", "Parallel lines", "Hyperbolic paths"], correct: 1, explanation: "Current creates circular magnetic field loops centered around the wire axis." },
+    { q: "According to Biot-Savart law, magnetic field is directly proportional to:", options: ["Current", "Distance", "Cross-sectional area", "Temperature"], correct: 0, explanation: "Field strength is proportional to current strength: B ∝ I." },
+    { q: "What rule determines the direction of the magnetic field around a straight wire?", options: ["Left-hand rule", "Right-hand grip rule", "Lenz's rule", "Faraday's rule"], correct: 1, explanation: "Point your right thumb along the current; your curled fingers indicate the field direction." },
+    { q: "Permeability of free space μ₀ has a value of:", options: ["4π × 10⁻⁷ T·m/A", "8.85 × 10⁻¹² F/m", "6.63 × 10⁻³⁴ J·s", "3 × 10⁸ m/s"], correct: 0, explanation: "μ₀ is exactly defined as 4π × 10⁻⁷ T·m/A." }
   ],
   planck_photocell: [
-    { q: "What happens to the stopping voltage in a photoelectric experiment when the light intensity is doubled?", options: ["Doubles", "Halves", "Remains unchanged", "Drops to zero"], correct: 2, explanation: "Stopping voltage depends only on photon frequency (energy) and work function, not on intensity (photon quantity)." }
+    { q: "What happens to the stopping voltage in a photoelectric experiment when the light intensity is doubled?", options: ["Doubles", "Halves", "Remains unchanged", "Drops to zero"], correct: 2, explanation: "Stopping voltage depends only on photon frequency (energy) and work function, not on intensity (photon quantity)." },
+    { q: "The stopping voltage Vs is a measure of:", options: ["Total photocurrent", "Work function", "Maximum kinetic energy of photoelectrons", "Intensity"], correct: 2, explanation: "e*Vs represents the kinetic energy of the fastest photoelectrons." },
+    { q: "The slope of the plot of stopping voltage Vs versus frequency f is:", options: ["h / e", "e / h", "h × e", "Work function"], correct: 0, explanation: "From eVs = hf - Φ => Vs = (h/e)f - Φ/e. The slope is h/e." },
+    { q: "The minimum energy required to eject an electron from a metal surface is:", options: ["Stopping potential", "Work function", "Ionization energy", "Activation energy"], correct: 1, explanation: "The work function Φ is the minimum energy barrier electrons must overcome to escape the metal." },
+    { q: "Photocurrent starts flowing only when light frequency is greater than:", options: ["Stopping frequency", "Threshold frequency", "Infrared frequency", "Resonant frequency"], correct: 1, explanation: "Photons below threshold frequency (f₀) do not have enough energy to eject electrons." }
   ],
   stefan_law: [
-    { q: "According to Stefan-Boltzmann law, radiated energy from a blackbody scales with temperature T as:", options: ["T", "T²", "T³", "T⁴"], correct: 3, explanation: "Stefan's law states that total energy radiated per unit area is proportional to the fourth power of absolute temperature (T⁴)." }
+    { q: "According to Stefan-Boltzmann law, radiated energy from a blackbody scales with temperature T as:", options: ["T", "T²", "T³", "T⁴"], correct: 3, explanation: "Stefan's law states that total energy radiated per unit area is proportional to the fourth power of absolute temperature (T⁴)." },
+    { q: "The value of the Stefan-Boltzmann constant σ is:", options: ["5.67 × 10⁻⁸ W/m²K⁴", "6.63 × 10⁻³⁴ J·s", "1.38 × 10⁻²³ J/K", "8.31 J/mol·K"], correct: 0, explanation: "σ is equal to 5.6703 × 10⁻⁸ W/m²K⁴." },
+    { q: "An ideal blackbody is a body that:", options: ["Reflects all radiation", "Absorbs all radiation incident on it", "Emits green light only", "Does not radiate heat"], correct: 1, explanation: "A blackbody absorbs 100% of all incident electromagnetic radiation." },
+    { q: "Emissivity of a perfect blackbody is:", options: ["0.0", "0.5", "1.0", "100.0"], correct: 2, explanation: "An ideal blackbody has maximum emissivity ε = 1.0." },
+    { q: "If the absolute temperature of a blackbody is doubled, its radiated power increases by:", options: ["2 times", "4 times", "8 times", "16 times"], correct: 3, explanation: "Power is proportional to T⁴. (2)⁴ = 16 times increase." }
   ],
   ideal_gas: [
-    { q: "Ideal Gas Law is expressed as:", options: ["P V = n R T", "P / V = n R T", "P T = n R V", "P V = R T"], correct: 0, explanation: "State equation is PV = nRT." }
+    { q: "Ideal Gas Law is expressed as:", options: ["P V = n R T", "P / V = n R T", "P T = n R V", "P V = R T"], correct: 0, explanation: "State equation is PV = nRT." },
+    { q: "What represents the constant 'R' in the ideal gas equation?", options: ["Rydberg constant", "Universal gas constant", "Resistance", "Radius"], correct: 1, explanation: "R is the universal gas constant, approximately 8.314 J/mol·K." },
+    { q: "An ideal gas assumes that:", options: ["Molecules are very large", "There are no intermolecular forces between molecules", "Collisions are inelastic", "Pressure is constant"], correct: 1, explanation: "Ideal gas models assume negligible molecular volume and zero intermolecular forces." },
+    { q: "Under which conditions do real gases behave most like ideal gases?", options: ["Low temperature, high pressure", "High temperature, low pressure", "At absolute zero", "Never"], correct: 1, explanation: "High temp keeps molecules moving fast (overcoming attractive forces), and low pressure keeps them far apart." },
+    { q: "In the equation PV = nRT, T must be measured in:", options: ["Celsius", "Fahrenheit", "Kelvin", "Rankine"], correct: 2, explanation: "Thermodynamic equations require absolute temperature in Kelvin." }
   ],
   boyle: [
-    { q: "Boyle's law holds at constant:", options: ["Pressure", "Volume", "Temperature", "Moles only"], correct: 2, explanation: "Boyle's law requires temperature T to remain constant." }
+    { q: "Boyle's law holds at constant:", options: ["Pressure", "Volume", "Temperature", "Moles only"], correct: 2, explanation: "Boyle's law requires temperature T to remain constant." },
+    { q: "If the volume of a gas is halved at constant temperature, its pressure:", options: ["Is halved", "Remains same", "Doubles", "Quadruples"], correct: 2, explanation: "Pressure and volume are inversely proportional: P1V1 = P2(V1/2) => P2 = 2 P1." },
+    { q: "A graph of Pressure (P) vs Volume (V) at constant temperature is:", options: ["Straight line through origin", "Parabola", "Hyperbola", "S-curve"], correct: 2, explanation: "PV = constant is an equation of a rectangular hyperbola." },
+    { q: "A graph of Pressure (P) vs 1/Volume (1/V) is:", options: ["Straight line through the origin", "Hyperbola", "Horizontal line", "Circle"], correct: 0, explanation: "Since P = k * (1/V), P is linear with respect to 1/V." },
+    { q: "Boyle's Law is mathematically represented as:", options: ["P / V = k", "P × V = k", "V / T = k", "P / T = k"], correct: 1, explanation: "Pressure times volume is a constant: P × V = k." }
   ],
   charles: [
-    { q: "Charles's law holds at constant:", options: ["Pressure", "Volume", "Temperature", "Mass only"], correct: 0, explanation: "Charles's law requires pressure P to remain constant." }
+    { q: "Charles's law holds at constant:", options: ["Pressure", "Volume", "Temperature", "Mass only"], correct: 0, explanation: "Charles's law requires pressure P to remain constant." },
+    { q: "If absolute temperature of a gas is doubled at constant pressure, its volume:", options: ["Is halved", "Remains same", "Doubles", "Triples"], correct: 2, explanation: "Volume is directly proportional to absolute temperature (V ∝ T)." },
+    { q: "The graph of volume V versus temperature T in Celsius is a straight line that intercepts the T-axis at:", options: ["0°C", "-273.15°C", "100°C", "273.15°C"], correct: 1, explanation: "Extrapolating V to zero yields absolute zero temperature: -273.15°C." },
+    { q: "Charles's law is mathematically represented as:", options: ["P/T = k", "V/T = k", "PV = k", "V × T = k"], correct: 1, explanation: "Volume divided by temperature is constant: V / T = constant." },
+    { q: "Volume of a gas is directly proportional to temperature in which unit?", options: ["Celsius", "Fahrenheit", "Kelvin", "Both Celsius and Kelvin"], correct: 2, explanation: "Proportionality V ∝ T holds only when T is in Kelvin (absolute scale)." }
   ],
   specific_heat: [
-    { q: "Specific heat capacity is heat required to raise temp of 1g by:", options: ["1°C", "10°C", "100°C", "0.1°C"], correct: 0, explanation: "Specific heat c is heat per unit mass per degree change." }
+    { q: "Specific heat capacity is heat required to raise temp of 1g by:", options: ["1°C", "10°C", "100°C", "0.1°C"], correct: 0, explanation: "Specific heat c is heat per unit mass per degree change." },
+    { q: "The unit of specific heat capacity is:", options: ["Joule", "J / (g·°C)", "Watt", "Calorie"], correct: 1, explanation: "Specific heat is heat energy per unit mass per degree: J/(g·°C)." },
+    { q: "Which substance has a remarkably high specific heat capacity?", options: ["Copper", "Iron", "Water", "Lead"], correct: 2, explanation: "Water has a very high specific heat capacity (~4.184 J/g·°C), making it excellent for thermal moderation." },
+    { q: "In a calorimetry experiment, heat lost by the hot block is equal to:", options: ["Heat gained by water + calorimeter", "Initial temperature", "Work done", "Total kinetic energy"], correct: 0, explanation: "By energy conservation, heat transfer from hot substance equals heat absorbed by surroundings." },
+    { q: "If mass is doubled for the same temperature change, the heat transferred:", options: ["Is halved", "Remains same", "Doubles", "Quadruples"], correct: 2, explanation: "Q = m*c*ΔT. Heat is directly proportional to mass." }
   ],
   photoelectric: [
-    { q: "Photoelectric emission threshold depends directly on light:", options: ["Intensity", "Frequency", "Amplitude", "Velocity"], correct: 1, explanation: "Emission requires photon energy hν > Φ, which is a frequency constraint." }
+    { q: "Photoelectric emission threshold depends directly on light:", options: ["Intensity", "Frequency", "Amplitude", "Velocity"], correct: 1, explanation: "Emission requires photon energy hν > Φ, which is a frequency constraint." },
+    { q: "If the frequency of light is below the threshold frequency, the number of photoelectrons emitted is:", options: ["Zero", "Double", "Infinite", "Proportional to intensity"], correct: 0, explanation: "Below threshold frequency, photons lack sufficient energy to overcome the work function barrier." },
+    { q: "The kinetic energy of emitted photoelectrons increases linearly with:", options: ["Light intensity", "Light frequency", "Exposure time", "Source voltage"], correct: 1, explanation: "K_max = hf - Φ. Energy depends linearly on frequency f." },
+    { q: "The number of emitted photoelectrons per second is proportional to:", options: ["Light frequency", "Light intensity", "Metal thickness", "Stopping voltage"], correct: 1, explanation: "More intensity means more photons per second, yielding more ejected electrons." },
+    { q: "Who explained the photoelectric effect using photon theory?", options: ["Newton", "Einstein", "Maxwell", "Planck"], correct: 1, explanation: "Albert Einstein won the 1921 Nobel Prize for explaining the photoelectric effect using light packets (photons)." }
   ],
   radioactive: [
-    { q: "After exactly 3 half-lives, fraction of parent nuclei remaining is:", options: ["1/2", "1/4", "1/8", "1/16"], correct: 2, explanation: "Fraction remaining is (1/2)³ = 1/8." }
+    { q: "After exactly 3 half-lives, fraction of parent nuclei remaining is:", options: ["1/2", "1/4", "1/8", "1/16"], correct: 2, explanation: "Fraction remaining is (1/2)³ = 1/8." },
+    { q: "The decay rate (activity) of a sample is proportional to:", options: ["Temperature", "Pressure", "Number of remaining nuclei", "Isotope volume"], correct: 2, explanation: "Activity A = λN. It is directly proportional to remaining nuclei count." },
+    { q: "The relationship between half-life (T_1/2) and decay constant (λ) is:", options: ["T_1/2 = 0.693 / λ", "T_1/2 = λ / 0.693", "T_1/2 = λ", "T_1/2 = 1 / λ"], correct: 0, explanation: "T_1/2 = ln(2) / λ ≈ 0.693 / λ." },
+    { q: "What is the SI unit of radioactivity?", options: ["Curie", "Becquerel", "Gray", "Sievert"], correct: 1, explanation: "1 Becquerel (Bq) is defined as one disintegration per second." },
+    { q: "Radioactive decay is a:", options: ["Chemical reaction", "Random and spontaneous nuclear process", "Thermal expansion", "Induced ionization"], correct: 1, explanation: "Decay is a nuclear process that happens randomly and spontaneously." }
   ],
   de_broglie: [
-    { q: "de Broglie wavelength is inversely proportional to particle:", options: ["Mass only", "Velocity only", "Momentum", "Energy"], correct: 2, explanation: "λ = h/p, where momentum p = mv." }
+    { q: "de Broglie wavelength is inversely proportional to particle:", options: ["Mass only", "Velocity only", "Momentum", "Energy"], correct: 2, explanation: "λ = h/p, where momentum p = mv." },
+    { q: "What is the formula for the de Broglie wavelength?", options: ["λ = h / p", "λ = h × p", "λ = p / h", "λ = h × c"], correct: 0, explanation: "λ = h / p, where h is Planck's constant and p is momentum." },
+    { q: "As the velocity of a particle increases, its de Broglie wavelength:", options: ["Increases", "Decreases", "Remains same", "Becomes zero"], correct: 1, explanation: "Since velocity is in the denominator (λ = h/mv), higher velocity reduces wavelength." },
+    { q: "Which of the following exhibits wave-particle duality?", options: ["Light only", "Electrons only", "All matter and radiation", "No physical objects"], correct: 2, explanation: "All quantum entities exhibit both wave-like and particle-like properties." },
+    { q: "The wave nature of electrons was experimentally verified by:", options: ["Rutherford", "Bohr", "Davisson and Germer", "Einstein"], correct: 2, explanation: "Their electron diffraction experiments proved electrons behave as waves." }
   ],
   bohr_model: [
-    { q: "Hydrogen electron transition from n=2 to n=1 energy is:", options: ["10.2 eV", "13.6 eV", "3.4 eV", "1.5 eV"], correct: 0, explanation: "ΔE = -3.4 - (-13.6) = 10.2 eV." }
+    { q: "Hydrogen electron transition from n=2 to n=1 energy is:", options: ["10.2 eV", "13.6 eV", "3.4 eV", "1.5 eV"], correct: 0, explanation: "ΔE = -3.4 - (-13.6) = 10.2 eV." },
+    { q: "According to Bohr's model, the angular momentum of an electron is:", options: ["Infinite", "Quantized in integral multiples of h/2π", "Continuous", "Zero"], correct: 1, explanation: "L = mvr = n × (h/2π). Angular momentum is quantized." },
+    { q: "The energy of an electron in the nth orbit of a Hydrogen atom is proportional to:", options: ["n", "n²", "1 / n", "1 / n²"], correct: 3, explanation: "E_n = -13.6 / n² eV. It is inversely proportional to n²." },
+    { q: "Spectral lines corresponding to transitions ending in n=2 are in which series?", options: ["Lyman series", "Balmer series", "Paschen series", "Pfund series"], correct: 1, explanation: "The Balmer series corresponds to electron transitions ending in level n=2 (visible light)." },
+    { q: "The Bohr model is strictly applicable to:", options: ["Multi-electron atoms", "Single-electron atoms/ions", "Covalent crystals", "Helium gas only"], correct: 1, explanation: "Bohr's model applies only to hydrogen-like (single-electron) systems (H, He⁺, Li²⁺)." }
   ],
   arduino_led: [
-    { q: "What is the primary function of a current-limiting resistor in an LED loop?", options: ["Store charge", "Limit current and protect LED", "Convert AC to DC", "Oscillate voltage"], correct: 1, explanation: "Resistors limit the flow of current to prevent burning out components like LEDs." }
+    { q: "What is the primary function of a current-limiting resistor in an LED loop?", options: ["Store charge", "Limit current and protect LED", "Convert AC to DC", "Oscillate voltage"], correct: 1, explanation: "Resistors limit the flow of current to prevent burning out components like LEDs." },
+    { q: "The output voltage of an Arduino digital output pin when set HIGH is:", options: ["3.3 V", "5.0 V", "12.0 V", "0.0 V"], correct: 1, explanation: "Standard Arduino Uno digital pins output 5.0 V in the HIGH state." },
+    { q: "When a normally open push button is pressed, the switch:", options: ["Opens the circuit", "Closes the circuit", "Reverses polarity", "Reduces voltage"], correct: 1, explanation: "A normally open button completes/closes the path when pressed." },
+    { q: "The common reference ground pin on Arduino is labeled:", options: ["5V", "GND", "VIN", "RESET"], correct: 1, explanation: "GND represents the common zero-potential reference terminal." },
+    { q: "What happens if an LED is connected directly across 5V and GND without a resistor?", options: ["It glows normally", "It does not light up", "It draws excessive current and burns out", "It blinks automatically"], correct: 2, explanation: "Without a current-limiting resistor, the LED will draw current beyond its rating and burn out." }
   ]
 };
 
@@ -1811,14 +1978,18 @@ function appendAIMessage(sender, text, isUser = false) {
   const msg = document.createElement('div');
   msg.className = `ai-msg ${isUser ? 'user' : ''}`;
   
-  const avatar = isUser ? '👤' : '⚡';
-  const senderHtml = isUser ? '' : `<div style="font-size:9px;font-weight:600;color:var(--accent);letter-spacing:.5px;margin-bottom:3px">${sender}</div>`;
+  const avatarClass = isUser ? 'user' : 'bot';
+  const avatarIcon = isUser ? '<i class="fa-solid fa-user-astronaut"></i>' : '<i class="fa-solid fa-robot"></i>';
+  
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   
   msg.innerHTML = `
-    <div class="ai-avatar">${avatar}</div>
-    <div>
-      ${senderHtml}
+    <div class="ai-avatar ${avatarClass}">${avatarIcon}</div>
+    <div class="ai-bubble-wrap">
+      <div class="ai-bubble-sender">${sender}</div>
       <div class="ai-bubble">${text}</div>
+      <div class="ai-time">${timeStr}</div>
     </div>
   `;
   elements.aiMessagesContainer.appendChild(msg);
@@ -3498,6 +3669,217 @@ function downloadCanvasAsImage(canvas, filename) {
   document.body.removeChild(link);
 }
 
+function generateExperimentConclusion(expKey, dataPoints) {
+  if (!dataPoints || dataPoints.length === 0) {
+    return "Experiment in progress. Complete all steps and record data points using the 'Record' button to compile results and generate the final conclusion.";
+  }
+
+  const N = dataPoints.length;
+  const lastPt = dataPoints[N - 1];
+
+  switch (expKey) {
+    case 'ohms': {
+      const R_theoretical = state.params.R || 100;
+      let sumV = 0, sumI = 0, sumVI = 0, sumV2 = 0;
+      dataPoints.forEach(p => {
+        sumV += p.V;
+        sumI += p.I;
+        sumVI += p.V * p.I;
+        sumV2 += p.V * p.V;
+      });
+      const denom = (N * sumV2 - sumV * sumV);
+      if (denom !== 0) {
+        const m = (N * sumVI - sumV * sumI) / denom;
+        const R_calc = 1 / m;
+        const error = Math.abs(R_calc - R_theoretical) / R_theoretical * 100;
+        return `The Ohm's Law verification experiment was successfully completed. Based on the ${N} recorded data points, the V-I characteristic curve is a straight line passing through the origin, representing a purely Ohmic response. The experimental resistance calculated from the slope (reciprocal of conductance m = ${(m * 1000).toFixed(3)} mA/V) is ${R_calc.toFixed(1)} Ω. This deviates from the theoretical value of ${R_theoretical} Ω by only ${error.toFixed(2)}%, thereby verifying the linear relationship V = I × R.`;
+      }
+      return `The Ohm's Law verification experiment was performed. The V-I characteristic curve exhibits a linear response passing through the origin. This confirms that current is directly proportional to voltage and inversely proportional to resistance, verifying V = I × R.`;
+    }
+
+    case 'kvl': {
+      const R1 = state.params.R || 100;
+      const R2 = state.params.L || 100;
+      const lastV = lastPt.V;
+      const lastI = lastPt.I;
+      const V1 = lastI * R1;
+      const V2 = lastI * R2;
+      const sumDrops = V1 + V2;
+      const discrepancy = Math.abs(lastV - sumDrops);
+      return `Kirchhoff's Voltage Law (KVL) was verified in a series DC loop containing resistances R1 = ${R1} Ω and R2 = ${R2} Ω. The sum of the individual potential drops (V1 = ${V1.toFixed(2)} V and V2 = ${V2.toFixed(2)} V) equals the total source voltage Vs = ${lastV.toFixed(2)} V (discrepancy: ${discrepancy.toFixed(3)} V). This confirms the Loop Rule (ΣV = 0), verifying that the net energy gained in a closed circuit loop equals the net energy dissipated, satisfying conservation of energy.`;
+    }
+
+    case 'kcl': {
+      const R1 = state.params.R || 100;
+      const R2 = state.params.L || 100;
+      const lastV = lastPt.V;
+      const I1 = lastV / R1;
+      const I2 = lastV / R2;
+      const I_total = lastPt.I;
+      const sumBranch = I1 + I2;
+      const error = Math.abs(I_total - sumBranch) * 1000;
+      return `Kirchhoff's Current Law (KCL) was verified at a parallel junction containing resistors R1 = ${R1} Ω and R2 = ${R2} Ω. At a source potential of ${lastV.toFixed(1)} V, the measured total entering current is ${(I_total * 1000).toFixed(1)} mA, which closely matches the sum of individual branch currents (I1 = ${(I1 * 1000).toFixed(1)} mA and I2 = ${(I2 * 1000).toFixed(1)} mA, sum = ${(sumBranch * 1000).toFixed(1)} mA, error = ${error.toFixed(2)} mA). This confirms the Junction Rule (ΣI_in = ΣI_out), validating the principle of conservation of electrical charge.`;
+    }
+
+    case 'rc_rl_rlc': {
+      const R = state.params.R || 100;
+      const L = state.params.L || 10;
+      const C = state.params.C || 10;
+      return `The AC Impedance Analysis of the LCR series circuit was performed with R = ${R} Ω, L = ${L} mH, and C = ${C} µF. The total impedance Z and phase angle φ were monitored as frequency varied from 10 Hz to 1000 Hz. The reactances XL and XC exhibited their expected frequency dependencies, causing the overall phase shift to transition from capacitive (lagging voltage) at low frequencies to inductive (leading voltage) at high frequencies, confirming AC network impedance theory.`;
+    }
+
+    case 'lcr': {
+      const R = state.params.R || 100;
+      const L_mH = state.params.L || 10;
+      const C_uF = state.params.C || 10;
+      const f0_theoretical = (1 / (2 * Math.PI * Math.sqrt(L_mH * 1e-3 * C_uF * 1e-6))).toFixed(1);
+      return `The series LCR resonance experiment was successfully conducted using components R = ${R} Ω, L = ${L_mH} mH, and C = ${C_uF} µF. The theoretical resonant frequency is calculated as f₀ = 1 / (2π√(LC)) = ${f0_theoretical} Hz. At resonance, the inductive and capacitive reactances cancel each other (XL = XC), making the total impedance minimum (Z = R = ${R} Ω) and the current flow maximum. The frequency response curve demonstrates a sharp resonance peak, verifying AC resonance theory.`;
+    }
+
+    case 'rc': {
+      const R = state.params.R || 100;
+      const C = state.params.C || 10;
+      const tau_ms = (R * C * 1e-6 * 1000).toFixed(2);
+      return `The RC transient response experiment was completed using R = ${R} Ω and C = ${C} µF. The theoretical time constant is τ = RC = ${tau_ms} ms. The charging curve shows that the capacitor potential reaches 63.2% of the supply voltage in ${tau_ms} ms and is virtually fully charged (99.3%) after ${(parseFloat(tau_ms) * 5).toFixed(1)} ms. The exponential characteristic V_C(t) = V_s(1 - e^(-t/τ)) is verified.`;
+    }
+
+    case 'series_parallel': {
+      const R1 = state.params.R || 100;
+      const R2 = state.params.L || 100;
+      const Req_series = R1 + R2;
+      const Req_parallel = (R1 * R2) / (R1 + R2);
+      return `Resistor combination laws were verified for resistances R1 = ${R1} Ω and R2 = ${R2} Ω. The series connection resulted in an additive equivalent resistance of R_eq = ${Req_series} Ω, while the parallel configuration resulted in a reciprocal equivalent resistance of R_eq = ${Req_parallel.toFixed(1)} Ω. These results confirm the theoretical equivalent resistance formulas, showing that parallel paths reduce overall resistance.`;
+    }
+
+    case 'wheatstone': {
+      const R1 = state.params.R || 100;
+      const R2 = state.params.L || 100;
+      const R3 = lastPt.C;
+      const Rx_calc = R3 * (R2 / R1);
+      return `The Wheatstone Bridge balancing experiment was completed. Under null-deflection conditions where galvanometer current drops to 0.00 mA, the bridge arms are balanced: R1/R2 = R3/Rx. With R1 = ${R1} Ω, R2 = ${R2} Ω, and the variable balancing resistance R3 adjusted to ${R3.toFixed(1)} Ω, the unknown resistance Rx was determined to be ${Rx_calc.toFixed(1)} Ω, demonstrating the high precision of bridge measurement techniques.`;
+    }
+
+    case 'faraday': {
+      return `Faraday's Law of Electromagnetic Induction was verified. By moving a bar magnet through a conducting coil, an electromotive force (EMF) was induced. The peak induced voltage magnitude was observed to scale directly with the velocity of the magnet (rate of change of magnetic flux dΦ/dt) and the number of turns in the coil, confirming the relationship E = -N(dΦ/dt).`;
+    }
+
+    case 'lenz': {
+      return `Lenz's Law was successfully demonstrated. The direction of the induced current was observed to reverse when switching from inserting the magnet (entering flux increase) to withdrawing it (exiting flux decrease). The induced magnetic field always opposed the physical motion of the magnet, verifying the negative sign in Faraday's equation and confirming the conservation of mechanical to electrical energy.`;
+    }
+
+    case 'solenoid': {
+      const current = lastPt.V;
+      const turns = lastPt.R;
+      const length = 0.5;
+      const u0 = 4 * Math.PI * 1e-7;
+      const B_Tesla = u0 * (turns / length) * current;
+      const B_microTesla = B_Tesla * 1e6;
+      return `The magnetic field of a solenoid was analyzed. For a coil of ${turns} turns, length 50 cm, and carrying a current of ${current.toFixed(2)} A, the measured axial magnetic flux density B is ${B_microTesla.toFixed(1)} μT. The experimental results confirm that the magnetic field strength is uniform inside the solenoid core and is directly proportional to both the current and the turns density (N/L), verifying B = μ₀ × n × I.`;
+    }
+
+    case 'transformer': {
+      const Vp = lastPt.V;
+      const Np = lastPt.R;
+      const Ns = state.params.L || 400;
+      const Vs = Vp * (Ns / Np);
+      return `AC transformer operation was verified. With a primary turns count Np = ${Np} and secondary turns Ns = ${Ns}, the turns ratio is ${(Ns/Np).toFixed(2)}. At an input primary voltage of ${Vp.toFixed(1)} V AC, the induced secondary output voltage is ${Vs.toFixed(1)} V AC. This matches the transformer turns law Vs/Vp = Ns/Np, demonstrating step-up/step-down action via mutual induction.`;
+    }
+
+    case 'diode_iv': {
+      return `The I-V characteristics of a PN junction diode were verified in both forward and reverse bias. In forward bias, conduction remains negligible until the barrier potential (~0.7V for Silicon) is overcome, after which current increases exponentially. In reverse bias, only a tiny leakage current (~1 μA) is observed, verifying the diode's unidirectional conduction characteristics.`;
+    }
+
+    case 'voltage_divider': {
+      const Vin = lastPt.V;
+      return `The voltage divider rule was experimentally verified. For series resistances R1 = ${state.params.R || 100} Ω and R2 = ${state.params.L || 200} Ω, an input voltage of ${Vin.toFixed(1)} V distributed proportionally, yielding V_out = ${lastPt.V.toFixed(2)} V across R2. This confirms the voltage division relationship V_out = V_in * (R2 / (R1 + R2)).`;
+    }
+
+    case 'planck_led': {
+      return `Planck's constant was determined using color LEDs. The threshold turn-on voltages V_th for Red, Yellow, Green, and Blue wavelengths λ were recorded. By equating electrical energy to photon energy (e × V_th = h × c / λ), the slope of the V_th vs 1/λ plot yielded Planck's constant h, matching the standard value of 6.626 × 10⁻³⁴ J·s within experimental limits.`;
+    }
+
+    case 'biot_savart': {
+      const current = lastPt.V;
+      const distance = lastPt.I;
+      const B_microTesla = lastPt.P;
+      return `Biot-Savart's Law was verified around a straight current-carrying conductor. At a current of ${current.toFixed(1)} A and radial distance of ${distance.toFixed(1)} cm, the measured magnetic field B is ${B_microTesla.toFixed(2)} μT. Tabulated results confirm that B is directly proportional to current (I) and inversely proportional to radial distance (r), satisfying B = μ₀I / (2πr).`;
+    }
+
+    case 'planck_photocell': {
+      return `Planck's constant was determined using a photocell. The stopping voltage Vs was measured for different incident monochromatic wavelengths. The stopping voltage increases linearly with light frequency, confirming Einstein's photoelectric equation e × Vs = h × f - Φ. The slope yields h/e, from which Planck's constant was computed as ~6.63 × 10⁻³⁴ J·s.`;
+    }
+
+    case 'stefan_law': {
+      const T = lastPt.V;
+      const P = lastPt.P;
+      return `Stefan's Law of blackbody radiation was verified. Radiated power was measured across a range of absolute temperatures. For example, at T = ${T.toFixed(0)} K, the radiated power was ${P.toFixed(2)} W. The logarithmic plot of Power vs Temperature shows a slope of ~4.0, verifying that total radiated energy scales with the fourth power of absolute temperature (P ∝ T⁴).`;
+    }
+
+    case 'ideal_gas': {
+      const pressure = lastPt.V;
+      const volume = lastPt.I;
+      const temp = lastPt.R;
+      const PV_T = (pressure * volume) / temp;
+      return `The Ideal Gas Law was verified. Pressure, volume, and temperature were varied. Under all state configurations, the PV/T ratio remained constant at ${PV_T.toFixed(3)} L·kPa/K for the fixed quantity of gas, confirming the state equation PV = nRT.`;
+    }
+
+    case 'boyle': {
+      const pressure = lastPt.V;
+      const volume = lastPt.I;
+      const constant_PV = pressure * volume;
+      return `Boyle's Law was verified at constant temperature. As volume was compressed from 5L to 2L, pressure increased proportionally. The product of pressure and volume remained constant at approximately ${constant_PV.toFixed(1)} L·kPa, validating the inverse relationship P ∝ 1/V (P1V1 = P2V2).`;
+    }
+
+    case 'charles': {
+      const temp = lastPt.R;
+      const volume = lastPt.I;
+      const V_T_ratio = volume / temp;
+      return `Charles's Law was verified at constant pressure. Heating the gas caused linear volume expansion. The ratio of Volume to absolute Temperature (V/T) remained constant at approximately ${V_T_ratio.toFixed(4)} L/K, confirming the direct relationship V ∝ T (V1/T1 = V2/T2).`;
+    }
+
+    case 'specific_heat': {
+      const Tm = lastPt.V;
+      const Tf = lastPt.R;
+      return `The specific heat capacity of copper was determined using calorimetry. Hot copper weights at ${Tm.toFixed(1)} °C were dropped into water. The mixture reached thermal equilibrium at Tf = ${Tf.toFixed(1)} °C. Based on the heat exchange equation Q = m × c × ΔT, the specific heat of copper was computed, demonstrating excellent agreement with the standard value of 0.385 J/g·°C.`;
+    }
+
+    case 'photoelectric': {
+      const freq = lastPt.V;
+      const stoppingVs = lastPt.P;
+      return `Einstein's photoelectric equation was verified. Photoelectrons are emitted only when the incident frequency exceeds the threshold frequency. The stopping voltage Vs was found to increase linearly with light frequency (frequency: ${freq.toFixed(1)} × 10¹⁴ Hz, stopping voltage: ${stoppingVs.toFixed(2)} V), confirming that K_max = h × f - Φ.`;
+    }
+
+    case 'radioactive': {
+      const halfLife = lastPt.R;
+      return `The radioactive decay law was verified. The parent nuclei count was monitored over time and exhibited a clear exponential decay profile. The half-life was experimentally measured as approximately ${halfLife.toFixed(1)} seconds, conforming to the decay equation N(t) = N₀ × e^(-λ × t).`;
+    }
+
+    case 'de_broglie': {
+      const mass = lastPt.V;
+      const vel = lastPt.I;
+      const lambda = lastPt.R;
+      return `The de Broglie matter wave relation was verified. Moving masses (accelerated electrons) displayed wave diffraction patterns. For a particle mass of ${mass.toFixed(1)} × 10⁻³⁰ kg at velocity ${vel.toFixed(0)} km/s, the de Broglie wavelength was measured as ${lambda.toFixed(3)} nm, verifying the dual wave-particle nature of matter (λ = h/p).`;
+    }
+
+    case 'bohr_model': {
+      const ni = lastPt.V;
+      const nf = lastPt.I;
+      const deltaE = lastPt.R;
+      return `Orbital transitions in the Bohr Hydrogen atom were analyzed. The transition of an electron from orbit n_i = ${ni} to n_f = ${nf} resulted in an energy change of ΔE = ${deltaE.toFixed(2)} eV. This quantum transition emitted a photon whose wavelength corresponds to the hydrogen spectral series (Balmer/Lyman), verifying the Bohr orbit energy relation.`;
+    }
+
+    case 'arduino_led': {
+      const R = state.params.R || 150;
+      const I_mA = ((5.0 - 2.0) / R * 1000).toFixed(1);
+      return `The Arduino push-button LED loop was successfully constructed and verified. With Vcc = 5V and LED forward drop V_led ≈ 2V, the series current-limiting resistor R = ${R} Ω restricted the circuit current to a safe value of ${I_mA} mA. Closing the switch completed the loop, lighting the LED, demonstrating basic digital loop principles.`;
+    }
+
+    default:
+      return "Experiment successfully performed. Data points recorded and verified, confirming the physical principles of the experiment.";
+  }
+}
+
+
 
 // --- FULL LAB REPORT PDF GENERATOR ---
 function generateLabReportPDF() {
@@ -3594,19 +3976,7 @@ function generateLabReportPDF() {
   });
 
   // --- Build conclusion ---
-  const conclusionEl = document.getElementById('conclusion-text');
-  const conclusionText = conclusionEl ? (conclusionEl.innerText || conclusionEl.textContent) : '';
-  let conclusionBlock = conclusionText || 'Experiment in progress. Complete all steps and record data points to generate conclusion.';
-  if (expKey === 'lcr' && state.dataPoints.length >= 2) {
-    const f0_theoretical = (1 / (2 * Math.PI * Math.sqrt(state.params.L * 1e-3 * state.params.C * 1e-6))).toFixed(1);
-    conclusionBlock = `The series LCR resonance experiment was conducted using L = ${state.params.L} mH, C = ${state.params.C} µF, and R = ${state.params.R} Ω. The theoretical resonant frequency is f₀ = ${f0_theoretical} Hz. At resonance, the impedance is minimum (Z = R = ${state.params.R} Ω), current is maximum (I_max = V/R), and the phase angle φ = 0°. The I-Z vs. frequency curve showed a clear resonance peak, verifying the LCR resonance theory.`;
-  } else if (expKey === 'rc' && state.dataPoints.length >= 1) {
-    const tau_ms = (state.params.R * state.params.C * 1e-6 * 1000).toFixed(2);
-    conclusionBlock = `The RC circuit charging experiment was performed with R = ${state.params.R} Ω and C = ${state.params.C} µF. The theoretical time constant τ = RC = ${tau_ms} ms. The oscilloscope waveform showed an exponential charging curve V_C(t) = V_s(1−e^(−t/τ)), confirming the RC transient response theory. The capacitor reaches 63.2% of V_s after one time constant τ = ${tau_ms} ms.`;
-  } else if (expKey === 'arduino_led') {
-    const I_led = Math.max(0, (5.0 - 2.0) / state.params.R);
-    conclusionBlock = `The Arduino LED push-button experiment demonstrated basic digital control. With supply voltage V_cc = 5V, LED forward voltage V_f ≈ 2V, and series resistance R = ${state.params.R} Ω, the theoretical LED current I = (V_cc − V_f)/R = ${(I_led * 1000).toFixed(1)} mA. When the momentary button was pressed, the LED glowed confirming the series circuit was complete. On releasing the button (Normally Open switch), the LED turned OFF instantly, verifying the switch's behaviour.`;
-  }
+  const conclusionBlock = generateExperimentConclusion(expKey, state.dataPoints);
 
   // --- Get grade ---
   const displayScore = Math.min(100, state.score);
@@ -4381,44 +4751,9 @@ function initInteraction() {
     
     if (state.activeExperiment === 'ohms' && state.dataPoints.length >= 5) {
       completeStep(6);
-      
-      const R_theoretical = state.params.R || 100;
-      const N = state.dataPoints.length;
-      let sumV = 0, sumI = 0, sumVI = 0, sumV2 = 0;
-      state.dataPoints.forEach(p => {
-        sumV += p.V;
-        sumI += p.I;
-        sumVI += p.V * p.I;
-        sumV2 += p.V * p.V;
-      });
-      const denom = (N * sumV2 - sumV * sumV);
-      let conclusion = "";
-      if (denom !== 0) {
-        const m = (N * sumVI - sumV * sumI) / denom;
-        const R_calc = 1 / m;
-        const error = Math.abs(R_calc - R_theoretical) / R_theoretical * 100;
-        conclusion = `<b>Conclusion:</b> The V-I graph is a straight line passing through the origin with a positive slope (m = ${(m * 1000).toFixed(3)} mA/V). The experimental resistance calculated from the slope is ${R_calc.toFixed(1)} Ω, deviating from the theoretical value of ${R_theoretical} Ω by only ${error.toFixed(2)}%. Therefore, Ohm's Law (V = I × R) is verified.`;
-      } else {
-        conclusion = `<b>Conclusion:</b> The V-I graph is a straight line passing through the origin. Therefore, Ohm's Law is verified.`;
-      }
-      elements.conclusionText.innerHTML = conclusion;
-    } else if (state.activeExperiment === 'lcr') {
-      const f0_theoretical = (1 / (2 * Math.PI * Math.sqrt(state.params.L * 1e-3 * state.params.C * 1e-6))).toFixed(1);
-      const avgZ = state.dataPoints.reduce((a, b) => a + b.R, 0) / state.dataPoints.length;
-      elements.conclusionText.innerHTML = `<b>LCR Analysis (${state.dataPoints.length} points recorded):</b><br>
-        Theoretical resonant frequency: f₀ = <b>${f0_theoretical} Hz</b>.<br>
-        At f₀, impedance Z = R (minimum = ${state.params.R} Ω), current is maximum, and phase φ = 0°.<br>
-        Current avg impedance across recorded frequencies: ${avgZ.toFixed(1)} Ω.<br>
-        Record points above and below f₀ to plot the resonance curve.`;
-    } else if (state.activeExperiment === 'rc') {
-      const tau_ms = (state.params.R * state.params.C * 1e-6 * 1000).toFixed(2);
-      elements.conclusionText.innerHTML = `<b>RC Circuit Analysis (${state.dataPoints.length} points recorded):</b><br>
-        Current R = ${state.params.R} Ω, C = ${state.params.C} µF → Time constant τ = RC = <b>${tau_ms} ms</b>.<br>
-        Capacitor charges to 63.2% of V_s in ${tau_ms} ms and is fully charged (99.3%) after ${(parseFloat(tau_ms)*5).toFixed(1)} ms.<br>
-        The exponential charging curve V_C(t) = V_s(1−e^(−t/τ)) is visible on the oscilloscope.`;
-    } else {
-      elements.conclusionText.innerText = `Recorded ${state.dataPoints.length}/5 points. Adjust voltage and record more points to complete the experiment.`;
     }
+    const conclusion = generateExperimentConclusion(state.activeExperiment, state.dataPoints);
+    elements.conclusionText.innerHTML = `<b>Conclusion:</b><br>${conclusion}`;
     drawGraph();
     updateAIMentor();
     saveExperimentLogToBackend();
@@ -4757,6 +5092,21 @@ function initInteraction() {
         handleUserChatQuery();
       }
     });
+
+    // Quick prompts chips click handler
+    const quickPrompts = document.getElementById('ai-quick-prompts');
+    if (quickPrompts) {
+      quickPrompts.addEventListener('click', (e) => {
+        const chip = e.target.closest('.quick-prompt-chip');
+        if (chip) {
+          const promptText = chip.getAttribute('data-prompt');
+          if (promptText) {
+            elements.aiInput.value = promptText;
+            handleUserChatQuery();
+          }
+        }
+      });
+    }
   }
 
   // Keyboard Hotkeys
@@ -4906,17 +5256,21 @@ async function handleUserChatQuery() {
   if (!query) return;
   elements.aiInput.value = '';
   
-  appendAIMessage("User", query, true);
+  appendAIMessage("Student", query, true);
   
   // Append temporary loading bubble
   const loadingDiv = document.createElement('div');
   loadingDiv.className = 'ai-msg';
   loadingDiv.innerHTML = `
-    <div class="ai-avatar">⚡</div>
-    <div>
-      <div style="font-size:9px;font-weight:600;color:var(--accent);letter-spacing:.5px;margin-bottom:3px">Circuit IQ · AI Mentor</div>
-      <div class="ai-bubble" style="display:flex;gap:4px;align-items:center">
-        <span style="opacity: 0.6">Consulting AI...</span>
+    <div class="ai-avatar bot"><i class="fa-solid fa-robot"></i></div>
+    <div class="ai-bubble-wrap">
+      <div class="ai-bubble-sender">Circuit IQ · AI Mentor</div>
+      <div class="ai-bubble" style="display:flex;align-items:center;padding:10px 16px">
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
       </div>
     </div>
   `;

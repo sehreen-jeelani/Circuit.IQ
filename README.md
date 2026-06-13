@@ -133,7 +133,7 @@ sequenceDiagram
 
 *   **26 Physics Modules**: Covering breadboard circuits, semiconductors, visual electromagnetism simulators, ideal gases, calorimetry, stopping voltages, orbital shells, and radioactive half-lives.
 *   **Photorealistic 3D Breadboard Workspace**: Interactive Three.js scene supporting orbital rotations, component dragging, and Bézier wire drawing.
-*   **Context-Aware AI Mentor**: Panel-based chatbot inside the simulator ([PhysicsBotPanel.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/components/PhysicsBotPanel.tsx)) that reads the current layout structure, slider values, and meter readouts to guide students through faults.
+*   **Context-Aware AI Mentor**: Panel-based chatbot inside the simulator ([PhysicsBotPanel.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/components/PhysicsBotPanel.tsx)) redesigned with premium glassmorphic visual aesthetics, distinct message bubbles (gradient user bubbles vs. outlined bot bubbles), glowing round avatars, horizontal scrollable quick prompt chips, and a bouncing-wave typing indicator. The AI reads the current layout structure, slider values, and meter readouts to guide students through faults.
 *   **Global PhysicsBot Chat Console**: Homepage terminal simulator equipped with quick-command shortcuts (`ohms-solver`, `lcr-resonance`) that matches, explains, and loads target simulations with a single click.
 *   **Integrated Telemetry Instruments**: Active virtual digital multimeters, a functional dual-channel oscilloscope, and live data plotting canvas graphs.
 *   **Printable Academic Lab Reports**: Dynamically prints professional PDF reports compiling the student's name, university, aim, apparatus, theory formulas, observation tables, graded viva voce questions, and conclusion text.
@@ -167,10 +167,12 @@ Circuit.IQ includes a professional, classroom-grade attendance and presence veri
 
 ## 🤖 Global PhysicsBot AI Console
 
-The homepage features a terminal-style chatbot interface dedicated to general physics tutoring:
+The homepage features a terminal-style chatbot interface dedicated to general physics tutoring, now upgraded with a premium glassmorphic dark interface:
+*   **Redesigned Visual System**: Integrated with glowing status badges, custom animated user/bot avatars, visual bubble separation, and automated timestamps.
 *   **Structured Queries**: Calls the `/api/physics-bot` endpoint to retrieve concise explanations, formulas, and recommended simulation modules.
-*   **Quick Shortcuts**: Students can click pre-set command buttons (like `ohms-solver`, `lcr-resonance`, `ideal-gas`, and `photoelectric-effect`) to instantly query common physics topics.
-*   **Interactive Simulation Launch**: If a query is related to one of the 26 simulator experiments, the AI provides a button to automatically load and launch that simulation inside the virtual lab.
+*   **Quick Suggestion Chips**: Students can click pre-set command/prompt chips (like `ohms-solver`, `lcr-resonance`, `ideal-gas`, and `photoelectric-effect`) to instantly run common queries or auto-fill custom questions.
+*   **Interactive Simulation Launch**: If a query is related to one of the simulator experiments, the AI provides an action button to automatically load and launch that simulation inside the virtual lab.
+*   **Bouncing typing indicator**: Beautiful multi-colored bouncing dots wave animation showing search status.
 *   **Offline Keyword Parser**: If `GEMINI_API_KEY` is not set, a local keyword parser evaluates questions (matching words like "ohm", "lcr", "pendulum", "snell", "gas") and responds with structured formulas and local instructions.
 
 ---
@@ -181,6 +183,14 @@ The backend uses a dual database adapter structure ([database.py](file:///c:/Use
 *   **Local SQLite Driver**: Saves data to `circuit_iq.db` automatically if Supabase variables are absent.
 *   **Seeded Sandbox**: Initializes a default profile for student `Aisha Rahman` (ID: `a1b2c3d4-e5f6-7890-abcd-ef1234567890`) and pre-configures a sample Ohm's Law circuit so the simulator is functional on fresh deployments.
 *   **PostgreSQL Migration**: The database script files ([schema.sql](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABdata-IQ/schema.sql)) and ([customise.sql](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABdata-IQ/customise.sql)) define matching schemas, constraints, trigger functions for updated timestamps, Row Level Security (RLS) policies, and test data seeding for deployment on Supabase.
+
+### 💾 Save & Restore Progress Workflow
+Circuit.IQ features a student progress saving mechanism designed for long or multi-stage experiments:
+1.  **Auto-Save Sync**: The 3D simulator triggers a debounced layout backup (`debouncedSaveCircuit()`) to the Flask database route `/api/db/save-circuit` on every component placement or wire connection, showing `DB: SYNCING...` then `DB: SAVED` on the status bar.
+2.  **Manual Save Progress Button**: A dedicated **Save Progress** button with a floppy disk icon in the lab's topbar allows students to manually sync their workspace configuration to the cloud/local database immediately. On success, a glowing, semi-transparent toast notification appears on the screen: *"Progress saved successfully!"*.
+3.  **Restore Prompt on Load**: When launching an experiment (on initial load, selection change, or from the library list), the system queries `/api/db/load-circuit`. If a previous saved layout is discovered, it suspends loading and opens an overlay confirmation modal asking: *"Saved Progress Found: Would you like to restore your saved layout or start a fresh experiment?"*.
+    *   **Restore Progress**: Clears the workspace and reconstructs the saved component locations, parameter knobs, and wire links (restored exactly without snapping offsets). The status bar updates to `DB: LOADED`.
+    *   **Start From New**: Resets the database records for this experiment to an empty state immediately by saving a blank layout, allowing the student to work on a fresh breadboard.
 
 ---
 
@@ -332,7 +342,7 @@ Circuit.IQ uses a premium dark aesthetic combined with modern typography:
 *   **Palette**: Neon accents (Emerald green `#10b981`, Cyber blue `#3b82f6`, Dark void `#070b14`) styled with dynamic hover gradients.
 *   **Typography**: Utilizes `Outfit` and `Inter` via Google Fonts.
 *   **Glassmorphism**: UI panels are structured with light borders, backdrop blur properties (`backdrop-filter: blur(16px)`), and semi-transparent backgrounds.
-*   **Animations**: Built using GSAP, Framer Motion, and Tailwind transitions.
+*   **Animations**: Built using GSAP, Framer Motion, and Tailwind transitions. Includes spring-loaded card entry slide-ins, tactical hover lifts, button tap scales, and slow breathing background glow pulses on the Contact Page.
 
 ---
 

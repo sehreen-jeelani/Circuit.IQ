@@ -105,7 +105,7 @@ The homepage has these sections:
 
 ### 📞 ContactPage
 
-- Support ticket form (name, email, message)
+- Support ticket form with premium spring-loaded entrance animations, card lifts on hover, responsive button scales, and FAQ transitions
 - Sends via `/api/contact` to email
 - FAQ accordion section
 
@@ -117,7 +117,7 @@ The homepage has these sections:
 |-----------|-------------|
 | `Navbar` | Top navigation — links to Home, Experiments, Lab, Contact |
 | `AntigravityHero` | 3D scene with floating resistors/capacitors (React Three Fiber) |
-| `PhysicsBotPanel` | Terminal-style chat — sends questions to Gemini AI |
+| `PhysicsBotPanel` | Upgraded slate glass chat interface with custom avatars, suggestions chips, and pulsing waves |
 | `PhysicsShowcase` | Animated mini-demos on the homepage |
 | `AttendanceSystem` | Student attendance tracking table |
 | `TeamRolesSection` | Founder cards with waveform visualizations |

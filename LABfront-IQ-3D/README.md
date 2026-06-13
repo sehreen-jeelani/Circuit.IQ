@@ -14,6 +14,7 @@ This is the **heart** of Circuit.IQ — a Three.js application that renders a ph
 - 📊 **View waveforms** on an oscilloscope and plot V-I graphs
 - 📄 **Generate PDF lab reports** with recorded data and grading
 - 💾 **Auto-save** circuits to the database (restored exactly on reload)
+- 🤖 **Redesigned AI Mentor Panel** — a premium glassmorphic interface with pulsing custom avatars, time logging, horizontal prompt suggestion chips, and a bouncing wave typing indicator.
 
 This app runs inside an **iframe** embedded in the React website.
 

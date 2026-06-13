@@ -159,16 +159,16 @@ export default function ContactPage() {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(99,102,241,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(99,102,241,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none" />
       
       {/* Dynamic Ambient Glowing Accents */}
-      <div className="absolute top-24 left-1/4 w-96 h-96 bg-blue-500/5 dark:bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-24 right-1/4 w-96 h-96 bg-indigo-500/5 dark:bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-24 left-1/4 w-96 h-96 bg-blue-500/5 dark:bg-blue-500/5 blur-[120px] rounded-full pointer-events-none animate-[pulse_10s_ease-in-out_infinite]" />
+      <div className="absolute bottom-24 right-1/4 w-96 h-96 bg-indigo-500/5 dark:bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none animate-[pulse_12s_ease-in-out_infinite]" />
 
       <div className="max-w-5xl mx-auto relative z-10 flex flex-col gap-10 md:gap-14">
         
         {/* Cinematic Page Header */}
         <div className="text-center flex flex-col items-center gap-3">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-600 dark:text-blue-400 text-[10px] font-mono tracking-widest uppercase"
           >
@@ -177,18 +177,18 @@ export default function ContactPage() {
           </motion.div>
           
           <motion.h1
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
             className="text-3xl md:text-4xl font-display font-bold tracking-tight text-slate-900 dark:text-white"
           >
             How can we assist you?
           </motion.h1>
           
           <motion.p
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             className="text-slate-500 dark:text-slate-400 max-w-lg text-center text-sm leading-relaxed"
           >
             Got a problem with the simulation, spotted a bug, or want to suggest an improvement? Submit your request details below and we will investigate immediately.
@@ -200,10 +200,23 @@ export default function ContactPage() {
           
           {/* Main Inquiry Form */}
           <motion.div
-            initial={{ opacity: 0, x: -15 }}
+            initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white/80 dark:bg-black/30 border border-slate-200 dark:border-white/5 shadow-xl rounded-3xl p-6 md:p-8 backdrop-blur-3xl relative"
+            whileHover={{
+              y: -6,
+              borderColor: "rgba(59, 130, 246, 0.3)",
+              boxShadow: "0 25px 50px rgba(59, 130, 246, 0.12), 0 0 25px rgba(6, 182, 212, 0.05)"
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 100,
+              damping: 20,
+              delay: 0.1,
+              borderColor: { delay: 0 },
+              boxShadow: { delay: 0 },
+              y: { type: "spring", stiffness: 300, damping: 20, delay: 0 }
+            }}
+            className="bg-white/80 dark:bg-black/30 border border-slate-200 dark:border-white/5 shadow-xl rounded-3xl p-6 md:p-8 backdrop-blur-3xl relative transition-colors duration-300"
           >
             <div className="border-b border-slate-100 dark:border-white/5 pb-4 mb-6 text-left">
               <h2 className="text-base font-display font-semibold text-slate-900 dark:text-white">Submit a Support Ticket</h2>
@@ -350,14 +363,16 @@ export default function ContactPage() {
                   </AnimatePresence>
 
                   {/* Submit Button */}
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 text-xs transition-all hover:bg-blue-700 disabled:opacity-50 tracking-wider uppercase select-none active:scale-[0.99] cursor-pointer"
+                    className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 text-xs transition-all hover:bg-blue-700 disabled:opacity-50 tracking-wider uppercase select-none cursor-pointer"
                   >
                     <span>Send Message</span>
                     <Send size={14} />
-                  </button>
+                  </motion.button>
                 </form>
               ) : (
                 /* Success Animated Modal */
@@ -417,10 +432,23 @@ export default function ContactPage() {
             
             {/* Quick Contact metrics card */}
             <motion.div
-              initial={{ opacity: 0, x: 15 }}
+              initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-white/80 dark:bg-black/30 border border-slate-200 dark:border-white/5 shadow-xl rounded-3xl p-6 backdrop-blur-3xl flex flex-col gap-3.5"
+              whileHover={{
+                y: -6,
+                borderColor: "rgba(59, 130, 246, 0.3)",
+                boxShadow: "0 25px 50px rgba(59, 130, 246, 0.12), 0 0 25px rgba(6, 182, 212, 0.05)"
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 100,
+                damping: 20,
+                delay: 0.2,
+                borderColor: { delay: 0 },
+                boxShadow: { delay: 0 },
+                y: { type: "spring", stiffness: 300, damping: 20, delay: 0 }
+              }}
+              className="bg-white/80 dark:bg-black/30 border border-slate-200 dark:border-white/5 shadow-xl rounded-3xl p-6 backdrop-blur-3xl flex flex-col gap-3.5 transition-colors duration-300"
             >
               <h3 className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-blue-500" />
@@ -452,10 +480,23 @@ export default function ContactPage() {
 
             {/* Quick Consultation Slot Booking */}
             <motion.div
-              initial={{ opacity: 0, x: 15 }}
+              initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white/80 dark:bg-black/30 border border-slate-200 dark:border-white/5 shadow-xl rounded-3xl p-6 backdrop-blur-3xl flex flex-col gap-4"
+              whileHover={{
+                y: -6,
+                borderColor: "rgba(59, 130, 246, 0.3)",
+                boxShadow: "0 25px 50px rgba(59, 130, 246, 0.12), 0 0 25px rgba(6, 182, 212, 0.05)"
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 100,
+                damping: 20,
+                delay: 0.3,
+                borderColor: { delay: 0 },
+                boxShadow: { delay: 0 },
+                y: { type: "spring", stiffness: 300, damping: 20, delay: 0 }
+              }}
+              className="bg-white/80 dark:bg-black/30 border border-slate-200 dark:border-white/5 shadow-xl rounded-3xl p-6 backdrop-blur-3xl flex flex-col gap-4 transition-colors duration-300"
             >
               <div className="flex flex-col">
                 <h3 className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
@@ -475,11 +516,13 @@ export default function ContactPage() {
                       <span className="text-[9px] font-mono text-slate-400 uppercase">Available Dates:</span>
                       <div className="grid grid-cols-4 gap-1.5">
                         {calendarDays.slice(0, 4).map((day, idx) => (
-                          <button
+                          <motion.button
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.97 }}
                             key={idx}
                             onClick={() => setSelectedDate(idx)}
                             className={cn(
-                              "flex flex-col items-center justify-center p-2 rounded-xl border text-center transition-all cursor-pointer",
+                              "flex flex-col items-center justify-center p-2 rounded-xl border text-center transition-all cursor-pointer select-none",
                               selectedDate === idx
                                 ? "bg-blue-600 text-white border-blue-600 shadow-md"
                                 : "bg-slate-50 dark:bg-black/20 border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10 dark:text-gray-300"
@@ -491,7 +534,7 @@ export default function ContactPage() {
                             <span className="text-xs font-bold leading-none mt-1">
                               {day.getDate()}
                             </span>
-                          </button>
+                          </motion.button>
                         ))}
                       </div>
                     </div>
@@ -501,29 +544,33 @@ export default function ContactPage() {
                       <span className="text-[9px] font-mono text-slate-400 uppercase">Available Hours (UTC):</span>
                       <div className="grid grid-cols-3 gap-1.5">
                         {availableHours.map((time) => (
-                          <button
+                          <motion.button
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.97 }}
                             key={time}
                             onClick={() => setSelectedTime(time)}
                             className={cn(
-                              "py-1.5 text-[9px] font-mono border rounded-lg text-center transition-all cursor-pointer",
+                              "py-1.5 text-[9px] font-mono border rounded-lg text-center transition-all cursor-pointer select-none",
                               selectedTime === time
                                 ? "bg-blue-600 text-white border-blue-600"
                                 : "bg-slate-50 dark:bg-black/20 border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10 dark:text-gray-300"
                             )}
                           >
                             {time}
-                          </button>
+                          </motion.button>
                         ))}
                       </div>
                     </div>
 
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={handleBookCall}
                       disabled={selectedDate === null || !selectedTime}
-                      className="w-full py-2 rounded-lg bg-slate-900 border border-transparent text-white dark:bg-white/10 dark:text-white hover:bg-slate-800 dark:hover:bg-white/15 text-[10px] font-bold uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
+                      className="w-full py-2.5 rounded-lg bg-slate-900 border border-transparent text-white dark:bg-white/10 dark:text-white hover:bg-slate-800 dark:hover:bg-white/15 text-[10px] font-bold uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shadow-md select-none"
                     >
                       Book Free Support Call
-                    </button>
+                    </motion.button>
                   </div>
                 ) : (
                   <motion.div
@@ -547,9 +594,9 @@ export default function ContactPage() {
 
         {/* Dynamic Accordion Questions */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
+          transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.4 }}
           className="max-w-3xl mx-auto w-full flex flex-col gap-4 text-left"
         >
           <div className="border-b border-slate-100 dark:border-white/5 pb-3 mb-2 text-center md:text-left">
@@ -564,7 +611,8 @@ export default function ContactPage() {
             {FAQS.map((faq, idx) => {
               const isOpen = openFaq === idx;
               return (
-                <div 
+                <motion.div 
+                  whileHover={{ borderColor: "rgba(59, 130, 246, 0.2)" }}
                   key={idx}
                   className="bg-white/50 dark:bg-black/15 border border-slate-200 dark:border-white/5 rounded-2xl overflow-hidden transition-all duration-300 shadow-sm"
                 >
@@ -595,7 +643,7 @@ export default function ContactPage() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </motion.div>
               );
             })}
           </div>

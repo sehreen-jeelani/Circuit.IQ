@@ -97,6 +97,13 @@ supabase db push
 
 Update the JSON circuit payload handling in `database.py` if the new column should be populated automatically.
 
+### 💾 Progress Save & Restore Architecture
+The Save/Restore progress functionality utilizes `/api/db/save-circuit` and `/api/db/load-circuit` endpoints:
+*   **Checking for saved layout**: `checkForSavedCircuit(expKey)` makes an asynchronous pre-check. If placed components or wires exist, it resolves a promise containing the configuration and triggers the confirmation modal.
+*   **Loading layout state**: `applySavedCircuit(circuitData)` is invoked if the user clicks "Restore Progress". It dynamically cleans the active WebGL scene, rebuilds Three.js mesh instances via `placeComponent3D`, runs `create3DWire` with the `loadFromDb = false` snapping-bypass flag, and syncs slider values.
+*   **Starting new state**: If the user clicks "Start From New", the system cleans the breadboard and triggers an immediate `saveCircuitToBackend` call with empty components, overwriting the database state to prevent the load prompt from displaying on next load.
+*   **Manual Save Progress**: Triggers direct sync to DB and presents a custom DOM-based toast notification (`showToastNotification()`).
+
 ---
 
 ## 7️⃣ Build & Deploy

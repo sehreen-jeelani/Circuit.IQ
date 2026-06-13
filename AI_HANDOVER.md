@@ -35,7 +35,13 @@ Please review the codebase structure and key rules below before we start:
     ```
     *Why?* Passing `false` prevents wires from jumping, snapping, or overlapping with the power source upon reload, ensuring the circuit matches the exact state it was saved in.
 
-### 4. Build Pipeline
+### 4. Progress Save & Restore
+*   **Checking for saved layout**: `checkForSavedCircuit(expKey)` runs an asynchronous check. If layout configuration exists in the database, it presents the `#modal-load-confirm` dialog.
+*   **Restoring progress**: If the user confirms restore, it triggers `applySavedCircuit` which wipes current board group children and reconstructs meshes, wires (restored using `create3DWire(..., false)`), and updates UI.
+*   **Starting fresh**: If the user clicks "Start From New", the system calls `saveCircuitToBackend` with empty components to reset DB status.
+*   **Manual Save Progress Button**: A button `btn-save-progress` in the topbar triggers `saveCircuitToBackend()` manually and displays a custom `showToastNotification()` message.
+
+### 5. Build Pipeline
 *   `python build_all.py` compiles the 3D Simulator, moves output HTML/JS/CSS assets to the React portal public assets, and compiles the React production bundle.
 *   `python start_dev.py` launches Flask on port 5000 and React on port 3000 concurrently.
 
