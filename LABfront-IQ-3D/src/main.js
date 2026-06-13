@@ -1685,6 +1685,7 @@ function updateUI() {
     }
   });
   updateInspector();
+  broadcastCircuitState();
 }
 
 // --- TAB ROUTER ---
@@ -11265,6 +11266,29 @@ function populateLibraryGrid(category) {
 // ─── SQL DATABASE ROUTINES ───────────────────────────────────────────────────
 let saveTimeout = null;
 
+function broadcastCircuitState() {
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'CIRCUIT_STATE_UPDATE',
+        payload: {
+          placed_components: state.placedComponents.map((c, index) => ({ type: c.type, id: index })),
+          wires: typeof resolveVirtualWires === 'function' ? resolveVirtualWires() : [],
+          params: state.params,
+          readings: {
+            volts: state.meters.volts || 0,
+            amps: state.meters.amps || 0,
+            ohms: state.meters.ohms || 0,
+            power: state.meters.power || 0
+          }
+        }
+      }, '*');
+    }
+  } catch (e) {
+    console.warn("Failed to broadcast circuit state:", e);
+  }
+}
+
 function debouncedSaveCircuit() {
   if (state.isDatabaseLoading) return;
   
@@ -11277,6 +11301,8 @@ function debouncedSaveCircuit() {
   saveTimeout = setTimeout(() => {
     saveCircuitToBackend();
   }, 1500);
+
+  broadcastCircuitState();
 }
 
 async function saveCircuitToBackend() {

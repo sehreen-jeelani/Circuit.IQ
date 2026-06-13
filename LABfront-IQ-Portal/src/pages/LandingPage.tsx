@@ -1,12 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
-import AntigravityHero from '../components/AntigravityHero';
 import PhysicsShowcase from '../components/PhysicsShowcase';
-import CyberpunkLedMatrix from '../components/CyberpunkLedMatrix';
 import TeamRolesSection from '../components/TeamRolesSection';
 import { useAppStore } from '../store/useAppStore';
 import { Zap, Cpu, MousePointer2, FlaskConical, Bot, Send, HelpCircle, BookOpen, Terminal, Sparkles, HelpCircle as HelpIcon, ArrowRight, Gauge, Atom } from 'lucide-react';
 import Lenis from 'lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const AntigravityHero = lazy(() => import('../components/AntigravityHero'));
+const CyberpunkLedMatrix = lazy(() => import('../components/CyberpunkLedMatrix'));
 
 interface ExperimentItem {
   id: string;
@@ -226,12 +231,20 @@ export default function LandingPage({ view = 'home' }: { view?: 'home' | 'experi
       touchMultiplier: 1.2,
       infinite: false,
     });
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-    return () => lenis.destroy();
+
+    lenis.on('scroll', ScrollTrigger.update);
+
+    const updateRaf = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+
+    gsap.ticker.add(updateRaf);
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+      lenis.destroy();
+      gsap.ticker.remove(updateRaf);
+    };
   }, []);
 
   if (view === 'experiments') {
@@ -518,7 +531,9 @@ export default function LandingPage({ view = 'home' }: { view?: 'home' | 'experi
 
   return (
     <div ref={scrollRef} className="relative min-h-[300vh] bg-transparent">
-      <AntigravityHero />
+      <Suspense fallback={<div className="fixed inset-0 bg-transparent pointer-events-none z-0" />}>
+        <AntigravityHero />
+      </Suspense>
 
       {/* Hero Content */}
       <section className="sticky top-0 h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
@@ -595,7 +610,14 @@ export default function LandingPage({ view = 'home' }: { view?: 'home' | 'experi
       {/* Cyberpunk LED Matrix Showcase Component */}
       <section className="relative py-20 w-full overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
-          <CyberpunkLedMatrix />
+          <Suspense fallback={
+            <div className="w-full h-[550px] bg-slate-950/85 p-8 rounded-3xl border border-white/5 backdrop-blur-3xl shadow-[0_24px_70px_rgba(0,0,0,0.8)] flex flex-col items-center justify-center gap-4">
+              <div className="w-10 h-10 rounded-full border-2 border-t-blue-500 border-r-transparent border-b-transparent border-l-blue-500 animate-spin" />
+              <span className="font-mono text-xs text-slate-500 tracking-widest uppercase">Initializing LED Matrix...</span>
+            </div>
+          }>
+            <CyberpunkLedMatrix />
+          </Suspense>
         </div>
       </section>
 
@@ -649,7 +671,7 @@ export default function LandingPage({ view = 'home' }: { view?: 'home' | 'experi
           <motion.h2 
             initial={{ y: "40%", opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true, margin: "-120px" }}
+            viewport={{ once: false, margin: "-120px" }}
             transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
             className="text-[12.8vw] font-bold tracking-tighter text-slate-950 dark:text-white leading-none font-display inline-block"
             style={{ 

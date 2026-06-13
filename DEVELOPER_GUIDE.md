@@ -125,7 +125,51 @@ The built site is in `LABfront-IQ-Portal/dist/` and can be deployed to any stati
 
 ---
 
-## 9️⃣ Common Issues & Fixes
+## 9️⃣ Performance & Animation Guidelines
+
+To keep initial load times extremely fast and guarantee scroll-scrubbed animations are butter-smooth, adhere to these development standards:
+
+### 1. Dynamic Imports for Heavy Libraries
+Do not import heavy WebGL components (e.g. Three.js scenes, post-processing filters, chart visualizers) statically. Instead, use React's `lazy` and `Suspense` to split code chunks:
+```typescript
+import { lazy, Suspense } from 'react';
+const ThreeComponent = lazy(() => import('../components/ThreeComponent'));
+
+export default function Page() {
+  return (
+    <Suspense fallback={<SkeletonContainer />}>
+      <ThreeComponent />
+    </Suspense>
+  );
+}
+```
+
+### 2. Smooth Scrolling & Animation Sync
+If you are adding scroll-scrubbed GSAP or Framer Motion animations to a page, always synchronize the `Lenis` smooth-scroll instance with the GSAP ticker and trigger updates:
+```typescript
+useEffect(() => {
+  const lenis = new Lenis();
+  
+  // Update GSAP ScrollTrigger whenever Lenis scrolls
+  lenis.on('scroll', ScrollTrigger.update);
+  
+  // Use GSAP ticker to tick Lenis to keep them in perfect sync
+  const updateRaf = (time: number) => {
+    lenis.raf(time * 1000);
+  };
+  gsap.ticker.add(updateRaf);
+  gsap.ticker.lagSmoothing(0);
+  
+  return () => {
+    lenis.destroy();
+    gsap.ticker.remove(updateRaf);
+  };
+}, []);
+```
+
+---
+
+## 🔟 Common Issues & Fixes
 
 | Issue | Quick Fix |
 |-------|----------|
@@ -139,7 +183,7 @@ The built site is in `LABfront-IQ-Portal/dist/` and can be deployed to any stati
 
 ---
 
-## 🔧 Useful Scripts
+## 1️⃣1️⃣ Useful Scripts
 
 | Script | What it does |
 |--------|--------------|
@@ -151,7 +195,7 @@ The built site is in `LABfront-IQ-Portal/dist/` and can be deployed to any stati
 
 ---
 
-## 📚 Further Reading
+## 1️⃣2️⃣ Further Reading
 
 - **API Reference** – see `LABback-IQ/README.md`
 - **3D Lab Code Map** – see `LABfront-IQ-3D/README.md`

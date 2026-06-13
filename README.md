@@ -378,6 +378,15 @@ Circuit.IQ uses a premium dark aesthetic combined with modern typography:
 
 ## 🛠️ Performance & Troubleshooting
 
+### Bundle Size & Dynamic Code Splitting
+*   **Lazy Loading Heavy Assets**: The core WebGL Three.js elements (`AntigravityHero.tsx` and `CyberpunkLedMatrix.tsx`) utilize heavy libraries (`three`, `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing`).
+*   **Vite Chunk Splitting**: To minimize the initial JavaScript entry bundle size (~1.75 MB reduced to light portal files), these components are dynamically loaded using `React.lazy` and wrapped in React `Suspense` containers.
+*   **Premium Fallback Skeletons**: Fallbacks prevent layouts from shifting during load by rendering high-fidelity dark skeleton frames with animated neon spinners.
+
+### Scroll Animation Synchronization (Lenis & GSAP)
+*   **Ticker Connection**: To prevent visual stuttering and guarantee that scroll-scrubbed GSAP animations (such as the 3D breadboard assembly and text fades) trigger continuously and smoothly on both scroll-up and scroll-down, the `Lenis` smooth-scroller is connected directly to `ScrollTrigger.update` and ticked via the global GSAP ticker.
+*   **Cleanup & Memory Management**: Ticker updates and Lenis events are automatically removed during component unmounting to prevent memory leaks.
+
 ### WebGL Context Management (Leaks Resolved)
 *   **Chrome Limits**: Chrome limits active WebGL contexts per browser session. Frequent iframe reloads can lead to a `WebGL Context Lost` crash.
 *   **Automatic Cleanups**: Circuit.IQ includes unmount hooks inside `LabStudio.tsx` and window `unload` events in `main.js` that invoke `loseContext()` and `renderer.dispose()` automatically when leaving the lab, preventing memory leaks.

@@ -260,23 +260,25 @@ const [loadingStudents, setLoadingStudents] = useState(false);
 
   const headers = { 'Content-Type': 'application/json', 'X-Admin-Token': token };
 
+  // Load students from database when department or semester changes
+  useEffect(() => {
+    const loadStudents = async () => {
+      setLoadingStudents(true);
+      try {
+        const res = await fetch(`/api/students?department=${department}&semester=${semester}`);
+        const data = await res.json();
+        if (res.ok) {
+          setDbStudents(data.students);
+          setRegNumbers(data.students.map((s: any) => s.enrollment));
+        }
+      } catch {}
+      finally { setLoadingStudents(false); }
+    };
+    loadStudents();
+  }, [department, semester]);
+
   const loadSessions = useCallback(async () => {
     try {
-      useEffect(() => {
-  const loadStudents = async () => {
-    setLoadingStudents(true);
-    try {
-      const res = await fetch(`/api/students?department=${department}&semester=${semester}`);
-      const data = await res.json();
-      if (res.ok) {
-        setDbStudents(data.students);
-        setRegNumbers(data.students.map((s: any) => s.enrollment));
-      }
-    } catch {}
-    finally { setLoadingStudents(false); }
-  };
-  loadStudents();
-}, [department, semester]);
       const res = await fetch('/api/admin/session/list', { headers });
       const data = await res.json();
       if (res.ok) setSessions(data.sessions);
@@ -724,9 +726,9 @@ if (s.status === 'paused') onLabPause?.();
         document.head.appendChild(s);
       });
 
+      await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js');
       await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@4.15.0/dist/tf-backend-webgl.min.js');
-await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js');
-await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js');
+      await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js');
 
       const cocoSsd = (window as any).cocoSsd;
       detectorRef.current = await cocoSsd.load({ base: 'lite_mobilenet_v2' });

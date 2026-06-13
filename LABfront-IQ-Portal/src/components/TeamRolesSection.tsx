@@ -102,7 +102,7 @@ export default function TeamRolesSection() {
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-2xl"
           >
@@ -118,7 +118,7 @@ export default function TeamRolesSection() {
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
             className="text-slate-500 dark:text-slate-400 max-w-md text-sm md:text-base font-light leading-relaxed"
           >
@@ -223,7 +223,7 @@ function TeamMemberCard({ member, index, isSelected, onClickPlay, onClose }: Car
       onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, y: 70 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: false, margin: "-100px" }}
       // Staggered quantum gravity float representation (cards bob up and down asynchronously to look beautiful)
       animate={isSelected ? { y: 0, scale: 1.01 } : {
         y: [0, -8, 0],

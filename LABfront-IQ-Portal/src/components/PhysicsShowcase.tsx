@@ -154,7 +154,7 @@ function ShowcaseRow({
       <motion.div 
         initial={{ opacity: 0, x: reverse ? 100 : -100 }}
         whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: false, margin: "-100px" }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         className="w-full lg:w-1/2 flex flex-col justify-center"
       >
@@ -182,7 +182,7 @@ function ShowcaseRow({
               key={i} 
               initial={{ opacity: 0, x: reverse ? 30 : -30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ delay: 0.15 * i + 0.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               className="flex gap-4 group cursor-pointer"
               whileHover={{ x: 8 }}
@@ -205,7 +205,7 @@ function ShowcaseRow({
       <motion.div 
         initial={{ opacity: 0, x: reverse ? -100 : 100 }}
         whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: false, margin: "-100px" }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
         style={{ perspective: "1500px" }}
         className="w-full lg:w-1/2"
