@@ -323,15 +323,9 @@ const experiments = {
   },
   rc_rl_rlc: {
     name: "LCR AC Impedance Analysis",
-<<<<<<< ours
     aim: "Study total impedance and phase angle in LCR series circuits.",
     apparatus: "AC Function Generator, Resistor, Inductor, Capacitor, Oscilloscope.",
     req: ['source', 'resistor', 'inductor', 'capacitor'],
-=======
-    aim: "Study total impedance and phase angle in LCR circuits.",
-    apparatus: "AC Generator, Resistor, Inductor, Capacitor, Ammeter, Voltmeter.",
-    req: ['source', 'resistor', 'inductor', 'capacitor', 'ammeter', 'voltmeter'],
->>>>>>> theirs
     steps: [
       { id: 1, text: "Place a resistor, inductor, and capacitor in series on the breadboard." },
       { id: 2, text: "Connect the series network to the AC function generator." },
