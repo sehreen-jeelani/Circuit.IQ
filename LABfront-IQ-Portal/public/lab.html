@@ -86,7 +86,7 @@
   <!-- FontAwesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <!-- Stylesheet -->
-  <script type="module" crossorigin src="/assets/main-_lKJ3fMn.js"></script>
+  <script type="module" crossorigin src="/assets/main-DiZF02z_.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/main-BJKzGHxe.css">
 </head>
 
@@ -584,10 +584,12 @@
       <div id="osc-wrap">
         <div class="osc-hdr">
           <div class="osc-title">
-            <div style="width:6px;height:6px;border-radius:50%;background:#00ff88;animation:blink 1s infinite"></div>
+            <div id="osc-power-indicator" style="width:6px;height:6px;border-radius:50%;background:#00ff88;animation:blink 1s infinite"></div>
             Oscilloscope
           </div>
           <div class="panel-hdr-actions">
+            <button class="panel-hdr-btn" id="osc-power-btn" title="Toggle Oscilloscope Power" style="color: #00ff88;"><i
+                class="fa-solid fa-power-off"></i></button>
             <button class="panel-hdr-btn" id="osc-download" title="Download Scope Image"><i
                 class="fa-solid fa-download"></i></button>
             <button class="osc-close" id="osc-close">✕</button>
