@@ -64,7 +64,7 @@ export default function AttendanceSystem({ onLabUnlock, onLabPause, onLabResume 
   const [studentRegNo, setStudentRegNo] = useState('');
 
   return (
-    <div className="min-h-screen bg-[#070B14] text-white font-mono flex items-center justify-center p-4">
+    <div className="w-full flex items-center justify-center p-4 text-slate-800 dark:text-slate-200 font-sans">
       <AnimatePresence mode="wait">
         {view === 'gate' && (
           <GateView key="gate" onSelect={(v) => setView(v)} />
@@ -115,14 +115,14 @@ function GateView({ onSelect }: { onSelect: (v: View) => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-md"
+      className="w-full max-w-md bg-white/95 dark:bg-slate-950/75 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-6 md:p-8 relative shadow-2xl transition-all duration-300"
     >
       <div className="text-center mb-10">
         <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 rounded-full px-4 py-1.5 text-indigo-400 text-xs tracking-widest mb-6">
           <Activity size={12} /> LIVE ATTENDANCE SYSTEM
         </div>
-        <h1 className="text-4xl font-bold tracking-tight text-white mb-2">Circuit<span className="text-indigo-400">.IQ</span></h1>
-        <p className="text-slate-400 text-sm">Lab Session Management</p>
+        <h1 className="text-5xl font-display font-bold text-cinematic mb-3 tracking-tight">Circuit.IQ</h1>
+        <p className="text-slate-500 dark:text-slate-400 text-sm font-sans font-light tracking-wide">Lab Session Management</p>
       </div>
 
       <div className="grid gap-4">
@@ -147,21 +147,21 @@ function GateView({ onSelect }: { onSelect: (v: View) => void }) {
 
 function RoleCard({ icon, title, subtitle, color, onClick }: any) {
   const colors: Record<string, string> = {
-    indigo: 'border-indigo-500/30 hover:border-indigo-400/60 hover:bg-indigo-500/5',
-    emerald: 'border-emerald-500/30 hover:border-emerald-400/60 hover:bg-emerald-500/5',
+    indigo: 'border-indigo-500/20 dark:border-indigo-500/30 hover:border-indigo-400/60 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5',
+    emerald: 'border-emerald-500/20 dark:border-emerald-500/30 hover:border-emerald-400/60 hover:bg-emerald-50/50 dark:hover:bg-emerald-500/5',
   };
   return (
     <motion.button
       whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`w-full flex items-center gap-5 p-5 rounded-2xl border bg-white/3 ${colors[color]} transition-all text-left group`}
+      className={`w-full flex items-center gap-5 p-5 rounded-2xl border bg-white/50 dark:bg-white/3 ${colors[color]} transition-all text-left group shadow-sm`}
     >
       <div className={`w-14 h-14 rounded-xl bg-${color}-500/10 flex items-center justify-center shrink-0`}>{icon}</div>
       <div className="flex-1">
-        <p className="font-bold text-lg text-white">{title}</p>
-        <p className="text-slate-400 text-sm">{subtitle}</p>
+        <p className="font-bold text-lg text-slate-900 dark:text-white">{title}</p>
+        <p className="text-slate-500 dark:text-slate-400 text-sm">{subtitle}</p>
       </div>
-      <ChevronRight size={18} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
+      <ChevronRight size={18} className="text-slate-400 group-hover:text-slate-600 dark:text-slate-600 dark:group-hover:text-slate-400 transition-colors" />
     </motion.button>
   );
 }
@@ -185,24 +185,24 @@ function AdminLoginView({ onSuccess, onBack }: { onSuccess: (token: string) => v
       const data = await res.json();
       if (res.ok) { onSuccess(data.token); }
       else { setError(data.message || 'Invalid password'); }
-    } catch { setError('Connection error — is Flask running?'); }
+    } catch { setError('Connection error is Flask running?'); }
     finally { setLoading(false); }
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-sm"
+      className="w-full max-w-md bg-white/95 dark:bg-slate-950/75 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-6 md:p-8 relative shadow-2xl transition-all duration-300"
     >
-      <button onClick={onBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-300 text-sm mb-8 transition-colors">
+      <button onClick={onBack} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 text-sm mb-8 transition-colors font-medium">
         ← Back
       </button>
       <div className="mb-8">
         <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center mb-4">
           <Shield size={24} className="text-indigo-400" />
         </div>
-        <h2 className="text-2xl font-bold text-white">Professor Access</h2>
-        <p className="text-slate-400 text-sm mt-1">Enter your admin password to continue</p>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Professor Access</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Enter your admin password to continue</p>
       </div>
 
       <div className="space-y-4">
@@ -213,9 +213,9 @@ function AdminLoginView({ onSuccess, onBack }: { onSuccess: (token: string) => v
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
             placeholder="Admin password"
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-12 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50 transition-colors"
+            className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 pr-12 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-indigo-500/50 transition-colors"
           />
-          <button onClick={() => setShow(!show)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+          <button onClick={() => setShow(!show)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300">
             {show ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>
         </div>
@@ -359,25 +359,25 @@ const [expiryMinutes, setExpiryMinutes] = useState(15);
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-2xl"
+      className="w-full max-w-2xl bg-white/95 dark:bg-slate-950/75 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-6 md:p-8 relative shadow-2xl transition-all duration-300"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-white">Admin Panel</h2>
-          <p className="text-slate-400 text-sm mt-0.5">Manage lab sessions</p>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Admin Panel</h2>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">Manage lab sessions</p>
         </div>
-        <button onClick={onLogout} className="flex items-center gap-2 text-slate-500 hover:text-red-400 text-sm transition-colors">
+        <button onClick={onLogout} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-red-400 text-sm transition-colors font-medium">
           <LogOut size={15} /> Logout
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 bg-white/5 rounded-xl p-1">
+      <div className="flex gap-2 mb-6 bg-slate-100 dark:bg-white/5 border border-slate-200/50 dark:border-transparent rounded-xl p-1">
         {(['create', 'sessions'] as const).map((t) => (
           <button
             key={t} onClick={() => setTab(t)}
-            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all capitalize ${tab === t ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}
+            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all capitalize ${tab === t ? 'bg-indigo-600 dark:bg-indigo-600 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'}`}
           >
             {t === 'create' ? '+ New Session' : 'Active Sessions'}
           </button>
@@ -395,7 +395,7 @@ const [expiryMinutes, setExpiryMinutes] = useState(15);
       <CheckCircle2 size={20} className="text-emerald-400 shrink-0" />
       <div className="flex-1">
         <p className="text-emerald-300 font-semibold">Session Created!</p>
-        <p className="text-slate-400 text-sm">Code: <span className="text-white font-bold tracking-widest">{created}</span></p>
+        <p className="text-slate-600 dark:text-slate-450 text-sm">Code: <span className="text-white font-bold tracking-widest">{created}</span></p>
       </div>
       <button onClick={() => { setCreated(null); setCreatedRegNumbers([]); setCheckedInLocal([]); }} className="text-slate-500 hover:text-slate-300"><XCircle size={16} /></button>
     </div>
@@ -405,8 +405,8 @@ const [expiryMinutes, setExpiryMinutes] = useState(15);
         {createdRegNumbers.map((r) => {
           const isPresent = checkedInLocal.includes(r);
           return (
-            <div key={r} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
-              <span className={`text-sm font-mono ${isPresent ? 'text-emerald-400' : 'text-slate-300'}`}>{r}</span>
+            <div key={r} className="flex items-center justify-between bg-slate-100/60 dark:bg-white/5 rounded-lg px-3 py-2">
+              <span className={`text-sm font-mono ${isPresent ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300'}`}>{r}</span>
               <button
                 onClick={async () => {
                  if (isPresent) { setCheckedInLocal(checkedInLocal.filter((e: string) => e !== r)); return; }
@@ -440,62 +440,62 @@ const [expiryMinutes, setExpiryMinutes] = useState(15);
 
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">Experiment</label>
+              <label className="text-xs text-slate-500 dark:text-slate-400 tracking-widest uppercase mb-2 block font-semibold">Experiment</label>
               <select value={experiment} onChange={(e) => setExperiment(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500/50"
+                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500/50"
               >
-                {EXPERIMENTS.map((e) => <option key={e} value={e} className="bg-gray-900">{e}</option>)}
+                {EXPERIMENTS.map((e) => <option key={e} value={e} className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">{e}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">Group Name</label>
+              <label className="text-xs text-slate-500 dark:text-slate-400 tracking-widest uppercase mb-2 block font-semibold">Group Name</label>
               <input value={groupName} onChange={(e) => setGroupName(e.target.value)}
                 placeholder="e.g. Group A"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50"
+                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-indigo-500/50"
               />
             </div>
             <div>
-              <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">Group Size</label>
+              <label className="text-xs text-slate-500 dark:text-slate-400 tracking-widest uppercase mb-2 block font-semibold">Group Size</label>
               <input type="number" min={1} max={10} value={groupSize} onChange={(e) => setGroupSize(parseInt(e.target.value))}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500/50"
+                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500/50"
               />
             </div>
           </div><div>
-  <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">Session Expiry</label>
+  <label className="text-xs text-slate-500 dark:text-slate-400 tracking-widest uppercase mb-2 block font-semibold">Session Expiry</label>
   <select
     value={expiryMinutes}
     onChange={(e) => setExpiryMinutes(Number(e.target.value))}
-    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500/50"
+    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500/50"
   >
-    <option value={10} className="bg-gray-900">10 minutes</option>
-    <option value={15} className="bg-gray-900">15 minutes</option>
-    <option value={20} className="bg-gray-900">20 minutes</option>
-    <option value={30} className="bg-gray-900">30 minutes</option>
-    <option value={45} className="bg-gray-900">45 minutes</option>
-    <option value={60} className="bg-gray-900">60 minutes</option>
+    <option value={10} className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">10 minutes</option>
+    <option value={15} className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">15 minutes</option>
+    <option value={20} className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">20 minutes</option>
+    <option value={30} className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">30 minutes</option>
+    <option value={45} className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">45 minutes</option>
+    <option value={60} className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">60 minutes</option>
   </select>
 </div>
 
           <div>
-  <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">Department</label>
+  <label className="text-xs text-slate-500 dark:text-slate-400 tracking-widest uppercase mb-2 block font-semibold">Department</label>
   <select value={department} onChange={(e) => setDepartment(e.target.value)}
-    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500/50"
+    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500/50"
   >
-    <option value="BTECHDSAI" className="bg-gray-900">BTech DS&AI</option>
-    <option value="BTECHCSE" className="bg-gray-900">BTech CSE</option>
+    <option value="BTECHDSAI" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">BTech DS&AI</option>
+    <option value="BTECHCSE" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">BTech CSE</option>
   </select>
 </div>
 <div>
-  <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">Semester</label>
+  <label className="text-xs text-slate-500 dark:text-slate-400 tracking-widest uppercase mb-2 block font-semibold">Semester</label>
   <select value={semester} onChange={(e) => setSemester(e.target.value)}
-    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500/50"
+    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500/50"
   >
-    <option value="1" className="bg-gray-900">1st Semester</option>
-    <option value="2" className="bg-gray-900">2nd Semester</option>
+    <option value="1" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">1st Semester</option>
+    <option value="2" className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white">2nd Semester</option>
   </select>
 </div>
 <div>
-  <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">
+  <label className="text-xs text-slate-500 dark:text-slate-400 tracking-widest uppercase mb-2 block font-semibold">
     Students {loadingStudents ? '(Loading...)' : `(${dbStudents.length} loaded)`}
   </label>
   <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 max-h-40 overflow-y-auto space-y-1">
@@ -528,7 +528,7 @@ const [expiryMinutes, setExpiryMinutes] = useState(15);
       {tab === 'sessions' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-slate-400 text-sm">{sessions.length} session{sessions.length !== 1 ? 's' : ''}</p>
+            <p className="text-slate-600 dark:text-slate-450 text-sm">{sessions.length} session{sessions.length !== 1 ? 's' : ''}</p>
             <button onClick={loadSessions} className="text-slate-500 hover:text-slate-300 transition-colors"><RefreshCw size={14} /></button>
           </div>
 
@@ -540,16 +540,16 @@ const [expiryMinutes, setExpiryMinutes] = useState(15);
           )}
 
           {sessions.map((s) => (
-            <div key={s.id} className="bg-white/3 border border-white/8 rounded-xl p-4">
+            <div key={s.id} className="bg-slate-50/50 dark:bg-white/3 border border-slate-200 dark:border-white/8 rounded-xl p-4 shadow-sm">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-white">{s.group_name}</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{s.group_name}</span>
                     <StatusBadge status={s.status} />
                   </div>
-                  <p className="text-slate-400 text-sm">{s.experiment}</p>
-                  <p className="text-slate-500 text-xs mt-1">
-                    Code: <span className="text-indigo-400 font-bold tracking-widest">{s.id}</span>
+                  <p className="text-slate-600 dark:text-slate-450 text-sm">{s.experiment}</p>
+                  <p className="text-slate-500 dark:text-slate-500 text-xs mt-1">
+                    Code: <span className="text-indigo-600 dark:text-indigo-400 font-bold tracking-widest">{s.id}</span>
                     {' · '}{s.checked_in}/{s.group_size} checked in
                     {s.expiry_at && (
   <span className={`ml-2 text-xs ${new Date(s.expiry_at) > new Date() ? 'text-yellow-400' : 'text-red-400'}`}>
@@ -572,7 +572,7 @@ const [expiryMinutes, setExpiryMinutes] = useState(15);
                     ><Download size={12} /> Log</button>
                   )}
                   <button onClick={() => handleDelete(s.id)}
-                    className="text-slate-600 hover:text-red-400 transition-colors p-1.5"
+                    className="text-slate-400 hover:text-rose-600 dark:text-slate-500 dark:hover:text-red-400 transition-colors p-1.5"
                   ><Trash2 size={14} /></button>
                 </div>
               </div>
@@ -592,7 +592,7 @@ const [expiryMinutes, setExpiryMinutes] = useState(15);
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-white">Attendance Log</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white">Attendance Log</h3>
               <button onClick={() => downloadLog(log)} className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm">
                 <Download size={14} /> Download
               </button>
@@ -646,38 +646,38 @@ function StudentJoinView({ onJoined, onBack }: { onJoined: (s: Session, reg: str
       const data = await res.json();
       if (res.ok) { onJoined(data.session, regNumber.toUpperCase()); }
       else { setError(data.message || 'Could not join session'); }
-    } catch { setError('Connection error — is Flask running?'); }
+    } catch { setError('Connection error is Flask running?'); }
     finally { setLoading(false); }
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-sm"
+      className="w-full max-w-md bg-white/95 dark:bg-slate-950/75 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-6 md:p-8 relative shadow-2xl transition-all duration-300"
     >
-      <button onClick={onBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-300 text-sm mb-8 transition-colors">← Back</button>
+      <button onClick={onBack} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 text-sm mb-8 transition-colors font-medium">← Back</button>
       <div className="mb-8">
         <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-4">
           <GraduationCap size={24} className="text-emerald-400" />
         </div>
-        <h2 className="text-2xl font-bold text-white">Join Lab Session</h2>
-        <p className="text-slate-400 text-sm mt-1">Enter the code your professor shared</p>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Join Lab Session</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Enter the code your professor shared</p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">Session Code</label>
+          <label className="text-xs text-slate-500 dark:text-slate-400 tracking-widest uppercase mb-2 block font-semibold">Session Code</label>
           <input value={sessionCode} onChange={(e) => setSessionCode(e.target.value.toUpperCase())}
             placeholder="e.g. A3F92B1C"
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 tracking-widest font-bold uppercase"
+            className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 tracking-widest font-bold uppercase"
           />
         </div>
         <div>
-          <label className="text-xs text-slate-500 tracking-widest uppercase mb-2 block">Registration Number</label>
+          <label className="text-xs text-slate-500 dark:text-slate-400 tracking-widest uppercase mb-2 block font-semibold">Registration Number</label>
           <input value={regNumber} onChange={(e) => setRegNumber(e.target.value.toUpperCase())}
             onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
             placeholder="e.g. 22BCE001"
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 uppercase"
+            className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 uppercase"
           />
         </div>
 
@@ -840,7 +840,7 @@ if (s.status === 'paused') onLabPause?.();
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-lg"
+      className="w-full max-w-2xl bg-white/95 dark:bg-slate-950/75 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-6 md:p-8 relative shadow-2xl transition-all duration-300"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -848,7 +848,7 @@ if (s.status === 'paused') onLabPause?.();
           <p className="text-xs text-slate-500 tracking-widest uppercase">Session {session.id}</p>
           <h2 className="text-xl font-bold text-white">{session.group_name} — {session.experiment}</h2>
         </div>
-        <button onClick={() => { stopCamera(); onExit(); }} className="text-slate-500 hover:text-slate-300 transition-colors text-sm flex items-center gap-1">
+        <button onClick={() => { stopCamera(); onExit(); }} className="text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-red-400 transition-colors text-sm flex items-center gap-1 font-medium">
           <LogOut size={14} /> Exit
         </button>
       </div>
@@ -856,7 +856,7 @@ if (s.status === 'paused') onLabPause?.();
       {/* Status Banner */}
       <motion.div
         animate={{ borderColor: session.status === 'paused' ? '#ef4444' : session.status === 'active' ? '#10b981' : '#f59e0b' }}
-        className="border rounded-2xl p-4 mb-5 bg-white/3"
+        className="border border-slate-200 dark:border-white/10 rounded-2xl p-4 mb-5 bg-slate-50/50 dark:bg-white/3 shadow-sm"
       >
         <div className="flex items-center gap-3">
           <div className={`w-3 h-3 rounded-full ${session.status === 'active' ? 'bg-emerald-400 animate-pulse' : session.status === 'paused' ? 'bg-red-400 animate-ping' : 'bg-amber-400'}`} />
@@ -871,7 +871,7 @@ if (s.status === 'paused') onLabPause?.();
       </motion.div>
 
       {/* Check-in list */}
-      <div className="bg-white/3 border border-white/8 rounded-2xl p-4 mb-5">
+      <div className="bg-slate-50/50 dark:bg-white/3 border border-slate-200 dark:border-white/8 rounded-2xl p-4 mb-5 shadow-sm">
         <p className="text-xs text-slate-500 tracking-widest uppercase mb-3">Members</p>
         <div className="space-y-2">
           {session.reg_numbers.map((r) => {
@@ -881,7 +881,7 @@ if (s.status === 'paused') onLabPause?.();
                 {present
                   ? <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
                   : <Clock size={16} className="text-slate-600 shrink-0" />}
-                <span className={`text-sm ${present ? 'text-white' : 'text-slate-500'}`}>{r}</span>
+                <span className={`text-sm ${present ? 'text-slate-800 dark:text-white font-medium' : 'text-slate-400 dark:text-slate-500'}`}>{r}</span>
                 {r === regNo && <span className="text-xs text-indigo-400 ml-auto">you</span>}
               </div>
             );
@@ -890,12 +890,12 @@ if (s.status === 'paused') onLabPause?.();
       </div>
 
       {/* Webcam */}
-      <div className="bg-white/3 border border-white/8 rounded-2xl p-4">
+      <div className="bg-slate-50/50 dark:bg-white/3 border border-slate-200 dark:border-white/8 rounded-2xl p-4 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <p className="text-xs text-slate-500 tracking-widest uppercase">Presence Monitor</p>
           <button
             onClick={camActive ? stopCamera : startCamera}
-            className={`flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg border transition-colors ${camActive ? 'border-red-500/30 text-red-400 hover:bg-red-500/10' : 'border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10'}`}
+            className={`flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg border transition-colors ${camActive ? 'border-red-500/20 dark:border-red-500/30 text-rose-600 dark:text-red-400 hover:bg-rose-50 dark:hover:bg-red-500/10' : 'border-indigo-500/20 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10'}`}
           >
             {camActive ? <><CameraOff size={12} /> Stop</> : <><Camera size={12} /> {modelLoading ? 'Loading...' : 'Start Camera'}</>}
           </button>
@@ -904,7 +904,7 @@ if (s.status === 'paused') onLabPause?.();
         {camError && <p className="text-red-400 text-sm mb-3">{camError}</p>}
 
         {!camActive && !modelLoading && (
-          <div className="aspect-video bg-black/30 rounded-xl flex flex-col items-center justify-center border border-white/5 text-slate-600">
+          <div className="aspect-video bg-slate-100 dark:bg-black/30 rounded-xl flex flex-col items-center justify-center border border-slate-200 dark:border-white/5 text-slate-500 dark:text-slate-600">
             <Camera size={32} className="mb-2 opacity-30" />
             <p className="text-sm">Camera not active</p>
             <p className="text-xs mt-1 opacity-60">Start camera to enable presence detection</p>
@@ -912,10 +912,10 @@ if (s.status === 'paused') onLabPause?.();
         )}
 
         {modelLoading && (
-          <div className="aspect-video bg-black/30 rounded-xl flex flex-col items-center justify-center border border-white/5">
+          <div className="aspect-video bg-slate-100 dark:bg-black/30 rounded-xl flex flex-col items-center justify-center border border-slate-200 dark:border-white/5">
             <Loader2 size={24} className="animate-spin text-indigo-400 mb-2" />
-            <p className="text-slate-400 text-sm">Loading detection model...</p>
-            <p className="text-slate-600 text-xs mt-1">First time takes ~10 seconds</p>
+            <p className="text-slate-600 dark:text-slate-450 text-sm">Loading detection model...</p>
+            <p className="text-slate-500 dark:text-slate-600 text-xs mt-1">First time takes ~10 seconds</p>
           </div>
         )}
 
@@ -929,7 +929,7 @@ if (s.status === 'paused') onLabPause?.();
           </div>
         </div>
 
-        <p className="text-slate-600 text-xs mt-3 text-center">
+        <p className="text-slate-500 dark:text-slate-600 text-xs mt-3 text-center">
           Webcam runs locally — no video is sent to any server
         </p>
       </div>
@@ -940,10 +940,10 @@ if (s.status === 'paused') onLabPause?.();
 // ── Small helpers ──────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    waiting: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
-    active:  'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-    paused:  'bg-red-500/10 text-red-400 border-red-500/30',
-    ended:   'bg-slate-500/10 text-slate-400 border-slate-500/30',
+    waiting: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 dark:border-amber-500/30',
+    active:  'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 dark:border-emerald-500/30',
+    paused:  'bg-red-500/10 text-rose-600 dark:text-red-400 border-red-500/20 dark:border-red-500/30',
+    ended:   'bg-slate-500/10 text-slate-500 dark:text-slate-400 border-slate-500/20 dark:border-slate-500/30',
   };
   return (
     <span className={`text-xs border px-2 py-0.5 rounded-full capitalize ${styles[status] || styles.ended}`}>
@@ -954,12 +954,15 @@ function StatusBadge({ status }: { status: string }) {
 
 function Stat({ label, value, color, small }: { label: string; value: string; color: string; small?: boolean }) {
   const colors: Record<string, string> = {
-    indigo: 'text-indigo-400', emerald: 'text-emerald-400', red: 'text-red-400', slate: 'text-slate-300',
+    indigo: 'text-indigo-600 dark:text-indigo-400',
+    emerald: 'text-emerald-600 dark:text-emerald-400',
+    red: 'text-rose-600 dark:text-red-400',
+    slate: 'text-slate-700 dark:text-slate-300',
   };
   return (
     <div>
-      <p className={`font-bold ${small ? 'text-sm' : 'text-xl'} ${colors[color] || 'text-white'}`}>{value}</p>
-      <p className="text-xs text-slate-500 mt-0.5">{label}</p>
+      <p className={`font-bold ${small ? 'text-sm' : 'text-xl'} ${colors[color] || 'text-slate-900 dark:text-white'}`}>{value}</p>
+      <p className="text-xs text-slate-500 dark:text-slate-450 mt-0.5">{label}</p>
     </div>
   );
 }

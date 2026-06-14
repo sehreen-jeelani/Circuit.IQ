@@ -55,7 +55,7 @@ export default defineConfig({
     // Uncomment below if you want API calls to go to the Python server in dev mode:
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://127.0.0.1:5000',
         changeOrigin: true,
       },
     },

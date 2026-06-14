@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect } from 'react';
+import { useEffect, Suspense, lazy } from 'react';
 import AttendanceSystem from './components/AttendanceSystem';
 import { useAppStore } from './store/useAppStore';
 import Navbar from './components/Navbar';
@@ -14,6 +14,8 @@ import InteractiveCircuitLines from './components/InteractiveCircuitLines';
 import { AnimatePresence, motion } from 'motion/react';
 import { cn } from './lib/utils';
 import PhysicsBotPanel from './components/PhysicsBotPanel';
+
+const AntigravityHero = lazy(() => import('./components/AntigravityHero'));
 
 export default function App() {
   const isLabOpen = useAppStore((state) => state.isLabOpen);
@@ -41,7 +43,7 @@ export default function App() {
       <div className="glow-top-left" />
       <div className="glow-bottom-right" />
       
-      {!isLabOpen && activeTab !== 'home' && <InteractiveCircuitLines />}
+      {!isLabOpen && activeTab !== 'home' && activeTab !== 'attendance' && <InteractiveCircuitLines />}
       {!isLabOpen && <Navbar />}
       
       <AnimatePresence mode="wait">
@@ -56,7 +58,10 @@ export default function App() {
             {activeTab === 'contact' ? (
               <ContactPage />
             ) : activeTab === 'attendance' ? (
-              <div className="fixed inset-0 bg-[#070B14] overflow-y-auto z-[999]">
+              <div className="min-h-screen pt-24 pb-12 w-full flex items-center justify-center relative z-10 overflow-x-hidden">
+                <Suspense fallback={<div className="fixed inset-0 bg-transparent pointer-events-none z-0" />}>
+                  <AntigravityHero hideBoard={true} />
+                </Suspense>
                 <AttendanceSystem
                   onLabUnlock={(sessionId) => {
                     setActiveTab('home');

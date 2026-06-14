@@ -431,10 +431,11 @@ function BreadboardWires({ logoPoints }: { logoPoints: any[] }) {
   );
 }
 
-function PhysicsBackgroundItems() {
+function PhysicsBackgroundItems({ hideBoard = false }: { hideBoard?: boolean }) {
+  const count = hideBoard ? 50 : 15;
   const items = useMemo(() => {
-    return Array.from({ length: 15 }).map((_, i) => {
-      const type = Math.random() > 0.5 ? 'led' : 'resistor';
+    return Array.from({ length: count }).map((_, i) => {
+      const type = hideBoard ? (Math.random() > 0.3 ? 'led' : 'resistor') : (Math.random() > 0.5 ? 'led' : 'resistor');
       const radius = 22 + Math.random() * 32;
       const angle = Math.random() * Math.PI * 2;
       const y = (Math.random() - 0.5) * 45;
@@ -459,7 +460,7 @@ function PhysicsBackgroundItems() {
         }
       };
     });
-  }, []);
+  }, [count, hideBoard]);
 
   const groupRef = useRef<THREE.Group>(null);
   
@@ -763,7 +764,7 @@ function WebGLContextDisposer() {
   return null;
 }
 
-export default function AntigravityHero() {
+export default function AntigravityHero({ hideBoard = false }: { hideBoard?: boolean }) {
   const progressRef = useRef({ value: 0 });
   const wrapperRef = useRef<HTMLDivElement>(null);
   const highFidelityMode = useAppStore((state) => state.highFidelityMode);
@@ -778,7 +779,7 @@ export default function AntigravityHero() {
   }, []);
 
   useEffect(() => {
-     if (wrapperRef.current) {
+     if (wrapperRef.current && !hideBoard) {
         gsap.to(wrapperRef.current, {
            opacity: 0,
            scrollTrigger: {
@@ -789,7 +790,7 @@ export default function AntigravityHero() {
            }
         });
      }
-  }, []);
+  }, [hideBoard]);
 
   return (
     <div ref={wrapperRef} className="fixed inset-0 pointer-events-none z-0">
@@ -803,8 +804,17 @@ export default function AntigravityHero() {
           <pointLight position={[10, 5, 10]} intensity={1} color="#fcf0d5" />
           
           <CursorGlitter />
-          <PhysicsBackgroundItems />
-          <GridLogoScene progressRef={progressRef} />
+          <PhysicsBackgroundItems hideBoard={hideBoard} />
+
+          {hideBoard ? (
+            <>
+              <Sparkles count={highFidelityMode ? 100 : 40} scale={35} size={2.5} color="#60a5fa" opacity={0.8} speed={0.5} />
+              <Stars radius={100} depth={50} count={highFidelityMode ? 1500 : 500} factor={3} saturation={1} fade speed={1.5} />
+            </>
+          ) : (
+            <GridLogoScene progressRef={progressRef} />
+          )}
+
           <Rig progressRef={progressRef} />
           <EffectComposer>
             {highFidelityMode ? (

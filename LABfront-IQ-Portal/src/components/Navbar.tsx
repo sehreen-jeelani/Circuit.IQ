@@ -79,6 +79,7 @@ export default function Navbar() {
               <MobileNavLink icon={<Cpu size={20} />} label="Virtual Lab" active={isLabOpen} onClick={() => { setLabOpen(true); setMobileMenuOpen(false); }} />
               <MobileNavLink icon={<Bot size={20} />} label="PhysicsBot" active={activeTab === 'physicsbot' && !isLabOpen} onClick={() => { setActiveTab('physicsbot'); setLabOpen(false); setMobileMenuOpen(false); }} />
               <MobileNavLink icon={<FileText size={20} />} label="Contact" active={activeTab === 'contact' && !isLabOpen} onClick={() => { setActiveTab('contact'); setLabOpen(false); setMobileMenuOpen(false); }} />
+              <MobileNavLink icon={<Users size={20} />} label="Attendance" active={activeTab === 'attendance' && !isLabOpen} onClick={() => { setActiveTab('attendance'); setLabOpen(false); setMobileMenuOpen(false); }} />
               
               <div className="mt-8">
                 <button 
