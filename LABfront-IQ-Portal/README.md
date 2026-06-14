@@ -171,6 +171,16 @@ Student clicks "Launch Lab" on experiment card
 
 ---
 
+## 🎨 Theme System & Color Adaptability
+
+The Portal integrates a dynamic theme synchronization framework managed via Zustand (`useAppStore.ts`):
+- **Default Theme state**: Configured to load `'dark'` mode by default on initial application launch.
+- **Root Class Overrides**: Toggling the theme adds or removes the `.dark` utility class from `document.documentElement`, altering page colors across the landing page, showcases, contact sections, and footers.
+- **Dynamic Background Canvas**: The Experiments catalog uses an interactive canvas background (`CyberCircuitBackground.tsx`) which evaluates theme changes on-the-fly, swapping particle grid networks between deep space-dark and clean light-slate styling.
+- **Iframe Synchronization**: Selecting a new theme broadcasts a postMessage handshake down to the embedded WebGL canvas iframe, synchronously updating scene fog, PCB plate reflections, and meter readings.
+
+---
+
 ## 🏗️ Building
 
 ```bash

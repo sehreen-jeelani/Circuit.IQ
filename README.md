@@ -149,12 +149,18 @@ A series of core architectural and visual optimizations have been integrated to 
 ### 1. Smart Snapping & Expected Tool Matching
 - **Expected Tool Lock**: A helper `getCurrentExpectedTool()` analyzes the active experiment state and dynamically limits drag-and-drop or click placements to only match the expected component/wire type for the active step.
 - **Ghost Preview Snapping**: In `dragover` events, if a valid expected tool is hovered, the simulator automatically overrides position snapping coordinates with target snap coordinates (`snap1`/`snap2`), causing the semi-transparent ghost mesh to snap instantly into place.
-- **Guide Label Hiding**: Unnecessary and cluttered HTML overlays on the board (`WIRE START` and `WIRE END` text tags) are hidden to maintain a clean visual workspace.
+- **Floating Coordinate Projections**: Guide pins **A** and **B** are projected dynamically from 3D target coordinates (`targetHighlightRing1`/`targetHighlightRing2`) to 2D HTML overlay elements using vector projection (`Vector3.project(camera)`) and responsive pixel offsets, keeping instructions perfectly readable above the target breadboard holes.
+- **Frustum Culling**: Projected guide pins automatically hide when they go behind the camera plane (`z > 1`) to prevent floating UI artifacts.
 
-### 2. Upgraded Eraser Wire Collision
+### 2. Responsive Theme Synchronization & Default Dark Mode
+- **Bi-Directional PostMessage Bridge**: Theme toggles sync seamlessly between the React Portal context and the embedded 3D Lab simulation iframe via message passing. 
+- **Dynamic CSS Variables & Fog Overrides**: Updating themes modifies root document classes (`.light-theme`), inverting UI panels, sliders, grids, multimeters, and WebGL clear backgrounds (`scene.background` and exponential fog) on-the-fly without requiring context reloads.
+- **Default Dark Mode**: The entire platform defaults to Dark Mode initially to maintain the premium tech theme.
+
+### 3. Upgraded Eraser Wire Collision
 - The eraser tool now evaluates intersections not just with the core thin wire tubes, but also with wire terminal pins and plastic sleeves. Clicking any part of a wire will instantly delete it, resolving the previous precision click issues.
 
-### 3. Professional KVL Experiment Refinement
+### 4. Professional KVL Experiment Refinement
 - **Sequential Measurements**: Real-time probing of KVL voltages tracks the student's progress as they measure $V_s$ (Source rails), $V_1$ (Resistor 1), and $V_2$ (Resistor 2).
 - **Live Math Telemetry**: Built-in math parsing checks the loop voltage drop calculation ($V_s - V_1 - V_2 = 0$) and displays formulas, active probe states, current, and equivalent resistance inside a dedicated, real-time telemetry card.
 - **Orientation-Agnostic Guiding Highlights**: The visual target highlights dynamically adjust depending on which probe the student connects first. Connecting either probe to one target will automatically guide the remaining free probe to the other counterpart terminal, supporting any polarity/connection order natively.

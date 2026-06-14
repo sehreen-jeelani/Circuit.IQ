@@ -212,6 +212,27 @@ The "Download Lab Report" button generates a printable PDF with:
 
 ---
 
+## 🎯 3D-to-2D Coordinate Projections & Dynamic Themes
+
+### 1. Vector Projection System
+The 3D simulator projects instructions and guide labels directly from WebGL space coordinates to HTML overlays:
+- **`updateGuideLabels()`**: Runs inside the main render loop to track the world position of snap targets (`targetHighlightRing1`/`targetHighlightRing2`).
+- **Mathematical Formula**:
+  - Extracts the world position of the target mesh: `ring.getWorldPosition(tempV)`
+  - Projects it to Normalized Device Coordinates (NDC): `tempV.project(camera)` (resulting in coordinates where $X, Y \in [-1, 1]$)
+  - Multiplies coordinates by container dimensions to map to CSS pixel coordinates:
+    $x_{px} = (x_{ndc} \times 0.5 + 0.5) \times \text{width}$
+    $y_{px} = (-y_{ndc} \times 0.5 + 0.5) \times \text{height}$
+- **Frustum Culling**: Checks if the target is behind the camera plane (`z > 1`) and automatically adds the `.hidden` class to prevent rendering out-of-bounds artifacts.
+- **Float Alignment**: Leverages CSS offsets (`transform: translate(-50%, -100%)` and `margin-top: -8px`) to make guide pin bubbles hover precisely above active breadboard holes.
+
+### 2. Live Theme Overrides
+- **Message Listener**: Receives a `theme-change` postMessage event from the parent React website and triggers `setTheme(theme)`.
+- **CSS Variable Injection**: Adds or removes the `.light-theme` class from `document.body` to adjust the colors of sidebars, panels, sliders, multimeters, and code blocks using pre-defined CSS variables.
+- **WebGL Background Adjustments**: Dynamically changes `scene.background` and `scene.fog` hex values on-the-fly (`0xf1f5f9` in light mode, `0x070a13` in dark mode) to blend the 3D environment seamlessly into the page.
+
+---
+
 ## 🛠️ Tech Stack
 
 | Tool | Version | What it does |
