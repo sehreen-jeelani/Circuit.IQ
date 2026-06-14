@@ -341,15 +341,9 @@ const experiments = {
   },
   lcr: {
     name: "Series LCR Resonance",
-<<<<<<< ours
     aim: "Determine the resonant frequency of an LCR series circuit.",
     apparatus: "AC Function Generator, Resistor, Inductor, Capacitor, Ammeter.",
     req: ['source', 'resistor', 'inductor', 'capacitor'],
-=======
-    aim: "Determine resonant frequency of LCR series circuit.",
-    apparatus: "AC Generator, Resistor, Inductor, Capacitor, Ammeter, Voltmeter.",
-    req: ['source', 'resistor', 'inductor', 'capacitor', 'ammeter', 'voltmeter'],
->>>>>>> theirs
     steps: [
       { id: 1, text: "Connect a resistor, inductor, and capacitor in series with the AC power supply." },
       { id: 2, text: "Connect an AC ammeter in series to measure circuit current." },
@@ -362,18 +356,6 @@ const experiments = {
   },
   rc: {
     name: "RC Time Constant",
-<<<<<<< ours
-    aim: "Measure the transient capacitor charging rate and verify the RC time constant.",
-    apparatus: "DC Power Supply, Resistor, Capacitor, Oscilloscope, Switch.",
-    req: ['source', 'resistor', 'capacitor'],
-    steps: [
-      { id: 1, text: "Connect a resistor and a capacitor in series across a DC voltage source." },
-      { id: 2, text: "Connect an oscilloscope probe across the capacitor to capture the voltage transient." },
-      { id: 3, text: "Close the switch to start the charging process." },
-      { id: 4, text: "Record voltage values at different time intervals to calculate the experimental time constant." }
-    ],
-    theory: "<h3>RC Transient Response</h3><p>When a DC voltage is applied to an RC series circuit, the capacitor does not charge instantly. Instead, its voltage increases exponentially: <b>V_C(t) = V_s(1 - e^(-t/τ))</b>.</p><p>The <b>time constant (τ = RC)</b> represents the time required for the capacitor voltage to reach approximately <b>63.2%</b> of its maximum value. During discharge, it drops to 36.8% in one time constant. After 5τ, the capacitor is considered fully charged (~99.3%).</p>",
-=======
     aim: "Measure transient capacitor charging rate.",
     apparatus: "DC Supply, ON/OFF Switch, Resistor, Capacitor, Ammeter, Voltmeter, Oscilloscope.",
     req: ['source', 'toggle_switch', 'resistor', 'capacitor', 'ammeter', 'voltmeter'],
@@ -383,20 +365,13 @@ const experiments = {
       { id: 3, text: "Toggle Switch ON/OFF to charge/discharge, observing transient curves on scope." }
     ],
     theory: "<h3>RC Charging & Discharging</h3><p>Time constant τ = RC defines the rate. Switch toggles between charging and discharging phases.</p>",
->>>>>>> theirs
     formulas: [{ name: "Time Constant", expr: "τ = R × C" }]
   },
   series_parallel: {
     name: "Series & Parallel Loads",
-<<<<<<< ours
-    aim: "Compare equivalent resistances of series and parallel resistor networks.",
-    apparatus: "DC Supply, Resistors, Multimeter, Breadboard.",
-    req: ['source', 'resistor'],
-=======
     aim: "Compare equivalent resistors network load values.",
     apparatus: "Resistors, Multimeters, Power Supply.",
     req: ['source', 'resistor', 'ammeter', 'voltmeter'],
->>>>>>> theirs
     steps: [
       { id: 1, text: "Place two resistors on the breadboard." },
       { id: 2, text: "Connect them in series and measure the total resistance using a multimeter." },
@@ -2008,11 +1983,7 @@ function updateUI() {
   } else if (state.activeExperiment === 'rc_rl_rlc') {
     elements.kirchhoffDisplay.innerText = `[OK] AC Impedance Analysis:\n Z = √[R² + (XL−XC)²] = ${state.meters.ohms.toFixed(1)} Ω\n XL = ${state.analysis.XL.toFixed(1)} Ω, XC = ${state.analysis.XC.toFixed(1)} Ω\n Phase φ = ${state.analysis.phi.toFixed(1)}°\n Resonant f₀ = ${state.analysis.f0.toFixed(1)} Hz`;
   } else if (state.activeExperiment === 'kvl') {
-<<<<<<< ours
-    const Vs_live = state.params.V;
-=======
     const Vs = state.meters.volts;
->>>>>>> theirs
     const R1 = state.params.R;
     const R2 = state.params.L !== undefined ? state.params.L : 100;
     const R_tot = R1 + R2;
@@ -6558,7 +6529,6 @@ function updateTargetHighlights() {
         const am1 = ammeter.snap1, am2 = ammeter.snap2;
         const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
 
-<<<<<<< ours
         const s_to_r1 = (uf.find(7 * 14 + 0) === uf.find(r1_1) || uf.find(7 * 14 + 0) === uf.find(r1_2));
         if (!s_to_r1) {
           targetHighlightRing1 = addRing(7 * 14 + 0, true);
@@ -6702,45 +6672,7 @@ function updateTargetHighlights() {
               return;
             }
           }
-=======
-        const volt1_node = uf.find(volt1);
-        const volt2_node = uf.find(volt2);
-        const r1_1_node = uf.find(r1_1), r1_2_node = uf.find(r1_2);
-        const r2_1_node = uf.find(r2_1), r2_2_node = uf.find(r2_2);
-        const posRail = uf.find(0);
-        const negRail = uf.find(1);
-
-        const isParallelR1 = (volt1_node === r1_1_node && volt2_node === r1_2_node) || (volt1_node === r1_2_node && volt2_node === r1_1_node);
-        const isParallelR2 = (volt1_node === r2_1_node && volt2_node === r2_2_node) || (volt1_node === r2_2_node && volt2_node === r2_1_node);
-        const isParallelSource = (volt1_node === posRail && volt2_node === negRail) || (volt1_node === negRail && volt2_node === posRail);
-
-        if (!isParallelR1 && !isParallelR2 && !isParallelSource) {
-          if (volt1_node === r2_1_node || volt1_node === r2_2_node) {
-            targetHighlightRing1 = addRing(volt2, true);
-            targetHighlightRing2 = addRing(volt1_node === r2_1_node ? r2_2 : r2_1, true);
-          } else if (volt2_node === r2_1_node || volt2_node === r2_2_node) {
-            targetHighlightRing1 = addRing(volt1, true);
-            targetHighlightRing2 = addRing(volt2_node === r2_1_node ? r2_2 : r2_1, true);
-          } else if (volt1_node === posRail || volt1_node === negRail) {
-            targetHighlightRing1 = addRing(volt2, true);
-            targetHighlightRing2 = addRing(volt1_node === posRail ? 17 * 14 + 1 : 7 * 14 + 0, true);
-          } else if (volt2_node === posRail || volt2_node === negRail) {
-            targetHighlightRing1 = addRing(volt1, true);
-            targetHighlightRing2 = addRing(volt2_node === posRail ? 17 * 14 + 1 : 7 * 14 + 0, true);
-          } else {
-            const volt1_connected = (volt1_node === r1_1_node || volt1_node === r1_2_node);
-            if (!volt1_connected) {
-              targetHighlightRing1 = addRing(volt1, true);
-              targetHighlightRing2 = addRing(r1_1, true);
-            } else {
-              const volt1_conn_to = (volt1_node === r1_1_node) ? r1_1 : r1_2;
-              const volt2_target = (volt1_conn_to === r1_1) ? r1_2 : r1_1;
-              targetHighlightRing1 = addRing(volt2, true);
-              targetHighlightRing2 = addRing(volt2_target, true);
-            }
-          }
-          return;
->>>>>>> theirs
+        }
         }
       }
     }
