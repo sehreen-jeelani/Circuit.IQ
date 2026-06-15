@@ -196,7 +196,7 @@ The homepage console (`POST /api/physics-bot`) uses structured prompts with JSON
 * `recommendedExp`: Key of a matching simulation module.
 
 ### 3. Local/Offline Fallback Parser
-If the Gemini API key is missing, the backend uses a local keyword processor ([ai_guide.py](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/ai_guide.py)) that matches queries for keywords (e.g. `ohm`, `lcr`, `snell`, `gas`) to return structured tutoring steps and formulas.
+If the Gemini API key is missing, the backend uses a local keyword processor ([ai_guide.py](file:///c:/Users/anaya/OneDrive/Desktop/final project ready/Circuit.IQ/LABback-IQ/ai_guide.py)) that matches queries for keywords (e.g. `ohm`, `lcr`, `snell`, `gas`) to return structured tutoring steps and formulas.
 
 ---
 
@@ -237,7 +237,7 @@ To prevent unattended simulations and monitor student presence, Circuit.IQ featu
 Circuit.IQ supports dual databases for local and cloud deployments:
 
 * **Dual Engine Selection**: Initializes SQLite (`circuit_iq.db`) automatically if Supabase configuration credentials are not found in the environment.
-* **Database migrations**: Configured via [schema.sql](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABdata-IQ/schema.sql) and [customise.sql](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABdata-IQ/customise.sql) to sync SQLite and Supabase schemas.
+* **Database migrations**: Configured via [schema.sql](file:///c:/Users/anaya/OneDrive/Desktop/final project ready/Circuit.IQ/LABdata-IQ/schema.sql) and [customise.sql](file:///c:/Users/anaya/OneDrive/Desktop/final project ready/Circuit.IQ/LABdata-IQ/customise.sql) to sync SQLite and Supabase schemas.
 * **Auto-Save**: The 3D simulator triggers a debounced layout backup (`debouncedSaveCircuit()`) to the Flask database route `/api/db/save-circuit` on every component placement or wire connection.
 * **Restore Prompt on Load**: When launching an experiment, the system queries `/api/db/load-circuit`. If a previous saved layout is discovered, it suspends loading and opens an overlay confirmation modal asking: *"Saved Progress Found: Would you like to restore your saved layout or start a fresh experiment?"*.
     * **Restore Progress**: Reconstructs the saved component locations, parameter knobs, and wire links (restored exactly without snapping offsets).

@@ -75,7 +75,7 @@ Guided experiments project floating instruction bubbles from 3D targets directly
 * **Bezier Curves**: Wires are generated using 3D tubes (`THREE.TubeGeometry`) mapped along quadratic or cubic Bezier curves:
   $$\mathbf{B}(t) = (1-t)^2\mathbf{P}_0 + 2(1-t)t\mathbf{P}_1 + t^2\mathbf{P}_2, \quad t \in [0, 1]$$
 * **Stacking Offsets**: Wires track shared connection points and increase their control point heights to prevent intersecting other wires.
-* **Fidelity Lock**: Manual wire drawing snaps to holes (`create3DWire(..., true)`). Wires loaded from the database bypass snapping (`create3DWire(..., false)`) to prevent layout shifts.
+* **Save/Load Fidelity**: Wires placed by the user snap to holes (`create3DWire(..., true)`). Wires loaded from the database bypass snapping (`create3DWire(..., false)`) to prevent layout shifts.
 * **Animation**: Charges are animated along the Bezier tube pathways using interpolation.
 
 ---
@@ -113,9 +113,9 @@ These are compiled and saved using `jsPDF` to generate a formatted PDF report.
 
 ## 🛠️ How to Run Standalone
 To run the simulator independently from the React portal:
-```bash
-cd LABfront-IQ-3D
-npm install
-npm run dev
-```
-Open `http://localhost:5173` to access the simulator workspace.
+* ```bash
+  cd LABfront-IQ-3D
+  npm install
+  npm run dev
+  ```
+  Open `http://localhost:5173` to access the simulator workspace.

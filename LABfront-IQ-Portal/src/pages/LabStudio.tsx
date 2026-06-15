@@ -13,10 +13,10 @@ export default function LabStudio() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    // Delay iframe load by 600ms to guarantee homepage canvases unmount and free WebGL contexts first
+    // Delay iframe load by 200ms to guarantee homepage canvases unmount and free WebGL contexts first
     const timer = setTimeout(() => {
       setShouldLoadIframe(true);
-    }, 600);
+    }, 200);
     return () => clearTimeout(timer);
   }, []);
 
@@ -31,7 +31,7 @@ export default function LabStudio() {
           setProgress(100);
           setTimeout(() => {
             setIsLoaded(true);
-          }, 800); // Allow time to see the 100% calibration state
+          }, 300); // Quick transition after calibration is complete
         } else if (event.data.type === 'theme-change') {
           const newTheme = event.data.theme;
           if (useAppStore.getState().theme !== newTheme) {
@@ -78,12 +78,12 @@ export default function LabStudio() {
             setTimeout(() => {
               setProgress((prev) => {
                 if (prev < 100) {
-                  setTimeout(() => setIsLoaded(true), 500);
+                  setTimeout(() => setIsLoaded(true), 300);
                   return 100;
                 }
                 return prev;
               });
-            }, 1500);
+            }, 800);
           }}
         />
       ) : (
@@ -96,7 +96,7 @@ export default function LabStudio() {
           <motion.div 
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
             className="absolute inset-0 bg-[#070a13] flex flex-col items-center justify-center z-[60] pointer-events-none"
           >
             {/* Ambient Background Glows */}
@@ -154,3 +154,4 @@ export default function LabStudio() {
     </div>
   );
 }
+

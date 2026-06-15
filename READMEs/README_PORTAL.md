@@ -16,7 +16,7 @@ The main frontend application handles user profiles, support tickets, admin dash
 
 ---
 
-## 📁 Project Directory Map
+## 📂 Project Directory Map
 ```
 LABfront-IQ-Portal/
 ├── src/
