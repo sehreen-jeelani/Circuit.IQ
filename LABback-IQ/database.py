@@ -9,6 +9,7 @@
 import os
 import json
 import sqlite3
+import threading
 from datetime import datetime
 from config import Config
 
@@ -20,16 +21,16 @@ except ImportError:
     HAS_SUPABASE_SDK = False
 
 DB_NAME = "circuit_iq.db"
-_sqlite_conn = None
+_local = threading.local()
 
 def get_sqlite_connection():
-    """Returns a connection to the local SQLite database."""
-    global _sqlite_conn
-    if _sqlite_conn is None:
+    """Returns a thread-local connection to the local SQLite database."""
+    if not hasattr(_local, "conn") or _local.conn is None:
         db_path = os.path.join(Config.BASE_DIR, DB_NAME)
-        _sqlite_conn = sqlite3.connect(db_path, check_same_thread=False)
-        _sqlite_conn.row_factory = sqlite3.Row
-    return _sqlite_conn
+        conn = sqlite3.connect(db_path, check_same_thread=False, timeout=30.0)
+        conn.row_factory = sqlite3.Row
+        _local.conn = conn
+    return _local.conn
 
 def init_sqlite_db():
     """Initializes local SQLite tables if they do not exist and seeds test data."""
