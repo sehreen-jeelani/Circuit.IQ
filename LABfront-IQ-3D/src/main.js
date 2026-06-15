@@ -168,6 +168,7 @@ let state = {
   energyStartTime: Date.now(),
   isDatabaseLoading: false
 };
+window.state = state;
 
 // --- ELECTRON ANIMATION STATE ---
 let electronOffset = 0;
@@ -298,9 +299,9 @@ const experiments = {
     steps: [
       { id: 1, text: "Build the DC series circuit on the breadboard (Source, R1, R2, and Ammeter in series)." },
       { id: 2, text: "Turn on the power supply to check the circuit loop current." },
-      { id: 3, text: "Connect the voltmeter across the Source rails (+/-) to measure and record the Source Voltage (Vs)." },
-      { id: 4, text: "Connect the voltmeter in parallel across Resistor R1 to measure and record its drop (V1)." },
-      { id: 5, text: "Connect the voltmeter in parallel across Resistor R2 to measure and record its drop (V2)." },
+      { id: 3, text: "Observe the Source Voltage (Vs) from the DC Power Supply display." },
+      { id: 4, text: "Observe the voltage drop across Resistor R1 (V1) on Voltmeter 1." },
+      { id: 5, text: "Observe the voltage drop across Resistor R2 (V2) on Voltmeter 2." },
       { id: 6, text: "Verify Kirchhoff's Voltage Law: confirm that Vs = V1 + V2." }
     ],
     theory: "<h3>Kirchhoff's Voltage Law (KVL)</h3><p>Kirchhoff's Voltage Law states that the algebraic sum of all potential differences (voltages) around any closed loop in a circuit must equal zero: <b>ΣV = 0</b>. KVL is a direct consequence of the <b>Conservation of Energy</b>.</p><p>As charge moves through a closed loop, the energy gained at voltage sources must equal the energy dissipated across passive elements (resistors). Because the electrostatic field is conservative, returning to the starting point results in zero net change in electrical potential.</p>",
@@ -1423,11 +1424,11 @@ function validateCircuitLocal() {
     }
     
     const resList = comps.filter(c => c.type === 'resistor');
-    const r1 = resList[0];
-    const r2 = resList[1];
+    const r1 = resList.find(r => Math.floor(r.snap1 / 14) === 7 || Math.floor(r.snap2 / 14) === 7) || resList[0];
+    const r2 = resList.find(r => Math.floor(r.snap1 / 14) === 13 || Math.floor(r.snap2 / 14) === 13) || resList[1];
     
-    const posRail = find(0);
-    const negRail = find(1);
+    const posRail = source ? find(source.snap1) : find(0);
+    const negRail = source ? find(source.snap2) : find(1);
     
     // Check short circuits
     if (posRail === negRail) {
@@ -1492,11 +1493,27 @@ function validateCircuitLocal() {
     }
     
     // Voltmeter check (must be connected in parallel across R1, R2, or Source)
-    if (voltmeter) {
-      const v1 = find(voltmeter.snap1);
-      const v2 = find(voltmeter.snap2);
+    const voltmeters = comps.filter(c => c.type === 'voltmeter');
+    for (const voltmeter of voltmeters) {
+      const voltUf = runUnionFind();
+      if (ammeter) {
+        voltUf.union(ammeter.snap1, ammeter.snap2);
+      }
+      const findVolt = (x) => voltUf.find(x);
+      
+      const v1 = findVolt(voltmeter.snap1);
+      const v2 = findVolt(voltmeter.snap2);
       if (v1 === v2) {
         return { status: 'error', message: 'Voltmeter is shorted! Connect it in parallel across a component.' };
+      }
+      const vposRail = source ? findVolt(source.snap1) : findVolt(0);
+      const vnegRail = source ? findVolt(source.snap2) : findVolt(1);
+      
+      const isConnectedToSource = (v1 === vposRail && v2 === vnegRail) || (v1 === vnegRail && v2 === vposRail);
+      const isConnectedToR1 = r1 && ((v1 === findVolt(r1.snap1) && v2 === findVolt(r1.snap2)) || (v1 === findVolt(r1.snap2) && v2 === findVolt(r1.snap1)));
+      const isConnectedToR2 = r2 && ((v1 === findVolt(r2.snap1) && v2 === findVolt(r2.snap2)) || (v1 === findVolt(r2.snap2) && v2 === findVolt(r2.snap1)));
+      if (!isConnectedToSource && !isConnectedToR1 && !isConnectedToR2) {
+        return { status: 'error', message: 'Voltmeter is connected incorrectly! It must be wired in PARALLEL directly across Resistor R1, Resistor R2, or the Source rails (+/-).' };
       }
     }
     
@@ -1990,40 +2007,54 @@ function updateUI() {
     const I = state.isRunning ? state.meters.amps : 0.0;
     const P = state.isRunning ? state.meters.power : 0.0;
 
-    let currentMeasurement = "None (Open Probes)";
-    const voltmeter = state.placedComponents.find(c => c.type === 'voltmeter');
+    let measurementsMade = [];
+    const voltmeters = state.placedComponents.filter(c => c.type === 'voltmeter');
     
-    if (voltmeter && state.isRunning) {
-      const uf = runUnionFind();
-      const find = (x) => uf.find(x);
-      
-      const v1 = find(voltmeter.snap1);
-      const v2 = find(voltmeter.snap2);
-      
-      const posRail = find(0);
-      const negRail = find(1);
-      
-      const resistors = state.placedComponents.filter(c => c.type === 'resistor');
-      const r1 = resistors.find(r => r.snap1 === 7 * 14 + 5 || r.snap2 === 7 * 14 + 5);
-      const r2 = resistors.find(r => r.snap1 === 13 * 14 + 5 || r.snap2 === 13 * 14 + 5);
-      
-      if (v1 !== v2) {
-        const liveV = getVoltmeterReading();
-        if ((v1 === posRail && v2 === negRail) || (v1 === negRail && v2 === posRail)) {
-          currentMeasurement = "Source Voltage (Vs)";
-          state.kvlMeasurements.Vs = liveV;
-          completeStep(3);
-        } else if (r1 && ((v1 === find(r1.snap1) && v2 === find(r1.snap2)) || (v1 === find(r1.snap2) && v2 === find(r1.snap1)))) {
-          currentMeasurement = "Resistor R1 Voltage (V1)";
-          state.kvlMeasurements.VR1 = liveV;
-          completeStep(4);
-        } else if (r2 && ((v1 === find(r2.snap1) && v2 === find(r2.snap2)) || (v1 === find(r2.snap2) && v2 === find(r2.snap1)))) {
-          currentMeasurement = "Resistor R2 Voltage (V2)";
-          state.kvlMeasurements.VR2 = liveV;
-          completeStep(5);
+    const uf = runUnionFind();
+    const ammeterComp = state.placedComponents.find(c => c.type === 'ammeter');
+    if (ammeterComp) {
+      uf.union(ammeterComp.snap1, ammeterComp.snap2);
+    }
+    const find = (x) => uf.find(x);
+    
+    const sourceComp = state.placedComponents.find(c => c.type === 'source');
+    const posRail = sourceComp ? find(sourceComp.snap1) : find(0);
+    const negRail = sourceComp ? find(sourceComp.snap2) : find(1);
+    
+    const resistors = state.placedComponents.filter(c => c.type === 'resistor');
+    const r1 = resistors.find(r => Math.floor(r.snap1 / 14) === 7 || Math.floor(r.snap2 / 14) === 7) || resistors[0];
+    const r2 = resistors.find(r => Math.floor(r.snap1 / 14) === 13 || Math.floor(r.snap2 / 14) === 13) || resistors[1];
+    
+    if (state.isRunning) {
+      state.kvlMeasurements.Vs = state.meters.volts;
+      completeStep(3);
+    }
+
+    for (const voltmeter of voltmeters) {
+      if (voltmeter && state.isRunning) {
+        const v1 = find(voltmeter.snap1);
+        const v2 = find(voltmeter.snap2);
+        
+        if (v1 !== v2) {
+          const liveV = getVoltmeterReading(voltmeter);
+          if ((v1 === posRail && v2 === negRail) || (v1 === negRail && v2 === posRail)) {
+            measurementsMade.push("Source Voltage (Vs)");
+            state.kvlMeasurements.Vs = liveV;
+            completeStep(3);
+          } else if (r1 && ((v1 === find(r1.snap1) && v2 === find(r1.snap2)) || (v1 === find(r1.snap2) && v2 === find(r1.snap1)))) {
+            measurementsMade.push("Resistor R1 Voltage (V1)");
+            state.kvlMeasurements.VR1 = liveV;
+            completeStep(4);
+          } else if (r2 && ((v1 === find(r2.snap1) && v2 === find(r2.snap2)) || (v1 === find(r2.snap2) && v2 === find(r2.snap1)))) {
+            measurementsMade.push("Resistor R2 Voltage (V2)");
+            state.kvlMeasurements.VR2 = liveV;
+            completeStep(5);
+          }
         }
       }
     }
+    
+    let currentMeasurement = measurementsMade.length > 0 ? measurementsMade.join(", ") : "None (Open Probes)";
 
     const vsVal = state.kvlMeasurements.Vs !== null ? `${state.kvlMeasurements.Vs.toFixed(2)} V` : "Not Measured (Connect to +/- Rails)";
     const vr1Val = state.kvlMeasurements.VR1 !== null ? `${state.kvlMeasurements.VR1.toFixed(2)} V` : "Not Measured (Connect to R1)";
@@ -2036,7 +2067,7 @@ function updateUI() {
     if (state.kvlMeasurements.Vs !== null && state.kvlMeasurements.VR1 !== null && state.kvlMeasurements.VR2 !== null) {
       const sumDrops = state.kvlMeasurements.VR1 + state.kvlMeasurements.VR2;
       const diff = Math.abs(state.kvlMeasurements.Vs - sumDrops);
-      formulaStr = `${state.kvlMeasurements.VR1.toFixed(2)} V + ${state.kvlMeasurements.VR2.toFixed(2)} V = ${sumDrops.toFixed(2)} V`;
+      formulaStr = `${state.kvlMeasurements.Vs.toFixed(2)} V = ${state.kvlMeasurements.VR1.toFixed(2)} V + ${state.kvlMeasurements.VR2.toFixed(2)} V`;
       if (diff <= 0.02) {
         verificationStatus = `✓ Kirchhoff's Voltage Law Verified (Vs = V1 + V2)`;
         verified = true;
@@ -5949,13 +5980,16 @@ function autoBuildExperiment() {
     placeComponent3D('resistor', 7 * 14 + 5, 11 * 14 + 5);      // Resistor 1: Col 8-12, Row D
     placeComponent3D('resistor', 13 * 14 + 5, 17 * 14 + 5);     // Resistor 2: Col 14-18, Row D
     placeComponent3D('ammeter', 11 * 14 + 9, 13 * 14 + 9);      // Ammeter: Col 12-14, Row H
-    placeComponent3D('voltmeter', 7 * 14 + 3, 11 * 14 + 3);     // Voltmeter: Col 8-12, Row B
+    placeComponent3D('voltmeter', 7 * 14 + 3, 11 * 14 + 3);     // Voltmeter 1: Col 8-12, Row B
+    placeComponent3D('voltmeter', 13 * 14 + 3, 17 * 14 + 3);    // Voltmeter 2: Col 14-18, Row B
     create3DWire(7 * 14 + 0, 7 * 14 + 6);                       // Source (+) rail Col 8 to Col 8 Row E (internally links to R1 start & Voltmeter +)
     create3DWire(11 * 14 + 6, 11 * 14 + 9);                     // Col 12 Row E (internally links to R1 end & Voltmeter -) to Ammeter (+) Col 12 Row H
     create3DWire(13 * 14 + 9, 13 * 14 + 6);                     // Ammeter (-) Col 14 Row H to Col 14 Row E (internally links to R2 start)
     create3DWire(17 * 14 + 6, 17 * 14 + 1);                     // Col 18 Row E (internally links to R2 end) to Source (-) rail Col 18
-    create3DWire(7 * 14 + 3, 7 * 14 + 4);                       // Voltmeter (+) Col 8 Row B to Col 8 Row C (parallel link)
-    create3DWire(11 * 14 + 3, 11 * 14 + 4);                     // Voltmeter (-) Col 12 Row B to Col 12 Row C (parallel link)
+    create3DWire(7 * 14 + 3, 7 * 14 + 4);                       // Voltmeter 1 (+) Col 8 Row B to Col 8 Row C (parallel link)
+    create3DWire(11 * 14 + 3, 11 * 14 + 4);                     // Voltmeter 1 (-) Col 12 Row B to Col 12 Row C (parallel link)
+    create3DWire(13 * 14 + 3, 13 * 14 + 4);                     // Voltmeter 2 (+) Col 14 Row B to Col 14 Row C (parallel link)
+    create3DWire(17 * 14 + 3, 17 * 14 + 4);                     // Voltmeter 2 (-) Col 18 Row B to Col 18 Row C (parallel link)
   } else if (expKey === 'kcl') {
     placeComponent3D('source', 1 * 14 + 0, 1 * 14 + 1);
     placeComponent3D('ammeter', 3 * 14 + 7, 6 * 14 + 7);       // Ammeter: Cols 4-7, row H (measures I_total before junction)
@@ -6221,13 +6255,13 @@ function getCurrentExpectedTool() {
     return 'wire';
   }
   if (state.activeExperiment === 'kvl') {
-    const resistor1 = resistors.find(r => r.snap1 === 7 * 14 + 5 || r.snap2 === 7 * 14 + 5);
-    const resistor2 = resistors.find(r => r.snap1 === 13 * 14 + 5 || r.snap2 === 13 * 14 + 5);
+    const resistor1 = resistors.find(r => Math.floor(r.snap1 / 14) === 7 || Math.floor(r.snap2 / 14) === 7) || resistors[0];
+    const resistor2 = resistors.find(r => Math.floor(r.snap1 / 14) === 13 || Math.floor(r.snap2 / 14) === 13) || resistors[1];
     if (!findComp('source')) return 'source';
     if (!resistor1) return 'resistor';
     if (!resistor2) return 'resistor';
     if (!findComp('ammeter')) return 'ammeter';
-    if (!findComp('voltmeter')) return 'voltmeter';
+    if (comps.filter(c => c.type === 'voltmeter').length < 2) return 'voltmeter';
     return 'wire';
   }
   if (state.activeExperiment === 'kcl') {
@@ -6492,10 +6526,10 @@ function updateTargetHighlights() {
     const source = findComp('source');
     const resistors = comps.filter(c => c.type === 'resistor');
     const ammeter = findComp('ammeter');
-    const voltmeter = findComp('voltmeter');
+    const voltmetersPlaced = comps.filter(c => c.type === 'voltmeter');
     
-    const resistor1 = resistors.find(r => r.snap1 === 7 * 14 + 5 || r.snap2 === 7 * 14 + 5);
-    const resistor2 = resistors.find(r => r.snap1 === 13 * 14 + 5 || r.snap2 === 13 * 14 + 5);
+    const resistor1 = resistors.find(r => Math.floor(r.snap1 / 14) === 7 || Math.floor(r.snap2 / 14) === 7) || resistors[0];
+    const resistor2 = resistors.find(r => Math.floor(r.snap1 / 14) === 13 || Math.floor(r.snap2 / 14) === 13) || resistors[1];
 
     if (!source) {
       if (!state.selectedTool || state.selectedTool === 'source') {
@@ -6517,17 +6551,29 @@ function updateTargetHighlights() {
         targetHighlightRing1 = addRing(11 * 14 + 9);
         targetHighlightRing2 = addRing(13 * 14 + 9);
       }
-    } else if (!voltmeter) {
+    } else if (voltmetersPlaced.length < 2) {
       if (!state.selectedTool || state.selectedTool === 'voltmeter') {
-        targetHighlightRing1 = addRing(7 * 14 + 3);
-        targetHighlightRing2 = addRing(11 * 14 + 3);
+        if (voltmetersPlaced.length === 0) {
+          targetHighlightRing1 = addRing(7 * 14 + 3);
+          targetHighlightRing2 = addRing(11 * 14 + 3);
+        } else {
+          targetHighlightRing1 = addRing(13 * 14 + 3);
+          targetHighlightRing2 = addRing(17 * 14 + 3);
+        }
       }
     } else {
       if (!state.selectedTool || state.selectedTool === 'wire') {
         const r1_1 = resistor1.snap1, r1_2 = resistor1.snap2;
         const r2_1 = resistor2.snap1, r2_2 = resistor2.snap2;
         const am1 = ammeter.snap1, am2 = ammeter.snap2;
-        const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
+
+        const volt1_comp = voltmetersPlaced.find(v => Math.floor(v.snap1 / 14) === 7 || Math.floor(v.snap2 / 14) === 7) || voltmetersPlaced[0];
+        const volt2_comp = voltmetersPlaced.find(v => Math.floor(v.snap1 / 14) === 13 || Math.floor(v.snap2 / 14) === 13) || voltmetersPlaced[1];
+
+        const volt1_1 = volt1_comp.snap1;
+        const volt1_2 = volt1_comp.snap2;
+        const volt2_1 = volt2_comp.snap1;
+        const volt2_2 = volt2_comp.snap2;
 
         const s_to_r1 = (uf.find(7 * 14 + 0) === uf.find(r1_1) || uf.find(7 * 14 + 0) === uf.find(r1_2));
         if (!s_to_r1) {
@@ -6560,115 +6606,79 @@ function updateTargetHighlights() {
           return;
         }
 
-        const posRail = uf.find(0);
-        const negRail = uf.find(1);
+        const v1_1Node = uf.find(volt1_1);
+        const v1_2Node = uf.find(volt1_2);
+        const r1_1Node = uf.find(r1_1);
+        const r1_2Node = uf.find(r1_2);
 
-        if (state.kvlMeasurements.Vs === null) {
-          const v1Node = uf.find(volt1);
-          const v2Node = uf.find(volt2);
-          
-          if (v1Node !== posRail && v2Node !== posRail && v1Node !== negRail && v2Node !== negRail) {
-            targetHighlightRing1 = addRing(7 * 14 + 3, true);
-            targetHighlightRing2 = addRing(7 * 14 + 0, true);
-            return;
-          }
-          
-          if (v1Node === posRail) {
-            if (v2Node !== negRail) {
-              targetHighlightRing1 = addRing(11 * 14 + 3, true);
-              targetHighlightRing2 = addRing(11 * 14 + 1, true);
-              return;
-            }
-          } else if (v2Node === posRail) {
-            if (v1Node !== negRail) {
-              targetHighlightRing1 = addRing(7 * 14 + 3, true);
-              targetHighlightRing2 = addRing(11 * 14 + 1, true);
-              return;
-            }
-          } else if (v1Node === negRail) {
-            if (v2Node !== posRail) {
-              targetHighlightRing1 = addRing(11 * 14 + 3, true);
-              targetHighlightRing2 = addRing(7 * 14 + 0, true);
-              return;
-            }
-          } else if (v2Node === negRail) {
-            if (v1Node !== posRail) {
-              targetHighlightRing1 = addRing(7 * 14 + 3, true);
-              targetHighlightRing2 = addRing(7 * 14 + 0, true);
-              return;
-            }
-          }
-        } else if (state.kvlMeasurements.VR1 === null) {
-          const v1Node = uf.find(volt1);
-          const v2Node = uf.find(volt2);
-          const r1_1Node = uf.find(r1_1);
-          const r1_2Node = uf.find(r1_2);
-          
-          if (v1Node !== r1_1Node && v2Node !== r1_1Node && v1Node !== r1_2Node && v2Node !== r1_2Node) {
+        const isVolt1ConnectedToR1 = (v1_1Node === r1_1Node && v1_2Node === r1_2Node) || (v1_1Node === r1_2Node && v1_2Node === r1_1Node);
+        if (!isVolt1ConnectedToR1) {
+          if (v1_1Node !== r1_1Node && v1_2Node !== r1_1Node && v1_1Node !== r1_2Node && v1_2Node !== r1_2Node) {
             targetHighlightRing1 = addRing(7 * 14 + 3, true);
             targetHighlightRing2 = addRing(7 * 14 + 4, true);
             return;
           }
-          
-          if (v1Node === r1_1Node) {
-            if (v2Node !== r1_2Node) {
+          if (v1_1Node === r1_1Node) {
+            if (v1_2Node !== r1_2Node) {
               targetHighlightRing1 = addRing(11 * 14 + 3, true);
               targetHighlightRing2 = addRing(11 * 14 + 4, true);
               return;
             }
-          } else if (v2Node === r1_1Node) {
-            if (v1Node !== r1_2Node) {
+          } else if (v1_2Node === r1_1Node) {
+            if (v1_1Node !== r1_2Node) {
               targetHighlightRing1 = addRing(7 * 14 + 3, true);
               targetHighlightRing2 = addRing(11 * 14 + 4, true);
               return;
             }
-          } else if (v1Node === r1_2Node) {
-            if (v2Node !== r1_1Node) {
+          } else if (v1_1Node === r1_2Node) {
+            if (v1_2Node !== r1_1Node) {
               targetHighlightRing1 = addRing(11 * 14 + 3, true);
               targetHighlightRing2 = addRing(7 * 14 + 4, true);
               return;
             }
-          } else if (v2Node === r1_2Node) {
-            if (v1Node !== r1_1Node) {
+          } else if (v1_2Node === r1_2Node) {
+            if (v1_1Node !== r1_1Node) {
               targetHighlightRing1 = addRing(7 * 14 + 3, true);
               targetHighlightRing2 = addRing(7 * 14 + 4, true);
               return;
             }
           }
-        } else if (state.kvlMeasurements.VR2 === null) {
-          const v1Node = uf.find(volt1);
-          const v2Node = uf.find(volt2);
-          const r2_1Node = uf.find(r2_1);
-          const r2_2Node = uf.find(r2_2);
-          
-          if (v1Node !== r2_1Node && v2Node !== r2_1Node && v1Node !== r2_2Node && v2Node !== r2_2Node) {
-            targetHighlightRing1 = addRing(7 * 14 + 3, true);
-            targetHighlightRing2 = addRing(13 * 14 + 6, true);
+        }
+
+        const v2_1Node = uf.find(volt2_1);
+        const v2_2Node = uf.find(volt2_2);
+        const r2_1Node = uf.find(r2_1);
+        const r2_2Node = uf.find(r2_2);
+
+        const isVolt2ConnectedToR2 = (v2_1Node === r2_1Node && v2_2Node === r2_2Node) || (v2_1Node === r2_2Node && v2_2Node === r2_1Node);
+        if (!isVolt2ConnectedToR2) {
+          if (v2_1Node !== r2_1Node && v2_2Node !== r2_1Node && v2_1Node !== r2_2Node && v2_2Node !== r2_2Node) {
+            targetHighlightRing1 = addRing(13 * 14 + 3, true);
+            targetHighlightRing2 = addRing(13 * 14 + 4, true);
             return;
           }
-          
-          if (v1Node === r2_1Node) {
-            if (v2Node !== r2_2Node) {
-              targetHighlightRing1 = addRing(11 * 14 + 3, true);
-              targetHighlightRing2 = addRing(17 * 14 + 6, true);
+          if (v2_1Node === r2_1Node) {
+            if (v2_2Node !== r2_2Node) {
+              targetHighlightRing1 = addRing(17 * 14 + 3, true);
+              targetHighlightRing2 = addRing(17 * 14 + 4, true);
               return;
             }
-          } else if (v2Node === r2_1Node) {
-            if (v1Node !== r2_2Node) {
-              targetHighlightRing1 = addRing(7 * 14 + 3, true);
-              targetHighlightRing2 = addRing(17 * 14 + 6, true);
+          } else if (v2_2Node === r2_1Node) {
+            if (v2_1Node !== r2_2Node) {
+              targetHighlightRing1 = addRing(13 * 14 + 3, true);
+              targetHighlightRing2 = addRing(17 * 14 + 4, true);
               return;
             }
-          } else if (v1Node === r2_2Node) {
-            if (v2Node !== r2_1Node) {
-              targetHighlightRing1 = addRing(11 * 14 + 3, true);
-              targetHighlightRing2 = addRing(13 * 14 + 6, true);
+          } else if (v2_1Node === r2_2Node) {
+            if (v2_2Node !== r2_1Node) {
+              targetHighlightRing1 = addRing(17 * 14 + 3, true);
+              targetHighlightRing2 = addRing(13 * 14 + 4, true);
               return;
             }
-          } else if (v2Node === r2_2Node) {
-            if (v1Node !== r2_1Node) {
-              targetHighlightRing1 = addRing(7 * 14 + 3, true);
-              targetHighlightRing2 = addRing(13 * 14 + 6, true);
+          } else if (v2_2Node === r2_2Node) {
+            if (v2_1Node !== r2_1Node) {
+              targetHighlightRing1 = addRing(13 * 14 + 3, true);
+              targetHighlightRing2 = addRing(13 * 14 + 4, true);
               return;
             }
           }
@@ -7610,8 +7620,9 @@ function getAIMentorMessage() {
 
   if (state.activeExperiment === 'kvl') {
     const resistors = comps.filter(c => c.type === 'resistor');
-    const r1 = resistors[0];
-    const r2 = resistors[1];
+    const r1 = resistors.find(r => Math.floor(r.snap1 / 14) === 7 || Math.floor(r.snap2 / 14) === 7) || resistors[0];
+    const r2 = resistors.find(r => Math.floor(r.snap1 / 14) === 13 || Math.floor(r.snap2 / 14) === 13) || resistors[1];
+    const voltmeters = comps.filter(c => c.type === 'voltmeter');
     
     if (!source) {
       return "<b>Step 1: Place DC Source</b><br>Select <b>DC Power Source</b> <i class='fa-solid fa-plug'></i> and click glowing green Top Rails slots (Col 2, Row +/-).";
@@ -7625,17 +7636,17 @@ function getAIMentorMessage() {
     if (!ammeter) {
       return "<b>Step 1: Place Ammeter</b><br>Select <b>Ammeter (Series)</b> and place horizontally between Col 12, Row H and Col 14, Row H.";
     }
-    if (!voltmeter) {
-      return "<b>Step 1: Place Voltmeter</b><br>Select <b>Voltmeter (Parallel)</b> and place horizontally between Col 8, Row B and Col 12, Row B.";
+    if (voltmeters.length < 1) {
+      return "<b>Step 1: Place Voltmeter 1</b><br>Select <b>Voltmeter (Parallel)</b> and place horizontally between Col 8, Row B and Col 12, Row B.";
+    }
+    if (voltmeters.length < 2) {
+      return "<b>Step 1: Place Voltmeter 2</b><br>Select <b>Voltmeter (Parallel)</b> and place horizontally between Col 14, Row B and Col 18, Row B.";
     }
     
     const uf = runUnionFind();
     const r1_1 = r1.snap1, r1_2 = r1.snap2;
     const r2_1 = r2.snap1, r2_2 = r2.snap2;
     const am1 = ammeter.snap1, am2 = ammeter.snap2;
-    const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
-    const posRail = uf.find(0);
-    const negRail = uf.find(1);
     
     // Wire 1: Top (+) Rail (Col 8) to Resistor 1 start
     const s_to_r1 = (uf.find(7 * 14 + 0) === uf.find(r1_1));
@@ -7669,15 +7680,15 @@ function getAIMentorMessage() {
     }
     
     if (state.kvlMeasurements.Vs === null) {
-      return "<b>Step 3: Measure Source Voltage (Vs)</b><br>Connect the voltmeter across the positive (+) and negative (-) rails (e.g., Voltmeter pin 1 to Top (+) Rail Col 8, pin 2 to Top (-) Rail Col 12) to record Vs.";
+      return "<b>Step 3: Measure Source Voltage (Vs)</b><br>Observe the Source Voltage (Vs) from the DC Power Supply display.";
     }
     
     if (state.kvlMeasurements.VR1 === null) {
-      return "<b>Step 4: Measure Resistor R1 Drop (V1)</b><br>Connect the voltmeter across Resistor R1 (e.g. Voltmeter pin 1 to Col 8 Row C/D, pin 2 to Col 12 Row C/D) to record V1.";
+      return "<b>Step 4: Measure Resistor R1 Drop (V1)</b><br>Observe the voltage drop across Resistor R1 (V1) on Voltmeter 1.";
     }
     
     if (state.kvlMeasurements.VR2 === null) {
-      return "<b>Step 5: Measure Resistor R2 Drop (V2)</b><br>Connect the voltmeter across Resistor R2 (e.g. Voltmeter pin 1 to Col 14 Row C/D, pin 2 to Col 18 Row C/D) to record V2.";
+      return "<b>Step 5: Measure Resistor R2 Drop (V2)</b><br>Observe the voltage drop across Resistor R2 (V2) on Voltmeter 2.";
     }
     
     const sum = state.kvlMeasurements.VR1 + state.kvlMeasurements.VR2;
@@ -10338,13 +10349,17 @@ async function triggerSingleCalculation() {
   }
 }
 
-function getVoltmeterReading() {
+function getVoltmeterReading(voltmeterComp) {
   if (!state.isRunning) return 0.0;
   
-  const voltmeter = state.placedComponents.find(c => c.type === 'voltmeter');
+  const voltmeter = voltmeterComp || state.placedComponents.find(c => c.type === 'voltmeter');
   if (!voltmeter) return 0.0;
   
   const uf = runUnionFind();
+  const ammeter = state.placedComponents.find(c => c.type === 'ammeter');
+  if (ammeter) {
+    uf.union(ammeter.snap1, ammeter.snap2);
+  }
   const find = (x) => uf.find(x);
   
   const v1 = find(voltmeter.snap1);
@@ -10355,14 +10370,13 @@ function getVoltmeterReading() {
   const source = state.placedComponents.find(c => c.type === 'source');
   if (!source) return 0.0;
   
-  const posRail = find(0);
-  const negRail = find(1);
+  const posRail = source ? find(source.snap1) : find(0);
+  const negRail = source ? find(source.snap2) : find(1);
   
   let posNode = posRail;
   let negNode = negRail;
   
   // Propagate potential across ammeter (treated as zero-resistance wire)
-  const ammeter = state.placedComponents.find(c => c.type === 'ammeter');
   if (ammeter) {
     const am1 = find(ammeter.snap1);
     const am2 = find(ammeter.snap2);
@@ -10373,6 +10387,8 @@ function getVoltmeterReading() {
   }
   
   const potentials = {};
+  potentials[posRail] = state.meters.volts;
+  potentials[negRail] = 0.0;
   potentials[posNode] = state.meters.volts;
   potentials[negNode] = 0.0;
   
@@ -10388,16 +10404,16 @@ function getVoltmeterReading() {
   } else if (state.activeExperiment === 'kvl' || (state.activeExperiment === 'series_parallel' && !checkIsParallelCircuit())) {
     const resistors = state.placedComponents.filter(c => c.type === 'resistor');
     if (resistors.length >= 2) {
-      const r1 = resistors[0];
-      const r2 = resistors[1];
+      const r1 = resistors.find(r => Math.floor(r.snap1 / 14) === 7 || Math.floor(r.snap2 / 14) === 7) || resistors[0];
+      const r2 = resistors.find(r => Math.floor(r.snap1 / 14) === 13 || Math.floor(r.snap2 / 14) === 13) || resistors[1];
       
       const r1_1 = find(r1.snap1);
       const r1_2 = find(r1.snap2);
       const r2_1 = find(r2.snap1);
       const r2_2 = find(r2.snap2);
       
-      const R1_val = state.params.R;
-      const R2_val = state.activeExperiment === 'kvl' ? state.params.L : (state.params.L || 100);
+      const VR1 = (state.analysis.VR1 !== undefined) ? state.analysis.VR1 : (state.analysis.XL !== undefined ? state.analysis.XL : 0.0);
+      const VR2 = (state.analysis.VR2 !== undefined) ? state.analysis.VR2 : (state.analysis.XC !== undefined ? state.analysis.XC : 0.0);
       
       let juncNode = null;
       let r1ConnectedToPos = (r1_1 === posNode || r1_2 === posNode);
@@ -10408,7 +10424,7 @@ function getVoltmeterReading() {
         const r2_other = (r2_1 === negNode) ? r2_2 : r2_1;
         if (find(r1_other) === find(r2_other)) {
           juncNode = find(r1_other);
-          potentials[juncNode] = state.meters.volts * R2_val / (R1_val + R2_val);
+          potentials[juncNode] = VR2;
         }
       } else {
         let r2ConnectedToPos = (r2_1 === posNode || r2_2 === posNode);
@@ -10418,7 +10434,7 @@ function getVoltmeterReading() {
           const r1_other = (r1_1 === negNode) ? r1_2 : r1_1;
           if (find(r2_other) === find(r1_other)) {
             juncNode = find(r2_other);
-            potentials[juncNode] = state.meters.volts * R1_val / (R1_val + R2_val);
+            potentials[juncNode] = VR1;
           }
         }
       }
@@ -10517,10 +10533,10 @@ function getVoltmeterReading() {
   return Math.abs(V1 - V2);
 }
 
-function getAmmeterReading() {
+function getAmmeterReading(ammeterComp) {
   if (!state.isRunning) return 0.0;
   
-  const ammeter = state.placedComponents.find(c => c.type === 'ammeter');
+  const ammeter = ammeterComp || state.placedComponents.find(c => c.type === 'ammeter');
   if (!ammeter) return 0.0;
   
   const uf = runUnionFind();
@@ -10616,6 +10632,95 @@ function updateDynamicTextures() {
     vCtx.fillText(state.isRunning ? '● LIVE' : '○ READY', W / 2, H - 10);
     voltmeterScreenTexture.needsUpdate = true;
   }
+  
+  // Update instance-specific displays for placed voltmeters and ammeters
+  state.placedComponents.forEach(c => {
+    if (c.type === 'voltmeter' && c.mesh.userData.canvas && c.mesh.userData.texture) {
+      const canvas = c.mesh.userData.canvas;
+      const texture = c.mesh.userData.texture;
+      const vCtx = canvas.getContext('2d');
+      const W = 256, H = 128;
+      
+      vCtx.fillStyle = '#021a10';
+      vCtx.fillRect(0, 0, W, H);
+      
+      vCtx.fillStyle = 'rgba(16,185,129,0.04)';
+      for (let y = 0; y < H; y += 4) vCtx.fillRect(0, y, W, 2);
+      
+      vCtx.strokeStyle = 'rgba(248,113,113,0.7)';
+      vCtx.lineWidth = 3;
+      vCtx.strokeRect(2, 2, W - 4, H - 4);
+      
+      vCtx.fillStyle = 'rgba(248,113,113,0.6)';
+      vCtx.font = 'bold 14px Courier New';
+      vCtx.textAlign = 'center';
+      vCtx.fillText('VOLT', W / 2, 22);
+      
+      vCtx.strokeStyle = 'rgba(248,113,113,0.3)';
+      vCtx.lineWidth = 1;
+      vCtx.beginPath(); vCtx.moveTo(10, 32); vCtx.lineTo(W - 10, 32); vCtx.stroke();
+      
+      const voltsVal = state.isRunning ? getVoltmeterReading(c).toFixed(3) : '0.000';
+      vCtx.fillStyle = state.isRunning ? '#f87171' : '#4b5563';
+      vCtx.font = 'bold 38px Courier New';
+      vCtx.textAlign = 'right';
+      vCtx.fillText(voltsVal, W - 40, 85);
+      
+      vCtx.fillStyle = 'rgba(248,113,113,0.8)';
+      vCtx.font = 'bold 20px Courier New';
+      vCtx.textAlign = 'left';
+      vCtx.fillText('V', W - 34, 85);
+      
+      vCtx.fillStyle = state.isRunning ? 'rgba(34,197,94,0.8)' : 'rgba(239,68,68,0.5)';
+      vCtx.font = '11px Courier New';
+      vCtx.textAlign = 'center';
+      vCtx.fillText(state.isRunning ? '● LIVE' : '○ READY', W / 2, H - 10);
+      
+      texture.needsUpdate = true;
+    } else if (c.type === 'ammeter' && c.mesh.userData.canvas && c.mesh.userData.texture) {
+      const canvas = c.mesh.userData.canvas;
+      const texture = c.mesh.userData.texture;
+      const aCtx = canvas.getContext('2d');
+      const W = 256, H = 128;
+      
+      aCtx.fillStyle = '#020c1a';
+      aCtx.fillRect(0, 0, W, H);
+      
+      aCtx.fillStyle = 'rgba(96,165,250,0.04)';
+      for (let y = 0; y < H; y += 4) aCtx.fillRect(0, y, W, 2);
+      
+      aCtx.strokeStyle = 'rgba(96,165,250,0.7)';
+      aCtx.lineWidth = 3;
+      aCtx.strokeRect(2, 2, W - 4, H - 4);
+      
+      aCtx.fillStyle = 'rgba(96,165,250,0.6)';
+      aCtx.font = 'bold 14px Courier New';
+      aCtx.textAlign = 'center';
+      aCtx.fillText('AMP', W / 2, 22);
+      
+      aCtx.strokeStyle = 'rgba(96,165,250,0.3)';
+      aCtx.lineWidth = 1;
+      aCtx.beginPath(); aCtx.moveTo(10, 32); aCtx.lineTo(W - 10, 32); aCtx.stroke();
+      
+      const ampsVal = state.isRunning ? (getAmmeterReading(c) * 1000).toFixed(1) : '0.0';
+      aCtx.fillStyle = state.isRunning ? '#60a5fa' : '#4b5563';
+      aCtx.font = 'bold 38px Courier New';
+      aCtx.textAlign = 'right';
+      aCtx.fillText(ampsVal, W - 50, 85);
+      
+      aCtx.fillStyle = 'rgba(96,165,250,0.8)';
+      aCtx.font = 'bold 20px Courier New';
+      aCtx.textAlign = 'left';
+      aCtx.fillText('mA', W - 44, 85);
+      
+      aCtx.fillStyle = state.isRunning ? 'rgba(34,197,94,0.8)' : 'rgba(239,68,68,0.5)';
+      aCtx.font = '11px Courier New';
+      aCtx.textAlign = 'center';
+      aCtx.fillText(state.isRunning ? '● LIVE' : '○ READY', W / 2, H - 10);
+      
+      texture.needsUpdate = true;
+    }
+  });
   
   // Draw separate Ammeter screen (high-res 256x128)
   if (ammeterScreenCanvas && ammeterScreenTexture) {
@@ -11900,10 +12005,18 @@ function createComponentVisuals(type, snap1, snap2, customColor = null) {
     bezel.position.set(0, 0.06, 0.12);
     group.add(bezel);
 
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 128;
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    group.userData.canvas = canvas;
+    group.userData.texture = texture;
+
     // Screen plane - faces +Z (toward camera)
     const screenGeo = new THREE.PlaneGeometry(0.40, 0.19);
     const screenMat = new THREE.MeshBasicMaterial({
-      map: isAm ? ammeterScreenTexture : voltmeterScreenTexture,
+      map: texture,
       side: THREE.FrontSide
     });
     const screen = new THREE.Mesh(screenGeo, screenMat);
@@ -12531,7 +12644,7 @@ function updateInspector() {
     } else if (comp.type === 'ammeter' || comp.type === 'voltmeter') {
       typeName = comp.type === 'ammeter' ? 'Digital Ammeter' : 'Digital Voltmeter';
       detailsHTML = `
-        <div class="prop-row"><span class="prop-label">Measurement</span><span class="prop-val" style="color:var(--yellow)">${comp.type === 'ammeter' ? (getAmmeterReading() * 1000).toFixed(1) + ' mA' : getVoltmeterReading().toFixed(2) + ' V'}</span></div>
+        <div class="prop-row"><span class="prop-label">Measurement</span><span class="prop-val" style="color:var(--yellow)">${comp.type === 'ammeter' ? (getAmmeterReading(comp) * 1000).toFixed(1) + ' mA' : getVoltmeterReading(comp).toFixed(2) + ' V'}</span></div>
         <div class="prop-row"><span class="prop-label">Terminals</span><span class="prop-val">${getHoleName(comp.snap1)} (+) ↔ ${getHoleName(comp.snap2)} (-)</span></div>
       `;
     }
