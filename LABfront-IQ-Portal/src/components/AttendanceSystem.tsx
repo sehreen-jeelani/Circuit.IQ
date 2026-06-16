@@ -750,10 +750,10 @@ if (s.status === 'paused') onLabPause?.();
 
       await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js');
       await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@4.15.0/dist/tf-backend-webgl.min.js');
-      await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js');
+      await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@0.0.7/dist/blazeface.min.js');
 
-      const cocoSsd = (window as any).cocoSsd;
-      detectorRef.current = await cocoSsd.load({ base: 'lite_mobilenet_v2' });
+      const blazeface = (window as any).blazeface;
+detectorRef.current = await blazeface.load();
       setModelLoaded(true);
     } catch (e) {
       setCamError('Failed to load detection model. Check your internet connection.');
@@ -778,8 +778,8 @@ if (s.status === 'paused') onLabPause?.();
       intervalRef.current = setInterval(async () => {
         if (!videoRef.current || !detectorRef.current) return;
         try {
-          const predictions = await detectorRef.current.detect(videoRef.current);
-          const count = predictions.filter((p: any) => p.class === 'person').length;
+          const predictions = await detectorRef.current.estimateFaces(videoRef.current, false);
+const count = predictions.length;
           setPeopleCount(count);
 
           // Draw boxes on canvas
@@ -791,12 +791,13 @@ if (s.status === 'paused') onLabPause?.();
               ctx.drawImage(videoRef.current, 0, 0);
               ctx.strokeStyle = count >= required ? '#10b981' : '#ef4444';
               ctx.lineWidth = 2;
-              predictions.filter((p: any) => p.class === 'person').forEach((p: any) => {
-                const [x, y, w, h] = p.bbox;
-                ctx.strokeRect(x, y, w, h);
-                ctx.fillStyle = count >= required ? '#10b981' : '#ef4444';
-                ctx.font = '12px monospace';
-                ctx.fillText('Person', x, y - 4);
+              predictions.forEach((p: any) => {
+              const [x1, y1] = p.topLeft;
+              const [x2, y2] = p.bottomRight;
+              ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+              ctx.fillStyle = '#10b981';
+              ctx.font = '12px monospace';
+              ctx.fillText('Face', x1, y1 - 4);
               });
             }
           }

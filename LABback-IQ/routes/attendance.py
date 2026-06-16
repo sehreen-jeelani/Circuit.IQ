@@ -8,7 +8,7 @@
 
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 from student_db import validate_enrollment, get_all_students, get_departments, get_semesters
 
@@ -46,6 +46,7 @@ def create_session():
     group_name = str(data.get("group_name", "Group A")).strip()
     group_size = int(data.get("group_size", 4))
     reg_numbers = [str(r).strip() for r in data.get("reg_numbers", []) if str(r).strip()]
+    expiry_minutes = int(data.get("expiry_minutes", 15))
     if not reg_numbers:
         return jsonify({"status": "error", "message": "At least one registration number required"}), 400
     session_id = str(uuid.uuid4())[:8].upper()
@@ -63,6 +64,8 @@ def create_session():
         "ended_at": None,
         "events": [],
         "people_count": 0,
+        "expiry_at": (datetime.now() + timedelta(minutes=expiry_minutes)).isoformat(),
+        "expiry_minutes": expiry_minutes,
     }
     return jsonify({"status": "success", "session_id": session_id, "join_code": session_id}), 200
 
@@ -106,6 +109,8 @@ def join_session():
     session = SESSIONS[session_id]
     if session["status"] == "ended":
         return jsonify({"status": "error", "message": "This session has already ended"}), 400
+    if datetime.now().isoformat() > session.get("expiry_at", "9999"):
+        return jsonify({"status": "error", "message": "Session has expired. You can no longer join."}), 400
     if reg_number not in session["reg_numbers"]:
         return jsonify({"status": "error", "message": f"Enrollment number {reg_number} not in this group"}), 403
     if reg_number in session["checked_in"]:
