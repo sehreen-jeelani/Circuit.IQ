@@ -325,14 +325,14 @@ const experiments = {
   rc_rl_rlc: {
     name: "LCR AC Impedance Analysis",
     aim: "Study total impedance and phase angle in LCR series circuits.",
-    apparatus: "AC Function Generator, Resistor, Inductor, Capacitor, Oscilloscope.",
-    req: ['source', 'resistor', 'inductor', 'capacitor'],
+    apparatus: "AC Function Generator, Resistor, Inductor, Capacitor, Ammeter, Voltmeter, Breadboard, connecting wires.",
+    req: ['source', 'resistor', 'inductor', 'capacitor', 'ammeter', 'voltmeter'],
     steps: [
       { id: 1, text: "Place a resistor, inductor, and capacitor in series on the breadboard." },
-      { id: 2, text: "Connect the series network to the AC function generator." },
-      { id: 3, text: "Connect oscilloscope probes across the source and the components to observe amplitude and phase shift." },
+      { id: 2, text: "Connect an AC ammeter in series and a voltmeter in parallel across the capacitor." },
+      { id: 3, text: "Connect the series loop to the AC function generator rails and click Initialize." },
       { id: 4, text: "Vary the generator frequency from 10Hz to 1kHz." },
-      { id: 5, text: "Record voltage, current, and phase difference at various frequencies to observe reactance variation." }
+      { id: 5, text: "Record impedance and phase difference at various frequencies to observe reactance variation." }
     ],
     theory: "<h3>LCR AC Circuit</h3><p>In AC circuits containing resistors (R), inductors (L), and capacitors (C), the opposition to current is called <b>Impedance (Z)</b>. It accounts for both resistance and frequency-dependent reactances (XL and XC): <b>Z = √[R² + (XL - XC)²]</b>.</p><p>Inductive reactance XL = 2πfL causes voltage to lead current by 90°, while capacitive reactance XC = 1/(2πfC) causes voltage to lag current by 90°. The phase angle φ between total voltage and current is given by: <b>tan(φ) = (XL - XC) / R</b>.</p>",
     formulas: [
@@ -2369,6 +2369,12 @@ function updateParameterValue(key, val) {
 
   state.params[key] = val;
 
+  if (state.activeExperiment === 'lcr' && key === 'f' && state.isRunning) {
+    completeStep(3);
+  } else if (state.activeExperiment === 'rc_rl_rlc' && key === 'f' && state.isRunning) {
+    completeStep(4);
+  }
+
   const slider = document.getElementById(`sl-${key.toLowerCase()}`);
   if (slider) {
     slider.value = val;
@@ -3635,7 +3641,6 @@ function getGraphConfig(expKey) {
       };
       
     case 'lcr':
-    case 'rc_rl_rlc':
       return {
         xLabel: "Frequency f (Hz)",
         yLabel: "Current I (mA)",
@@ -3643,6 +3648,17 @@ function getGraphConfig(expKey) {
         yMax: 250,
         getX: (pt) => pt.f,
         getY: (pt) => pt.I * 1000,
+        showSlopeCard: false
+      };
+      
+    case 'rc_rl_rlc':
+      return {
+        xLabel: "Frequency f (Hz)",
+        yLabel: "Impedance Z (Ω)",
+        xMax: 1000,
+        yMax: 1000,
+        getX: (pt) => pt.f,
+        getY: (pt) => pt.R,
         showSlopeCard: false
       };
       
@@ -5285,6 +5301,11 @@ function initInteraction() {
       completeStep(6);
     } else if (state.activeExperiment === 'kcl' && state.dataPoints.length >= 5) {
       completeStep(5);
+    } else if (state.activeExperiment === 'lcr') {
+      if (state.dataPoints.length >= 1) completeStep(4);
+      if (state.dataPoints.length >= 5) completeStep(5);
+    } else if (state.activeExperiment === 'rc_rl_rlc' && state.dataPoints.length >= 5) {
+      completeStep(5);
     }
     const conclusion = generateExperimentConclusion(state.activeExperiment, state.dataPoints);
     elements.conclusionText.innerHTML = `<b>Conclusion:</b><br>${conclusion}`;
@@ -6064,6 +6085,8 @@ function autoBuildExperiment() {
     create3DWire(24 * 14 + 9, 24 * 14 + 1);
     create3DWire(15 * 14 + 11, 15 * 14 + 6);
     create3DWire(19 * 14 + 11, 19 * 14 + 6);
+    completeStep(1);
+    completeStep(2);
   } else if (expKey === 'lcr') {
     placeComponent3D('source', 1 * 14 + 0, 1 * 14 + 1);
     placeComponent3D('resistor', 7 * 14 + 4, 11 * 14 + 4);
@@ -6078,6 +6101,8 @@ function autoBuildExperiment() {
     create3DWire(24 * 14 + 9, 24 * 14 + 1);
     create3DWire(15 * 14 + 11, 15 * 14 + 6);
     create3DWire(19 * 14 + 11, 19 * 14 + 6);
+    completeStep(1);
+    completeStep(2);
   } else if (expKey === 'rc') {
     placeComponent3D('source', 1 * 14 + 0, 1 * 14 + 1);
     placeComponent3D('toggle_switch', 5 * 14 + 5, 9 * 14 + 5);  // Col 6 Row D to Col 10 Row D
@@ -6316,6 +6341,8 @@ function getCurrentExpectedTool() {
     if (!findComp('resistor')) return 'resistor';
     if (!findComp('inductor')) return 'inductor';
     if (!findComp('capacitor')) return 'capacitor';
+    if (!findComp('ammeter')) return 'ammeter';
+    if (!findComp('voltmeter')) return 'voltmeter';
     return 'wire';
   }
   if (state.activeExperiment === 'rc') {
@@ -6964,6 +6991,8 @@ function updateTargetHighlights() {
     const resistor = findComp('resistor');
     const inductor = findComp('inductor');
     const capacitor = findComp('capacitor');
+    const ammeter = findComp('ammeter');
+    const voltmeter = findComp('voltmeter');
 
     if (!source) {
       if (!state.selectedTool || state.selectedTool === 'source') {
@@ -6985,11 +7014,23 @@ function updateTargetHighlights() {
         targetHighlightRing1 = addRing(15 * 14 + 6);
         targetHighlightRing2 = addRing(19 * 14 + 6);
       }
+    } else if (!ammeter) {
+      if (!state.selectedTool || state.selectedTool === 'ammeter') {
+        targetHighlightRing1 = addRing(19 * 14 + 9);
+        targetHighlightRing2 = addRing(24 * 14 + 9);
+      }
+    } else if (!voltmeter) {
+      if (!state.selectedTool || state.selectedTool === 'voltmeter') {
+        targetHighlightRing1 = addRing(15 * 14 + 11);
+        targetHighlightRing2 = addRing(19 * 14 + 11);
+      }
     } else {
       if (!state.selectedTool || state.selectedTool === 'wire') {
         const r1 = resistor.snap1, r2 = resistor.snap2;
         const l1 = inductor.snap1, l2 = inductor.snap2;
         const c1 = capacitor.snap1, c2 = capacitor.snap2;
+        const am1 = ammeter.snap1, am2 = ammeter.snap2;
+        const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
 
         const s_to_r = (uf.find(7 * 14 + 0) === uf.find(r1) || uf.find(7 * 14 + 0) === uf.find(r2));
         if (!s_to_r) {
@@ -7021,10 +7062,36 @@ function updateTargetHighlights() {
         const c_conn_term = (uf.find(c1) === uf.find(l_free_term)) ? c1 : c2;
         const c_free_term = (c_conn_term === c1) ? c2 : c1;
 
-        const c_to_gnd = (uf.find(c_free_term) === uf.find(19 * 14 + 1));
-        if (!c_to_gnd) {
+        const c_to_am = (uf.find(c_free_term) === uf.find(am1) || uf.find(c_free_term) === uf.find(am2));
+        if (!c_to_am) {
           targetHighlightRing1 = addRing(c_free_term, true);
-          targetHighlightRing2 = addRing(19 * 14 + 1, true);
+          targetHighlightRing2 = addRing(am1, true);
+          return;
+        }
+
+        const am_conn_term = (uf.find(am1) === uf.find(c_free_term)) ? am1 : am2;
+        const am_free_term = (am_conn_term === am1) ? am2 : am1;
+
+        const am_to_gnd = (uf.find(am_free_term) === uf.find(24 * 14 + 1));
+        if (!am_to_gnd) {
+          targetHighlightRing1 = addRing(am_free_term, true);
+          targetHighlightRing2 = addRing(24 * 14 + 1, true);
+          return;
+        }
+
+        const volt1_connected = (uf.find(volt1) === uf.find(c1) || uf.find(volt1) === uf.find(c2));
+        if (!volt1_connected) {
+          targetHighlightRing1 = addRing(volt1, true);
+          targetHighlightRing2 = addRing(c1, true);
+          return;
+        }
+
+        const volt1_conn_to = (uf.find(volt1) === uf.find(c1)) ? c1 : c2;
+        const volt2_target = (volt1_conn_to === c1) ? c2 : c1;
+        const volt2_connected = (uf.find(volt2) === uf.find(volt2_target));
+        if (!volt2_connected) {
+          targetHighlightRing1 = addRing(volt2, true);
+          targetHighlightRing2 = addRing(volt2_target, true);
           return;
         }
       }
@@ -7446,49 +7513,76 @@ function getAIMentorMessage() {
   
   if (state.activeExperiment === 'lcr') {
     if (!source) {
-      return "<b>Step 1: Place AC Source</b><br>Select <b>DC Power Source</b> <i class='fa-solid fa-plug'></i> and click glowing green Top Rails slots (Col 2, Row +/-).";
+      return "<b>Step 1: Place AC Source</b><br>Select <b>AC Function Generator</b> and click glowing green Top Rails slots (Col 2, Row +/-).";
     }
     if (!resistor) {
-      return "<b>Step 2: Place Resistor</b><br>Select <b>Ceramic Resistor</b> <i class='fa-solid fa-wave-square'></i> and place horizontally between Col 8, Row C and Col 12, Row C.";
+      return "<b>Step 1: Place Resistor</b><br>Select <b>Ceramic Resistor</b> <i class='fa-solid fa-wave-square'></i> and place horizontally between Col 8, Row C and Col 12, Row C.";
     }
     if (!inductor) {
-      return "<b>Step 3: Place Inductor</b><br>Select <b>Copper Inductor</b> <i class='fa-solid fa-circle-notch'></i> and place horizontally between Col 12, Row D and Col 16, Row D.";
+      return "<b>Step 1: Place Inductor</b><br>Select <b>Copper Inductor</b> <i class='fa-solid fa-circle-notch'></i> and place horizontally between Col 12, Row D and Col 16, Row D.";
     }
     if (!capacitor) {
-      return "<b>Step 4: Place Capacitor</b><br>Select <b>Electrolytic Capacitor</b> <i class='fa-solid fa-grip-lines-vertical'></i> and place horizontally between Col 16, Row E and Col 20, Row E.";
+      return "<b>Step 1: Place Capacitor</b><br>Select <b>Electrolytic Capacitor</b> <i class='fa-solid fa-grip-lines-vertical'></i> and place horizontally between Col 16, Row E and Col 20, Row E.";
+    }
+    if (!ammeter) {
+      return "<b>Step 2: Place Ammeter</b><br>Select <b>Ammeter</b> <i class='fa-solid fa-gauge-simple-high'></i> and place horizontally between Col 20, Row H and Col 25, Row H.";
+    }
+    if (!voltmeter) {
+      return "<b>Step 2: Place Voltmeter</b><br>Select <b>Voltmeter</b> <i class='fa-solid fa-gauge-simple'></i> and place horizontally between Col 16, Row J and Col 20, Row J.";
     }
     
     const uf = runUnionFind();
     const r1 = resistor.snap1, r2 = resistor.snap2;
     const l1 = inductor.snap1, l2 = inductor.snap2;
     const c1 = capacitor.snap1, c2 = capacitor.snap2;
+    const am1 = ammeter.snap1, am2 = ammeter.snap2;
+    const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
     
     // Wire 1: Top (+) Rail to Resistor start
     const s_to_r = (uf.find(7 * 14 + 0) === uf.find(r1));
     if (!s_to_r) {
-      return `<b>Step 5: Wire (+) Rail to Resistor</b><br>Wire **Top (+) Rail (Col 8)** to **Resistor start** (${getSocketLabelShort(r1)}).`;
+      return `<b>Step 1: Wire (+) Rail to Resistor</b><br>Wire **Top (+) Rail (Col 8)** to **Resistor start** (${getSocketLabelShort(r1)}).`;
     }
     // Wire 2: Resistor end to Inductor start
     const r_to_l = (uf.find(r2) === uf.find(l1));
     if (!r_to_l) {
-      return `<b>Step 5: Wire Resistor to Inductor</b><br>Wire **Resistor end** (${getSocketLabelShort(r2)}) to **Inductor start** (${getSocketLabelShort(l1)}).`;
+      return `<b>Step 1: Wire Resistor to Inductor</b><br>Wire **Resistor end** (${getSocketLabelShort(r2)}) to **Inductor start** (${getSocketLabelShort(l1)}).`;
     }
     // Wire 3: Inductor end to Capacitor start
     const l_to_c = (uf.find(l2) === uf.find(c1));
     if (!l_to_c) {
-      return `<b>Step 5: Wire Inductor to Capacitor</b><br>Wire **Inductor end** (${getSocketLabelShort(l2)}) to **Capacitor start** (${getSocketLabelShort(c1)}).`;
+      return `<b>Step 1: Wire Inductor to Capacitor</b><br>Wire **Inductor end** (${getSocketLabelShort(l2)}) to **Capacitor start** (${getSocketLabelShort(c1)}).`;
     }
-    // Wire 4: Capacitor end back to Top (-) Rail
-    const c_to_gnd = (uf.find(c2) === uf.find(19 * 14 + 1));
-    if (!c_to_gnd) {
-      return `<b>Step 5: Wire Capacitor to (-) Rail</b><br>Wire **Capacitor end** (${getSocketLabelShort(c2)}) to **Top (-) Rail (Col 20)**.`;
+    // Wire 4: Capacitor end to Ammeter (+)
+    const c_to_am = (uf.find(c2) === uf.find(am1));
+    if (!c_to_am) {
+      return `<b>Step 2: Wire Capacitor to Ammeter</b><br>Wire **Capacitor end** (${getSocketLabelShort(c2)}) to **Ammeter (+)** (${getSocketLabelShort(am1)}).`;
+    }
+    // Wire 5: Ammeter (-) back to Top (-) Rail
+    const am_to_gnd = (uf.find(am2) === uf.find(24 * 14 + 1));
+    if (!am_to_gnd) {
+      return `<b>Step 2: Wire Ammeter to (-) Rail</b><br>Wire **Ammeter (-)** (${getSocketLabelShort(am2)}) to **Top (-) Rail (Col 25)**.`;
+    }
+    // Wire 6: Voltmeter (+) to Capacitor start
+    const volt_pos_to_c = (uf.find(volt1) === uf.find(c1));
+    if (!volt_pos_to_c) {
+      return `<b>Step 2: Wire Voltmeter (+) to Capacitor</b><br>Wire **Voltmeter (+)** (${getSocketLabelShort(volt1)}) to **Capacitor start** (${getSocketLabelShort(c1)}).`;
+    }
+    // Wire 7: Voltmeter (-) to Capacitor end
+    const volt_neg_to_c = (uf.find(volt2) === uf.find(c2));
+    if (!volt_neg_to_c) {
+      return `<b>Step 2: Wire Voltmeter (-) to Capacitor</b><br>Wire **Voltmeter (-)** (${getSocketLabelShort(volt2)}) to **Capacitor end** (${getSocketLabelShort(c2)}).`;
     }
     
     if (!state.isRunning) {
-      return "<b>Step 6: Initialize Circuit</b><br>Wiring complete! Click <b>INITIALIZE</b> in the top bar to start the LCR simulation.";
+      return "<b>Step 3: Initialize Circuit</b><br>Wiring complete! Click <b>INITIALIZE</b> in the top bar to start the LCR simulation.";
     }
     
-    return "<b>Step 7: Find Resonance</b><br>Vary the **Source Frequency** slider to find the resonance peak (minimum Z / maximum I).";
+    if (state.dataPoints.length < 5) {
+      return `<b>Step 4: Record Resonance Data</b><br>Vary the **Source Frequency** slider to find the resonance peak, and click <b>Record Point</b> (${5 - state.dataPoints.length} remaining).`;
+    }
+    
+    return "<b>Step 5: View Resonance Curve</b><br>Great job! Click on the **Graph** panel to view the sharp resonant frequency curve.";
   }
   
   if (state.activeExperiment === 'rc') {
@@ -7776,44 +7870,79 @@ function getAIMentorMessage() {
 
   if (state.activeExperiment === 'rc_rl_rlc') {
     if (!source) {
-      return "<b>Step 1: Place AC Source</b><br>Select <b>AC Function Generator</b> and click glowing green Top Rails slots.";
+      return "<b>Step 1: Place AC Source</b><br>Select <b>AC Function Generator</b> and click glowing green Top Rails slots (Col 2, Row +/-).";
     }
     if (!resistor) {
-      return "<b>Step 2: Place Resistor</b><br>Select <b>Ceramic Resistor</b> and place horizontally between Col 8, Row C and Col 12, Row C.";
+      return "<b>Step 1: Place Resistor</b><br>Select <b>Ceramic Resistor</b> and place horizontally between Col 8, Row C and Col 12, Row C.";
     }
     if (!inductor) {
-      return "<b>Step 3: Place Inductor</b><br>Select <b>Copper Inductor</b> and place horizontally between Col 12, Row D and Col 16, Row D.";
+      return "<b>Step 1: Place Inductor</b><br>Select <b>Copper Inductor</b> and place horizontally between Col 12, Row D and Col 16, Row D.";
     }
     if (!capacitor) {
-      return "<b>Step 4: Place Capacitor</b><br>Select <b>Electrolytic Capacitor</b> and place horizontally between Col 16, Row E and Col 20, Row E.";
+      return "<b>Step 1: Place Capacitor</b><br>Select <b>Electrolytic Capacitor</b> and place horizontally between Col 16, Row E and Col 20, Row E.";
+    }
+    if (!ammeter) {
+      return "<b>Step 2: Place Ammeter</b><br>Select <b>Ammeter</b> and place horizontally below the ravine between Col 20, Row H and Col 25, Row H.";
+    }
+    if (!voltmeter) {
+      return "<b>Step 2: Place Voltmeter</b><br>Select <b>Voltmeter</b> and place horizontally below the ravine between Col 16, Row J and Col 20, Row J.";
     }
     
     const uf = runUnionFind();
     const r1 = resistor.snap1, r2 = resistor.snap2;
     const l1 = inductor.snap1, l2 = inductor.snap2;
     const c1 = capacitor.snap1, c2 = capacitor.snap2;
+    const am1 = ammeter.snap1, am2 = ammeter.snap2;
+    const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
     
+    // Wire 1: Top (+) Rail to Resistor start
     const s_to_r = (uf.find(7 * 14 + 0) === uf.find(r1));
     if (!s_to_r) {
-      return `<b>Step 5: Wire (+) Rail to Resistor</b><br>Wire **Top (+) Rail (Col 8)** to **Resistor start** (${getSocketLabelShort(r1)}).`;
+      return `<b>Step 3: Wire (+) Rail to Resistor</b><br>Wire **Top (+) Rail (Col 8)** to **Resistor start** (${getSocketLabelShort(r1)}).`;
     }
+    // Wire 2: Resistor end to Inductor start
     const r_to_l = (uf.find(r2) === uf.find(l1));
     if (!r_to_l) {
-      return `<b>Step 5: Wire Resistor to Inductor</b><br>Wire **Resistor end** (${getSocketLabelShort(r2)}) to **Inductor start** (${getSocketLabelShort(l1)}).`;
+      return `<b>Step 3: Wire Resistor to Inductor</b><br>Wire **Resistor end** (${getSocketLabelShort(r2)}) to **Inductor start** (${getSocketLabelShort(l1)}).`;
     }
+    // Wire 3: Inductor end to Capacitor start
     const l_to_c = (uf.find(l2) === uf.find(c1));
     if (!l_to_c) {
-      return `<b>Step 5: Wire Inductor to Capacitor</b><br>Wire **Inductor end** (${getSocketLabelShort(l2)}) to **Capacitor start** (${getSocketLabelShort(c1)}).`;
+      return `<b>Step 3: Wire Inductor to Capacitor</b><br>Wire **Inductor end** (${getSocketLabelShort(l2)}) to **Capacitor start** (${getSocketLabelShort(c1)}).`;
     }
-    const c_to_gnd = (uf.find(c2) === uf.find(19 * 14 + 1));
-    if (!c_to_gnd) {
-      return `<b>Step 5: Wire Capacitor to (-) Rail</b><br>Wire **Capacitor end** (${getSocketLabelShort(c2)}) to **Top (-) Rail (Col 20)**.`;
+    // Wire 4: Capacitor end to Ammeter (+)
+    const c_to_am = (uf.find(c2) === uf.find(am1));
+    if (!c_to_am) {
+      return `<b>Step 3: Wire Capacitor to Ammeter</b><br>Wire **Capacitor end** (${getSocketLabelShort(c2)}) to **Ammeter (+)** (${getSocketLabelShort(am1)}).`;
+    }
+    // Wire 5: Ammeter (-) back to Top (-) Rail
+    const am_to_gnd = (uf.find(am2) === uf.find(24 * 14 + 1));
+    if (!am_to_gnd) {
+      return `<b>Step 3: Wire Ammeter to (-) Rail</b><br>Wire **Ammeter (-)** (${getSocketLabelShort(am2)}) to **Top (-) Rail (Col 25)**.`;
+    }
+    // Wire 6: Voltmeter (+) to Capacitor start
+    const volt_pos_to_c = (uf.find(volt1) === uf.find(c1));
+    if (!volt_pos_to_c) {
+      return `<b>Step 3: Wire Voltmeter (+) to Capacitor</b><br>Wire **Voltmeter (+)** (${getSocketLabelShort(volt1)}) to **Capacitor start** (${getSocketLabelShort(c1)}).`;
+    }
+    // Wire 7: Voltmeter (-) to Capacitor end
+    const volt_neg_to_c = (uf.find(volt2) === uf.find(c2));
+    if (!volt_neg_to_c) {
+      return `<b>Step 3: Wire Voltmeter (-) to Capacitor</b><br>Wire **Voltmeter (-)** (${getSocketLabelShort(volt2)}) to **Capacitor end** (${getSocketLabelShort(c2)}).`;
     }
     
     if (!state.isRunning) {
-      return "<b>Step 6: Initialize Circuit</b><br>Wiring complete! Click <b>INITIALIZE</b> in the top bar to start the RLC simulation.";
+      return "<b>Step 3: Initialize Circuit</b><br>Wiring complete! Click <b>INITIALIZE</b> in the top bar to start the RLC simulation.";
     }
-    return "<b>Step 7: Analyze RLC Impedance</b><br>Vary frequency and parameters. Observe impedance Z and phase angle changes on the Oscilloscope.";
+    
+    if (state.completedSteps.has(4)) {
+      if (state.dataPoints.length < 5) {
+        return `<b>Step 5: Record Impedance Data</b><br>Vary frequency and click <b>Record Point</b> (${5 - state.dataPoints.length} remaining).`;
+      }
+      return "<b>Step 5: Analysis Complete</b><br>Great job! Click on the **Graph** panel to view the f-Z impedance response curve.";
+    }
+    
+    return "<b>Step 4: Vary Frequency</b><br>Vary the **Source Frequency** slider from 10Hz to 1kHz to see reactance and impedance shifts.";
   }
 
   if (state.activeExperiment === 'series_parallel') {
@@ -12337,6 +12466,20 @@ function placeComponent3D(type, snap1, snap2) {
     if (type === 'resistor') completeStep(1);
     if (type === 'source') completeStep(2);
     if (type === 'ammeter' || type === 'voltmeter') completeStep(3);
+  } else if (state.activeExperiment === 'lcr' || state.activeExperiment === 'rc_rl_rlc') {
+    const hasR = state.placedComponents.some(c => c.type === 'resistor');
+    const hasL = state.placedComponents.some(c => c.type === 'inductor');
+    const hasC = state.placedComponents.some(c => c.type === 'capacitor');
+    if (hasR && hasL && hasC) {
+      completeStep(1);
+    }
+    if (state.activeExperiment === 'rc_rl_rlc') {
+      const hasAm = state.placedComponents.some(c => c.type === 'ammeter');
+      const hasVolt = state.placedComponents.some(c => c.type === 'voltmeter');
+      if (hasAm && hasVolt) {
+        completeStep(2);
+      }
+    }
   } else if (state.activeExperiment === 'kcl') {
     const resistors = state.placedComponents.filter(c => c.type === 'resistor');
     const ammeters = state.placedComponents.filter(c => c.type === 'ammeter');
@@ -12349,8 +12492,6 @@ function placeComponent3D(type, snap1, snap2) {
     if (ammeters.length >= 3) {
       completeStep(4);
     }
-  } else if (state.activeExperiment === 'lcr') {
-    if (type === 'resistor') completeStep(1);
   } else if (state.activeExperiment === 'arduino_led') {
     if (type === 'source') completeStep(1);
     const hasButton = state.placedComponents.some(c => c.type === 'button' || c.type === 'toggle_switch') || type === 'button' || type === 'toggle_switch';
@@ -13120,7 +13261,7 @@ function create3DWire(snap1, snap2, isUserClick = false) {
   
   if (state.activeExperiment === 'ohms' && state.wires.length >= 4) {
     completeStep(4);
-  } else if (state.activeExperiment === 'lcr' && state.wires.length >= 4) {
+  } else if (state.activeExperiment === 'lcr' && state.wires.length >= 5) {
     completeStep(2);
   } else if (state.activeExperiment === 'rc' && state.wires.length >= 3) {
     completeStep(2);
