@@ -5975,6 +5975,10 @@ function autoBuildExperiment() {
     create3DWire(19 * 14 + 7, 19 * 14 + 1);                    // Ammeter end to Source (-) rail
     create3DWire(9 * 14 + 4, 9 * 14 + 9);                      // Resistor terminal 1 to voltmeter terminal 1 (cross ravine)
     create3DWire(14 * 14 + 4, 14 * 14 + 9);                    // Resistor terminal 2 to voltmeter terminal 2 (cross ravine)
+    completeStep(1);
+    completeStep(2);
+    completeStep(3);
+    completeStep(4);
   } else if (expKey === 'kvl') {
     placeComponent3D('source', 1 * 14 + 0, 1 * 14 + 1);
     placeComponent3D('resistor', 7 * 14 + 5, 11 * 14 + 5);      // Resistor 1: Col 8-12, Row D
@@ -6470,8 +6474,8 @@ function updateTargetHighlights() {
       }
     } else if (!voltmeter) {
       if (!state.selectedTool || state.selectedTool === 'voltmeter') {
-        targetHighlightRing1 = addRing(9 * 14 + 2);
-        targetHighlightRing2 = addRing(14 * 14 + 2);
+        targetHighlightRing1 = addRing(9 * 14 + 9);
+        targetHighlightRing2 = addRing(14 * 14 + 9);
       }
     } else {
       if (!state.selectedTool || state.selectedTool === 'wire') {
