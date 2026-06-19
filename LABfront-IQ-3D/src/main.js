@@ -1521,17 +1521,33 @@ function validateCircuitLocal() {
   }
   
   if (expKey === 'kcl') {
-    if (!source || comps.filter(c => c.type === 'resistor').length < 2) {
-      return { status: 'error', message: 'Missing required components. Place Source and at least 2 Resistors.' };
+    const ammeters = comps.filter(c => c.type === 'ammeter');
+    if (!source || comps.filter(c => c.type === 'resistor').length < 2 || ammeters.length < 3) {
+      return { status: 'error', message: 'Missing required components. Place Source, 2 Resistors, and 3 Ammeters.' };
     }
+    
+    // Create a custom union-find for parallel structure checking (treats ammeters as shorts)
+    const kclUf = runUnionFind();
+    ammeters.forEach(am => {
+      kclUf.union(am.snap1, am.snap2);
+    });
+    
+    const findKcl = (x) => kclUf.find(x);
+    
     const resList = comps.filter(c => c.type === 'resistor');
     const r1 = resList[0], r2 = resList[1];
+    
     const posRail = find(0), negRail = find(1);
     if (posRail === negRail) {
       return { status: 'error', message: 'Short Circuit Detected! Positive rail (+) is connected directly to Ground (-) rail.' };
     }
-    const nodeR1_1 = find(r1.snap1), nodeR1_2 = find(r1.snap2);
-    const nodeR2_1 = find(r2.snap1), nodeR2_2 = find(r2.snap2);
+    
+    // Check if resistors themselves are shorted
+    if (find(r1.snap1) === find(r1.snap2)) return { status: 'error', message: 'Resistor R1 is shorted!' };
+    if (find(r2.snap1) === find(r2.snap2)) return { status: 'error', message: 'Resistor R2 is shorted!' };
+    
+    const nodeR1_1 = findKcl(r1.snap1), nodeR1_2 = findKcl(r1.snap2);
+    const nodeR2_1 = findKcl(r2.snap1), nodeR2_2 = findKcl(r2.snap2);
     
     const parallel_connected = (
       (nodeR1_1 === nodeR2_1 && nodeR1_2 === nodeR2_2) ||
@@ -1541,29 +1557,18 @@ function validateCircuitLocal() {
       return { status: 'error', message: 'Resistors must be wired in PARALLEL. Check your connections.' };
     }
     
+    // Now verify the entire loop is closed
     const common1 = nodeR1_1;
     const common2 = nodeR1_2;
     
-    // Check if connected directly or via ammeter
-    const ammeter = findComp('ammeter');
-    let connectedToPos = (common1 === posRail || common2 === posRail);
-    let connectedToNeg = (common1 === negRail || common2 === negRail);
+    const kclPosRail = findKcl(0);
+    const kclNegRail = findKcl(1);
     
-    if (ammeter) {
-      const am1 = find(ammeter.snap1);
-      const am2 = find(ammeter.snap2);
-      if ((am1 === posRail && (am2 === common1 || am2 === common2)) ||
-          (am2 === posRail && (am1 === common1 || am1 === common2))) {
-        connectedToPos = true;
-      }
-      if ((am1 === negRail && (am2 === common1 || am2 === common2)) ||
-          (am2 === negRail && (am1 === common1 || am1 === common2))) {
-        connectedToNeg = true;
-      }
-    }
+    const connectedToPos = (common1 === kclPosRail || common2 === kclPosRail);
+    const connectedToNeg = (common1 === kclNegRail || common2 === kclNegRail);
     
-    const connected = connectedToPos && connectedToNeg;
-    if (connected) {
+    if (connectedToPos && connectedToNeg) {
+      completeStep(2);
       return { status: 'success', message: 'Kirchhoff\'s Current Law parallel loop verified and closed!' };
     }
     return { status: 'error', message: 'Ensure both parallel paths are connected to positive and negative rails.' };
@@ -5278,6 +5283,8 @@ function initInteraction() {
     
     if (state.activeExperiment === 'ohms' && state.dataPoints.length >= 5) {
       completeStep(6);
+    } else if (state.activeExperiment === 'kcl' && state.dataPoints.length >= 5) {
+      completeStep(5);
     }
     const conclusion = generateExperimentConclusion(state.activeExperiment, state.dataPoints);
     elements.conclusionText.innerHTML = `<b>Conclusion:</b><br>${conclusion}`;
@@ -5997,14 +6004,21 @@ function autoBuildExperiment() {
     completeStep(1);
   } else if (expKey === 'kcl') {
     placeComponent3D('source', 1 * 14 + 0, 1 * 14 + 1);
-    placeComponent3D('ammeter', 3 * 14 + 7, 6 * 14 + 7);       // Ammeter: Cols 4-7, row H (measures I_total before junction)
-    placeComponent3D('resistor', 8 * 14 + 3, 12 * 14 + 3);     // R1: parallel branch 1 (row C)
-    placeComponent3D('resistor', 8 * 14 + 5, 12 * 14 + 5);     // R2: parallel branch 2 (row F)
-    create3DWire(6 * 14 + 0, 3 * 14 + 7);                      // Source (+) to ammeter start (moved to Col 6 to avoid power source casing)
-    create3DWire(6 * 14 + 7, 8 * 14 + 3);                      // Ammeter end to junction (R1 start)
-    create3DWire(8 * 14 + 3, 8 * 14 + 5);                      // Junction: R1 start to R2 start (parallel)
-    create3DWire(12 * 14 + 3, 12 * 14 + 5);                    // R1 end to R2 end (parallel recombine)
-    create3DWire(12 * 14 + 5, 6 * 14 + 1);                     // Recombined path to Source (-) (moved to Col 6 to avoid power source casing)
+    placeComponent3D('ammeter', 3 * 14 + 7, 6 * 14 + 7);       // Ammeter (Total): Cols 4-7, row F
+    placeComponent3D('ammeter', 7 * 14 + 4, 10 * 14 + 4);      // Ammeter (Branch 1): Cols 8-11, row C
+    placeComponent3D('ammeter', 7 * 14 + 9, 10 * 14 + 9);      // Ammeter (Branch 2): Cols 8-11, row H
+    placeComponent3D('resistor', 10 * 14 + 4, 14 * 14 + 4);    // Resistor 1: Cols 11-15, row C
+    placeComponent3D('resistor', 10 * 14 + 9, 14 * 14 + 9);    // Resistor 2: Cols 11-15, row H
+    
+    create3DWire(3 * 14 + 0, 3 * 14 + 7);                      // Source (+) Col 4 to Total Ammeter start
+    create3DWire(6 * 14 + 7, 7 * 14 + 7);                      // Total Ammeter end to Junction node bottom (Col 8 Row F)
+    create3DWire(7 * 14 + 4, 7 * 14 + 9);                      // Junction wire: Col 8 Row C to Col 8 Row H (crosses ravine)
+    create3DWire(14 * 14 + 4, 14 * 14 + 9);                    // Recombine wire: Col 15 Row C to Col 15 Row H (crosses ravine)
+    create3DWire(14 * 14 + 9, 14 * 14 + 1);                    // Recombined end to Source (-) Col 15
+    completeStep(1);
+    completeStep(2);
+    completeStep(3);
+    completeStep(4);
   } else if (expKey === 'led') { // led color experiment
     placeComponent3D('source', 3 * 14 + 0, 3 * 14 + 1); // Source at Col 4 Positive & Negative
     placeComponent3D('resistor', 6 * 14 + 4, 9 * 14 + 4); // Resistor at Col 7E to 10E
@@ -6270,11 +6284,11 @@ function getCurrentExpectedTool() {
     return 'wire';
   }
   if (state.activeExperiment === 'kcl') {
-    const resistor1 = resistors.find(r => r.snap1 === 8 * 14 + 3 || r.snap2 === 8 * 14 + 3);
-    const resistor2 = resistors.find(r => r.snap1 === 8 * 14 + 5 || r.snap2 === 8 * 14 + 5);
+    const resistors = comps.filter(c => c.type === 'resistor');
+    const ammeters = comps.filter(c => c.type === 'ammeter');
     if (!findComp('source')) return 'source';
-    if (!resistor1) return 'resistor';
-    if (!resistor2) return 'resistor';
+    if (resistors.length < 2) return 'resistor';
+    if (ammeters.length < 3) return 'ammeter';
     return 'wire';
   }
   if (state.activeExperiment === 'series_parallel') {
@@ -10552,6 +10566,21 @@ function getAmmeterReading(ammeterComp) {
   
   if (am1 === am2) return 0.0;
   
+  if (state.activeExperiment === 'kcl') {
+    const col = Math.floor(ammeter.snap1 / 14);
+    const row = ammeter.snap1 % 14;
+    
+    // Branch 1 is Row C (index 4)
+    if (row === 4 || ammeter.snap2 % 14 === 4) {
+      return state.analysis.IR1 !== undefined ? state.analysis.IR1 : (state.meters.volts / (state.params.R || 1));
+    }
+    // Branch 2 is Row H (index 9)
+    if (row === 9 || ammeter.snap2 % 14 === 9) {
+      const R2 = state.params.L || 100;
+      return state.analysis.IR2 !== undefined ? state.analysis.IR2 : (state.meters.volts / R2);
+    }
+  }
+  
   return state.meters.amps;
 }
 
@@ -12308,6 +12337,18 @@ function placeComponent3D(type, snap1, snap2) {
     if (type === 'resistor') completeStep(1);
     if (type === 'source') completeStep(2);
     if (type === 'ammeter' || type === 'voltmeter') completeStep(3);
+  } else if (state.activeExperiment === 'kcl') {
+    const resistors = state.placedComponents.filter(c => c.type === 'resistor');
+    const ammeters = state.placedComponents.filter(c => c.type === 'ammeter');
+    if (resistors.length >= 2) {
+      completeStep(1);
+    }
+    if (ammeters.length >= 1) {
+      completeStep(3);
+    }
+    if (ammeters.length >= 3) {
+      completeStep(4);
+    }
   } else if (state.activeExperiment === 'lcr') {
     if (type === 'resistor') completeStep(1);
   } else if (state.activeExperiment === 'arduino_led') {
@@ -13082,6 +13123,8 @@ function create3DWire(snap1, snap2, isUserClick = false) {
   } else if (state.activeExperiment === 'lcr' && state.wires.length >= 4) {
     completeStep(2);
   } else if (state.activeExperiment === 'rc' && state.wires.length >= 3) {
+    completeStep(2);
+  } else if (state.activeExperiment === 'kcl' && state.wires.length >= 5) {
     completeStep(2);
   }
   
@@ -13935,10 +13978,19 @@ function updateDiagram(expKey) {
       <svg viewBox="0 0 200 120" style="width:100%;max-width:180px;height:auto;margin:0 auto;display:block">
         <line x1="25" y1="50" x2="25" y2="70" stroke="#ef4444" stroke-width="1.5" />
         <line x1="30" y1="55" x2="30" y2="65" stroke="#ef4444" stroke-width="0.8" />
-        <path d="M 25 60 L 15 60 L 15 20 L 60 20" fill="none" stroke="#00d084" stroke-width="1.5" />
+        <path d="M 25 60 L 15 60 L 15 20 L 33 20" fill="none" stroke="#00d084" stroke-width="1.5" />
+        <circle cx="38" cy="20" r="5" fill="#020617" stroke="#ef4444" stroke-width="1" />
+        <text x="38" y="22" fill="#ef4444" font-size="5" font-family="sans-serif" font-weight="bold" text-anchor="middle">A</text>
+        <path d="M 43 20 L 60 20" fill="none" stroke="#00d084" stroke-width="1.5" />
         <path d="M 30 60 L 185 60 L 185 20 L 140 20" fill="none" stroke="#64748b" stroke-width="1.5" />
-        <path d="M 60 20 L 60 10 L 80 10" fill="none" stroke="#00d084" stroke-width="1.2" />
-        <path d="M 60 20 L 60 30 L 80 30" fill="none" stroke="#00d084" stroke-width="1.2" />
+        <path d="M 60 20 L 60 10 L 68.5 10" fill="none" stroke="#00d084" stroke-width="1.2" />
+        <circle cx="73" cy="10" r="4.5" fill="#020617" stroke="#3b82f6" stroke-width="1" />
+        <text x="73" y="12" fill="#3b82f6" font-size="4.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">A₁</text>
+        <path d="M 77.5 10 L 80 10" fill="none" stroke="#00d084" stroke-width="1.2" />
+        <path d="M 60 20 L 60 30 L 68.5 30" fill="none" stroke="#00d084" stroke-width="1.2" />
+        <circle cx="73" cy="30" r="4.5" fill="#020617" stroke="#3b82f6" stroke-width="1" />
+        <text x="73" y="32" fill="#3b82f6" font-size="4.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">A₂</text>
+        <path d="M 77.5 30 L 80 30" fill="none" stroke="#00d084" stroke-width="1.2" />
         <path d="M 80 10 L 85 7 L 90 13 L 95 7 L 100 13 L 105 7 L 110 13 L 115 10" fill="none" stroke="#f97316" stroke-width="1.2" />
         <text x="97" y="4" fill="#f97316" font-size="7" font-family="sans-serif" text-anchor="middle">R₁</text>
         <path d="M 115 10 L 135 10 L 135 20" fill="none" stroke="#64748b" stroke-width="1.2" />
