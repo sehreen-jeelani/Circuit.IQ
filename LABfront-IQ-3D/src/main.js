@@ -2489,12 +2489,9 @@ function updateParameterValue(key, val) {
   }
 
   val = Math.max(min, Math.min(max, val));
-  if (step === 0.1) {
-    val = Math.round(val * 10) / 10;
-  } else {
-    const scale = 1 / step;
-    val = Math.round(val * scale) / scale;
-  }
+  const scale = 1 / (step || 1);
+  val = Math.round(val * scale) / scale;
+  if (state.params[key] === val) return;
   
   if (state.activeExperiment === 'ohms') {
     const now = Date.now();
@@ -2515,6 +2512,27 @@ function updateParameterValue(key, val) {
     } else if (key === 'V' && val !== state.params.V) {
       if (state.dataPoints.length > 0 && now - (state.lastMentorMsgTime || 0) > 5000) {
         appendAIMessage("Circuit IQ · AI Mentor", "Only one parameter (Voltage) is varying during Ohm’s Law verification. Resistance is kept fixed at " + (state.params.R || 100).toFixed(1) + " Ω.");
+        state.lastMentorMsgTime = now;
+      }
+    }
+  } else if (state.activeExperiment === 'kvl' || state.activeExperiment === 'kcl') {
+    const now = Date.now();
+    if ((key === 'R' || key === 'L' || key === 'T') && val !== state.params[key]) {
+      if (state.dataPoints.length > 0) {
+        state.dataPoints = [];
+        drawObservationTable();
+        drawGraph();
+        if (elements.conclusionText) elements.conclusionText.innerHTML = '';
+        state.meters.energy = 0;
+        
+        if (now - (state.lastMentorMsgTime || 0) > 3000) {
+          appendAIMessage("Circuit IQ · AI Mentor", "Only one parameter (Voltage) should vary during Kirchhoff's Law verification. Resetting graph and table for the new circuit characteristics.");
+          state.lastMentorMsgTime = now;
+        }
+      }
+    } else if (key === 'V' && val !== state.params.V) {
+      if (state.dataPoints.length > 0 && now - (state.lastMentorMsgTime || 0) > 5000) {
+        appendAIMessage("Circuit IQ · AI Mentor", "Only one parameter (Voltage) is varying during Kirchhoff's Law verification. Resistor values are kept constant.");
         state.lastMentorMsgTime = now;
       }
     }
