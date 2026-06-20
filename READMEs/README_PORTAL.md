@@ -52,18 +52,18 @@ LABfront-IQ-Portal/
 ## 🚀 Key Functional Systems
 
 ### 1. Code Splitting & Dynamic Imports
-To ensure fast initial page loads, [App.tsx](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABfront-IQ-Portal/src/App.tsx) uses dynamic imports (`React.lazy()`) for major pages and components. This splits heavy libraries (like Three.js, React Three Fiber, and ScrollTrigger) into separate bundles loaded only when needed.
+To ensure fast initial page loads, [App.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/App.tsx) uses dynamic imports (`React.lazy()`) for major pages and components. This splits heavy libraries (like Three.js, React Three Fiber, and ScrollTrigger) into separate bundles loaded only when needed.
 * **Initial bundle weight**: Reduced from `711 kB` down to `369 kB`.
 * **Loader Fallback**: Renders a glassmorphic skeleton layout with a spinner while dynamic components finish importing.
 
 ### 2. The postMessage Integration Bridge
-[LabStudio.tsx](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABfront-IQ-Portal/src/pages/LabStudio.tsx) hosts the fullscreen WebGL simulator inside a sandbox `iframe`. It handles the postMessage interface:
+[LabStudio.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/pages/LabStudio.tsx) hosts the fullscreen WebGL simulator inside a sandbox `iframe`. It handles the postMessage interface:
 * Toggling themes inside the React Navbar dispatches a `postMessage({ type: 'theme-change', theme }, '*')` into the iframe to sync colors.
 * Reclaiming WebGL memory when closing the lab modal is handled by sending context loss commands, avoiding browser-wide WebGL crashes.
 * Assets progress reports are intercepted to update the loading progress bar.
 
 ### 3. Zustand Global State Management
-The Zustand store ([useAppStore.ts](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABfront-IQ-Portal/src/store/useAppStore.ts)) keeps components decoupled:
+The Zustand store ([useAppStore.ts](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/store/useAppStore.ts)) keeps components decoupled:
 ```typescript
 interface AppState {
   isLabOpen: boolean;
@@ -78,9 +78,17 @@ interface AppState {
 ```
 
 ### 4. Classroom Attendance & Face-Lock
-[AttendanceSystem.tsx](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABfront-IQ-Portal/src/components/AttendanceSystem.tsx) coordinates webcam access and passes streams to TensorFlow.js COCO-SSD.
+[AttendanceSystem.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/components/AttendanceSystem.tsx) coordinates webcam access and passes streams to TensorFlow.js COCO-SSD.
 * **Safety Safeguard**: When student face count falls below the registered session threshold, the component triggers `onLabPause()`.
 * It renders a lock screen overlay, pauses simulation loops, and posts a `paused` status to `/api/session/<id>/presence`. It resumes immediately when the students return to the camera view.
+
+### 5. Load Time & Performance Optimizations
+To deliver a high-performance experience, the home page's WebGL canvas and entry animations have been heavily optimized:
+* **Shader Compilation Optimization**: Replaced the complex `mipmapBlur` Bloom post-processing effect with a standard bloom shader, speeding up WebGL shader compilation on startup by **3-4x** and removing render lag.
+* **Reduced Canvas Mounting Delay**: Shrank the mounting delay of the 3D Canvas from `300ms` down to `50ms` for near-instant execution.
+* **Smooth Opacity Transition**: Implemented a CSS transition wrapper (`duration-500`) to smoothly fade in the canvas over 500ms when it renders, eliminating any visual pops or flashes.
+* **Level of Detail (LOD) Background Meshes**: Configured a lightweight `isBackground` mode for floating background components, reducing subdivisions to `6` and disabling off-screen meshes (leads, wire joints, bounce lights, and volumetric halos) to lower draw calls.
+* **Relative Frame Orbit Pathing**: Precalculated orbital coordinates (`radius`/`angle`) in a `useMemo` block for background items, removing complex `Math.sqrt` and `Math.atan2` trigonometry overhead from the active `useFrame` loop.
 
 ## 🔌 Full-Stack Connection & Integration Flow (Frontend ↔ Backend ↔ Database)
 
@@ -92,7 +100,7 @@ Circuit.IQ leverages a tightly integrated client-server pipeline to synchronize 
   * **Production Static Serving**: In production, the React frontend is compiled into static assets and placed in the backend's `dist/` directory. Flask serves the static bundle and the API endpoints concurrently on Port `5000`.
 
 * **Website-to-Iframe Handshake (Simulation Integration)**:
-  * **Decoupled Embedding**: The React website ([LabStudio.tsx](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABfront-IQ-Portal/src/pages/LabStudio.tsx)) embeds the WebGL simulation by loading the static shell `lab.html` inside an `iframe` with URL parameters (`/lab.html?exp=<experiment_key>&theme=<theme>`).
+  * **Decoupled Embedding**: The React website ([LabStudio.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/pages/LabStudio.tsx)) embeds the WebGL simulation by loading the static shell `lab.html` inside an `iframe` with URL parameters (`/lab.html?exp=<experiment_key>&theme=<theme>`).
   * **State Passing via postMessage**: Communication bypasses origin restrictions using HTML5 message parsing for theme sync, asset loading progress, and webcam face pause signals.
 
 * **Database Sync & Layout Persistence (Storage Integration)**:

@@ -42,7 +42,7 @@ LABback-IQ/
 
 ## 🔬 Core Backend Subsystems
 
-### 1. Physics Engine Solver ([physics_engine.py](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/physics_engine.py))
+### 1. Physics Engine Solver ([physics_engine.py](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/physics_engine.py))
 Handles numerical computations for experiments. Calculations are structured as plugins inside the `experiments/` directory:
 * **Ohm's Law**: Calculates current and power, accounting for resistance shifts due to temperature coefficients:
   $$R_{eff} = R_{nominal} \times [1 + \alpha(T - 25^\circ C)]$$
@@ -51,7 +51,7 @@ Handles numerical computations for experiments. Calculations are structured as p
 * **RC Transient charging**: Computes charge levels ($V_c$) over charging intervals ($t$):
   $$V_c(t) = V_s \times (1 - e^{-t/RC})$$
 
-### 2. Dual Database Sync Adapter ([database.py](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/database.py))
+### 2. Dual Database Sync Adapter ([database.py](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/database.py))
 Circuit.IQ is compatible with local and cloud databases out of the box:
 * If `SUPABASE_URL` and `SUPABASE_ANON_KEY` are defined, the application routes data to Supabase (PostgreSQL).
 * If keys are missing, it falls back to a local SQLite database (`circuit_iq.db`), initializing and seeding default student profiles and circuits.
@@ -70,10 +70,10 @@ The chatbot endpoint `POST /api/physicsbot/ask` provides context-aware guidance 
   
   Provide a concise, helpful response (max 3 sentences). Guide the student to identify errors themselves. Do not give direct solutions.
   ```
-* **Offline Fallback**: If the Gemini API key is missing, the backend uses a local keyword processor ([ai_guide.py](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/ai_guide.py)) that parses queries to return structured tutoring steps.
+* **Offline Fallback**: If the Gemini API key is missing, the backend uses a local keyword processor ([ai_guide.py](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/ai_guide.py)) that parses queries to return structured tutoring steps.
 
 ### 4. Classroom Attendance Sessions
-The attendance blueprint ([attendance.py](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/routes/attendance.py)) tracks classroom lab sessions:
+The attendance blueprint ([attendance.py](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/routes/attendance.py)) tracks classroom lab sessions:
 * Professors authenticate using `ADMIN_PASSWORD` (default: `circuitiq@admin2025`) and create a session code.
 * Students enter the join code and register their details to enter a check-in queue.
 * The endpoint `/api/session/<session_id>/presence` receives webcam person count reports from the client-side TensorFlow.js tracker to log status changes.
@@ -82,7 +82,7 @@ The attendance blueprint ([attendance.py](file:///c:/Users/anaya/OneDrive/Deskto
 To ensure that all student lab experiments run perfectly and correctly, the backend implements detailed topology validation and calculation pipelines:
 
 #### A. Circuit Topology Verification (`POST /api/validate`)
-The validation blueprint ([physics.py](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/routes/physics.py)) receives active breadboard coordinate states from the frontend:
+The validation blueprint ([physics.py](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/routes/physics.py)) receives active breadboard coordinate states from the frontend:
 1. **Format Conversion**: Translates placed wire structures into index tuples mapping component connections.
 2. **Component Completeness**: Checks if all mandatory components for the specific experiment are placed.
 3. **Graph Construction**: Constructs an adjacency list representing the circuit graph:
@@ -115,7 +115,7 @@ Circuit.IQ leverages a tightly integrated client-server pipeline to synchronize 
   * **Production Static Serving**: In production, the React frontend is compiled into static assets and placed in the backend's `dist/` directory. Flask serves the static bundle and the API endpoints concurrently on Port `5000`.
 
 * **Website-to-Iframe Handshake (Simulation Integration)**:
-  * **Decoupled Embedding**: The React website ([LabStudio.tsx](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABfront-IQ-Portal/src/pages/LabStudio.tsx)) embeds the WebGL simulation by loading the static shell `lab.html` inside an `iframe` with URL parameters (`/lab.html?exp=<experiment_key>&theme=<theme>`).
+  * **Decoupled Embedding**: The React website ([LabStudio.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/pages/LabStudio.tsx)) embeds the WebGL simulation by loading the static shell `lab.html` inside an `iframe` with URL parameters (`/lab.html?exp=<experiment_key>&theme=<theme>`).
   * **State Passing via postMessage**: Communication bypasses origin restrictions using HTML5 message parsing for theme sync, asset loading progress, and webcam face pause signals.
 
 * **Database Sync & Layout Persistence (Storage Integration)**:

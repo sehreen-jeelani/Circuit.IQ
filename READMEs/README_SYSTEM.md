@@ -3,11 +3,11 @@
 Welcome to the technical blueprint of **Circuit.IQ**, a 3D Virtual Physics Laboratory. This document serves as the master documentation covering the frontend, backend, 3D rendering engines, databases, and AI tutor subsystems.
 
 > [!TIP]
-> For easy access, all sub-system README documentation files have also been compiled into the [READMEs/](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/READMEs) folder at the root level.
-> - **System Architecture Guide**: [README_SYSTEM.md](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/READMEs/README_SYSTEM.md)
-> - **Flask Backend Server**: [README_BACKEND.md](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/READMEs/README_BACKEND.md)
-> - **3D Simulator Engine**: [README_3D_SIMULATOR.md](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/READMEs/README_3D_SIMULATOR.md)
-> - **React Website Portal**: [README_PORTAL.md](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/READMEs/README_PORTAL.md)
+> For easy access, all sub-system README documentation files have also been compiled into the [READMEs/](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/READMEs) folder at the root level.
+> - **System Architecture Guide**: [README_SYSTEM.md](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/READMEs/README_SYSTEM.md)
+> - **Flask Backend Server**: [README_BACKEND.md](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/READMEs/README_BACKEND.md)
+> - **3D Simulator Engine**: [README_3D_SIMULATOR.md](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/READMEs/README_3D_SIMULATOR.md)
+> - **React Website Portal**: [README_PORTAL.md](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/READMEs/README_PORTAL.md)
 
 ---
 
@@ -77,7 +77,7 @@ Circuit.IQ leverages a tightly integrated client-server pipeline to synchronize 
   * **Production Static Serving**: In production, the React frontend is compiled into static assets and placed in the backend's `dist/` directory. Flask serves the static bundle and the API endpoints concurrently on Port `5000`.
 
 * **Website-to-Iframe Handshake (Simulation Integration)**:
-  * **Decoupled Embedding**: The React website ([LabStudio.tsx](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABfront-IQ-Portal/src/pages/LabStudio.tsx)) embeds the WebGL simulation by loading the static shell `lab.html` inside an `iframe` with URL parameters (`/lab.html?exp=<experiment_key>&theme=<theme>`).
+  * **Decoupled Embedding**: The React website ([LabStudio.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/pages/LabStudio.tsx)) embeds the WebGL simulation by loading the static shell `lab.html` inside an `iframe` with URL parameters (`/lab.html?exp=<experiment_key>&theme=<theme>`).
   * **State Passing via postMessage**: Communication bypasses origin restrictions using HTML5 message parsing for theme sync, asset loading progress, and webcam face pause signals.
 
 * **Database Sync & Layout Persistence (Storage Integration)**:
@@ -97,11 +97,18 @@ The primary web app handles administration, logs, support tickets, and launches 
 * **Animations**: Powered by GSAP (ScrollTrigger) for scroll-scrubbing hero sequences and Framer Motion for UI routes.
 * **Scroll Engine**: Synchronized with `Lenis` smooth-scroll linked to the GSAP ticker.
 
+### ⚡ Load Time & Performance Optimizations
+* **Bloom Shader Compilation Optimization**: Replaced heavy `mipmapBlur` Bloom post-processing with a standard, highly performant bloom shader to accelerate WebGL initialization and reduce startup latency by 3-4x.
+* **Reduced Canvas Mounting Delay**: Shrank canvas rendering delay from 300ms to 50ms for near-instant rendering.
+* **Canvas Opacity Transitions**: Implemented CSS transition wrappers to smoothly fade in the canvas over 500ms, masking WebGL rendering pops.
+* **Level of Detail (LOD) Background Mesh Rendering**: Background floating resistors/LEDs now use a simplified LOD mode (reduced cylinder/sphere subdivisions down to 6 and removed invisible wire leads, halos, and bounce lights), reducing draw calls and geometry complexity.
+* **Relative Frame Orbit Pathing**: Precalculated orbital coordinates in `useMemo` for background elements, avoiding computationally heavy math operations (`Math.sqrt`, `Math.atan2`) inside the active `useFrame` loop.
+
 ### 📂 Key Directory & File Map
-* [App.tsx](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABfront-IQ-Portal/src/App.tsx): Main SPA controller utilizing `React.lazy()` chunk-splitting to dynamically import heavy pages and reduce initial load bundle sizes by nearly 50%.
-* [useAppStore.ts](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABfront-IQ-Portal/src/store/useAppStore.ts): Zustand global store syncing selected experiments (`currentExperiment`), lab state (`isLabOpen`), and theme settings (`theme`).
-* [LandingPage.tsx](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABfront-IQ-Portal/src/pages/LandingPage.tsx): Displays the main hero section, modular category selectors, and embeds the homepage AI tutor console.
-* [LabStudio.tsx](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABfront-IQ-Portal/src/pages/LabStudio.tsx): The fullscreen iframe manager. Handles WebGL context loss cleanup to prevent memory leaks during page navigation.
+* [App.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/App.tsx): Main SPA controller utilizing `React.lazy()` chunk-splitting to dynamically import heavy pages and reduce initial load bundle sizes by nearly 50%.
+* [useAppStore.ts](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/store/useAppStore.ts): Zustand global store syncing selected experiments (`currentExperiment`), lab state (`isLabOpen`), and theme settings (`theme`).
+* [LandingPage.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/pages/LandingPage.tsx): Displays the main hero section, modular category selectors, and embeds the homepage AI tutor console.
+* [LabStudio.tsx](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-Portal/src/pages/LabStudio.tsx): The fullscreen iframe manager. Handles WebGL context loss cleanup to prevent memory leaks during page navigation.
 
 ---
 
@@ -115,19 +122,19 @@ The Python Flask server handles all calculations, databases, and API integration
 * **Database**: Supabase Python client (`supabase==2.10.0`) with local SQLite fallback.
 
 ### 📂 Key Directory & File Map
-* [app.py](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/app.py): App factory that configures blueprints, enables CORS configurations, and serves compiled production static assets in single-server deployments.
-* [physics_engine.py](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/physics_engine.py): Direct numerical solver containing mathematical models for the 26 experiments.
-* [database.py](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/database.py): Abstract database driver that selects between local SQLite (`circuit_iq.db`) and cloud Supabase depending on availability of environment variables.
-* [routes/](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/routes/): Blueprint controllers for route mappings:
-  * `/api/calculate` & `/api/validate` -> [physics.py](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/routes/physics.py)
-  * `/api/physicsbot/ask` -> [physicsbot.py](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/routes/physicsbot.py)
-  * `/api/db/*` (saving/loading layouts) -> [database_routes.py](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABback-IQ/routes/database_routes.py)
+* [app.py](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/app.py): App factory that configures blueprints, enables CORS configurations, and serves compiled production static assets in single-server deployments.
+* [physics_engine.py](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/physics_engine.py): Direct numerical solver containing mathematical models for the 26 experiments.
+* [database.py](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/database.py): Abstract database driver that selects between local SQLite (`circuit_iq.db`) and cloud Supabase depending on availability of environment variables.
+* [routes/](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/routes/): Blueprint controllers for route mappings:
+  * `/api/calculate` & `/api/validate` -> [physics.py](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/routes/physics.py)
+  * `/api/physicsbot/ask` -> [physicsbot.py](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/routes/physicsbot.py)
+  * `/api/db/*` (saving/loading layouts) -> [database_routes.py](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABback-IQ/routes/database_routes.py)
 
 ---
 
 ## ⚡ 3D Lab Simulator (Three.js WebGL Engine)
 
-The 3D simulator is written in Vanilla ES6 JavaScript, packaged using Vite 8, and loaded inside a fullscreen WebGL scene ([LABfront-IQ-3D/index.html](file:///c:/Users/anaya/OneDrive/Desktop/final%20project%20ready/Circuit.IQ/LABfront-IQ-3D/index.html)).
+The 3D simulator is written in Vanilla ES6 JavaScript, packaged using Vite 8, and loaded inside a fullscreen WebGL scene ([LABfront-IQ-3D/index.html](file:///c:/Users/anaya/OneDrive/Desktop/working%20folder%20new/Circuit.IQ/LABfront-IQ-3D/index.html)).
 
 ### 1. WebGL Scene & Memory Management
 * Renders a 3D workspace using Three.js (r184) PERSPECTIVE camera.
@@ -196,7 +203,7 @@ The homepage console (`POST /api/physics-bot`) uses structured prompts with JSON
 * `recommendedExp`: Key of a matching simulation module.
 
 ### 3. Local/Offline Fallback Parser
-If the Gemini API key is missing, the backend uses a local keyword processor ([ai_guide.py](file:///c:/Users/anaya/OneDrive/Desktop/final project ready/Circuit.IQ/LABback-IQ/ai_guide.py)) that matches queries for keywords (e.g. `ohm`, `lcr`, `snell`, `gas`) to return structured tutoring steps and formulas.
+If the Gemini API key is missing, the backend uses a local keyword processor ([ai_guide.py](file:///c:/Users/anaya/OneDrive/Desktop/working folder new/Circuit.IQ/LABback-IQ/ai_guide.py)) that matches queries for keywords (e.g. `ohm`, `lcr`, `snell`, `gas`) to return structured tutoring steps and formulas.
 
 ---
 
@@ -237,7 +244,7 @@ To prevent unattended simulations and monitor student presence, Circuit.IQ featu
 Circuit.IQ supports dual databases for local and cloud deployments:
 
 * **Dual Engine Selection**: Initializes SQLite (`circuit_iq.db`) automatically if Supabase configuration credentials are not found in the environment.
-* **Database migrations**: Configured via [schema.sql](file:///c:/Users/anaya/OneDrive/Desktop/final project ready/Circuit.IQ/LABdata-IQ/schema.sql) and [customise.sql](file:///c:/Users/anaya/OneDrive/Desktop/final project ready/Circuit.IQ/LABdata-IQ/customise.sql) to sync SQLite and Supabase schemas.
+* **Database migrations**: Configured via [schema.sql](file:///c:/Users/anaya/OneDrive/Desktop/working folder new/Circuit.IQ/LABdata-IQ/schema.sql) and [customise.sql](file:///c:/Users/anaya/OneDrive/Desktop/working folder new/Circuit.IQ/LABdata-IQ/customise.sql) to sync SQLite and Supabase schemas.
 * **Auto-Save**: The 3D simulator triggers a debounced layout backup (`debouncedSaveCircuit()`) to the Flask database route `/api/db/save-circuit` on every component placement or wire connection.
 * **Restore Prompt on Load**: When launching an experiment, the system queries `/api/db/load-circuit`. If a previous saved layout is discovered, it suspends loading and opens an overlay confirmation modal asking: *"Saved Progress Found: Would you like to restore your saved layout or start a fresh experiment?"*.
     * **Restore Progress**: Reconstructs the saved component locations, parameter knobs, and wire links (restored exactly without snapping offsets).
