@@ -22,7 +22,7 @@ class LcrExperiment(BaseExperiment):
         omega = params['omega']
 
         XL = omega * L
-        XC = 1.0 / (omega * C) if (omega * C) > 0 else float('inf')
+        XC = 1.0 / (omega * C) if (omega * C) > 0 else 1e9
         X = XL - XC
         Z = math.sqrt(R_eff * R_eff + X * X)
         I = V / Z if Z > 0 else 0.0
