@@ -20,7 +20,7 @@ class RcExperiment(BaseExperiment):
         V = params['V']
         omega = params['omega']
 
-        XC = 1.0 / (omega * C) if (omega * C) > 0 else float('inf')
+        XC = 1.0 / (omega * C) if (omega * C) > 0 else 1e9
         Z = math.sqrt(R_eff * R_eff + XC * XC)
         I = V / Z if Z > 0 else 0.0
         phi = math.degrees(math.atan2(-XC, R_eff))
