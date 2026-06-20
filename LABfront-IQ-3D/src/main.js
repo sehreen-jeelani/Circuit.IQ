@@ -12992,6 +12992,18 @@ function placeComponent3D(type, snap1, snap2) {
     const hasLed = state.placedComponents.some(c => c.type === 'led') || type === 'led';
     if (hasButton && hasLed) completeStep(2);
     if (type === 'resistor') completeStep(3);
+  } else if (state.activeExperiment === 'kvl') {
+    const resistors = state.placedComponents.filter(c => c.type === 'resistor');
+    const hasSource = state.placedComponents.some(c => c.type === 'source');
+    const hasAmmeter = state.placedComponents.some(c => c.type === 'ammeter');
+    if (resistors.length >= 2 && hasSource && hasAmmeter) {
+      completeStep(1);
+    }
+  } else if (state.activeExperiment === 'series_parallel') {
+    const resistors = state.placedComponents.filter(c => c.type === 'resistor');
+    if (resistors.length >= 2) {
+      completeStep(1);
+    }
   }
   updateTelemetryCounts();
   updateDynamicTextures();
