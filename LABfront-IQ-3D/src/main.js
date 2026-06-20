@@ -1294,6 +1294,7 @@ function validateCircuitLocal() {
       return { status: 'error', message: 'Voltmeter is connected incorrectly! It must be wired in PARALLEL directly across the Resistor.' };
     }
     
+    completeStep(4);
     return { status: 'success', message: 'Ohm\'s Law DC series-parallel circuit loop verified and closed!' };
   }
   
@@ -1689,6 +1690,7 @@ function validateCircuitLocal() {
         return { status: 'error', message: 'Voltmeter must be connected in PARALLEL across the parallel resistors.' };
       }
       
+      completeStep(3);
       return { status: 'success', message: 'Parallel Resistors circuit loop verified and closed!' };
       
     } else {
@@ -1739,148 +1741,295 @@ function validateCircuitLocal() {
         return { status: 'error', message: 'Voltmeter must be connected in PARALLEL across Resistor 1.' };
       }
       
+      completeStep(2);
       return { status: 'success', message: 'Series Resistors circuit loop verified and closed!' };
     }
   }
 
   if (expKey === 'wheatstone') {
-    if (!source || comps.filter(c => c.type === 'resistor').length < 4) {
-      return { status: 'error', message: 'Missing components. Place Source and 4 Resistors.' };
+    const resList = comps.filter(c => c.type === 'resistor');
+    const galv = findComp('galvanometer');
+    if (!source || resList.length < 4 || !galv) {
+      return { status: 'error', message: 'Missing required components. Please place Source, 4 Resistors, and Galvanometer.' };
     }
-    const posRail = find(0), negRail = find(1);
-    if (posRail === negRail) return { status: 'error', message: 'Short Circuit Detected!' };
     
-    let pos_conn = false, neg_conn = false;
-    comps.forEach(c => {
-      if (find(c.snap1) === posRail || find(c.snap2) === posRail) pos_conn = true;
-      if (find(c.snap1) === negRail || find(c.snap2) === negRail) neg_conn = true;
-    });
-    if (pos_conn && neg_conn) {
-      return { status: 'success', message: 'Wheatstone Bridge circuit verified!' };
+    if (find(galv.snap1) === find(galv.snap2)) return { status: 'error', message: 'Galvanometer is shorted!' };
+    for (let i = 0; i < 4; i++) {
+      if (find(resList[i].snap1) === find(resList[i].snap2)) {
+        return { status: 'error', message: `Resistor R${i+1} is shorted!` };
+      }
     }
-    return { status: 'error', message: 'Connect bridge inputs to positive and negative rails.' };
+    
+    const posRail = find(0), negRail = find(1);
+    if (posRail === negRail) return { status: 'error', message: 'Short Circuit Detected! Positive rail is connected directly to Ground.' };
+    
+    const Rp = resList.filter(r => find(r.snap1) === posRail || find(r.snap2) === posRail);
+    const Rn = resList.filter(r => find(r.snap1) === negRail || find(r.snap2) === negRail);
+    
+    if (Rp.length < 2) {
+      return { status: 'error', message: 'Bridge imbalance! Make sure at least two resistors are connected to the Positive (+) rail.' };
+    }
+    if (Rn.length < 2) {
+      return { status: 'error', message: 'Bridge imbalance! Make sure at least two resistors are connected to the Negative (-) rail.' };
+    }
+    
+    const nRp1 = find(Rp[0].snap1) === posRail ? find(Rp[0].snap2) : find(Rp[0].snap1);
+    const nRp2 = find(Rp[1].snap1) === posRail ? find(Rp[1].snap2) : find(Rp[1].snap1);
+    
+    const nRn1 = find(Rn[0].snap1) === negRail ? find(Rn[0].snap2) : find(Rn[0].snap1);
+    const nRn2 = find(Rn[1].snap1) === negRail ? find(Rn[1].snap2) : find(Rn[1].snap1);
+    
+    let nodeA = null, nodeB = null;
+    if (nRp1 === nRn1 && nRp2 === nRn2) {
+      nodeA = nRp1;
+      nodeB = nRp2;
+    } else if (nRp1 === nRn2 && nRp2 === nRn1) {
+      nodeA = nRp1;
+      nodeB = nRp2;
+    } else {
+      return { status: 'error', message: 'Resistors do not form a closed Wheatstone Bridge diamond. Check your midpoint connections.' };
+    }
+    
+    const g1 = find(galv.snap1);
+    const g2 = find(galv.snap2);
+    
+    const galvConnected = (
+      (g1 === nodeA && g2 === nodeB) ||
+      (g1 === nodeB && g2 === nodeA)
+    );
+    if (!galvConnected) {
+      return { status: 'error', message: 'Galvanometer must be connected across the midpoints (nodes A and B) of the bridge.' };
+    }
+    
+    return { status: 'success', message: 'Wheatstone Bridge circuit verified and balanced!' };
   }
 
   if (expKey === 'arduino_led') {
-    if (!source || !button || !led || !resistor) {
-      return { status: 'error', message: 'Missing components. Place Arduino, Button, LED, and Resistor.' };
+    const ledComp = findComp('led');
+    if (!source || !button || !ledComp || !resistor) {
+      return { status: 'error', message: 'Missing components. Place Source, Push Button, LED, and Resistor.' };
     }
-    const posNode = find(882);
-    const negNode = find(883);
-    if (posNode === negNode) return { status: 'error', message: 'Short Circuit Detected!' };
-    
-    let pos_conn = false, neg_conn = false;
-    comps.forEach(c => {
-      if (find(c.snap1) === posNode || find(c.snap2) === posNode) pos_conn = true;
-      if (find(c.snap1) === negNode || find(c.snap2) === negNode) neg_conn = true;
-    });
-    if (pos_conn && neg_conn) {
-      return { status: 'success', message: 'Arduino Uno digital power loop closed and verified!' };
-    }
-    return { status: 'error', message: 'Connect the loop to Arduino 5V and Ground nodes.' };
-  }
-
-  if (expKey === 'diode_iv') {
-    if (!source || !resistor || !findComp('diode') || !ammeter || !voltmeter) {
-      return { status: 'error', message: 'Missing required components. Place Source, Resistor, Diode, Ammeter, and Voltmeter.' };
-    }
-    const diode = findComp('diode');
-    const r1 = resistor.snap1, r2 = resistor.snap2;
-    const d1 = diode.snap1, d2 = diode.snap2;
-    const am1 = ammeter.snap1, am2 = ammeter.snap2;
-    const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
-    
-    if (find(r1) === find(r2) || find(d1) === find(d2) || find(am1) === find(am2) || find(volt1) === find(volt2)) {
-      return { status: 'error', message: 'One or more components are shorted!' };
-    }
+    if (find(resistor.snap1) === find(resistor.snap2)) return { status: 'error', message: 'Resistor is shorted!' };
+    if (find(ledComp.snap1) === find(ledComp.snap2)) return { status: 'error', message: 'LED is shorted!' };
+    if (find(button.snap1) === find(button.snap2)) return { status: 'error', message: 'Button is shorted!' };
     
     const posRail = find(0), negRail = find(1);
     if (posRail === negRail) return { status: 'error', message: 'Short Circuit Detected!' };
     
-    const nodeR1 = find(r1), nodeR2 = find(r2);
-    const nodeD1 = find(d1), nodeD2 = find(d2);
-    const nodeAm1 = find(am1), nodeAm2 = find(am2);
+    const seriesComps = [button, ledComp, resistor];
+    let currentNode = posRail;
+    const visitedComps = new Set();
+    let stepsLeft = 10;
     
-    let pathOk = false;
-    if ((nodeR1 === posRail || nodeR2 === posRail) && (nodeAm1 === negRail || nodeAm2 === negRail)) {
-      const rFree = (nodeR1 === posRail) ? nodeR2 : nodeR1;
-      const amFree = (nodeAm1 === negRail) ? nodeAm2 : nodeAm1;
-      if ((rFree === nodeD1 && nodeD2 === amFree) || (rFree === nodeD2 && nodeD1 === amFree)) {
-        pathOk = true;
+    while (currentNode !== negRail && stepsLeft > 0) {
+      stepsLeft--;
+      let foundNext = false;
+      for (const comp of seriesComps) {
+        if (visitedComps.has(comp)) continue;
+        const n1 = find(comp.snap1);
+        const n2 = find(comp.snap2);
+        if (n1 === currentNode) {
+          currentNode = n2;
+          visitedComps.add(comp);
+          foundNext = true;
+          break;
+        } else if (n2 === currentNode) {
+          currentNode = n1;
+          visitedComps.add(comp);
+          foundNext = true;
+          break;
+        }
       }
-    } else if ((nodeAm1 === posRail || nodeAm2 === posRail) && (nodeR1 === negRail || nodeR2 === negRail)) {
-      const amFree = (nodeAm1 === posRail) ? nodeAm2 : nodeAm1;
-      const rFree = (nodeR1 === negRail) ? nodeR2 : nodeR1;
-      if ((amFree === nodeD1 && nodeD2 === rFree) || (amFree === nodeD2 && nodeD1 === rFree)) {
-        pathOk = true;
-      }
+      if (!foundNext) break;
     }
     
-    if (!pathOk) {
-      return { status: 'error', message: 'Invalid series loop. Ensure: Battery (+) -> Resistor -> Diode (Anode to Cathode) -> Ammeter -> Ground (-).' };
+    if (currentNode !== negRail || visitedComps.size < 3) {
+      return { status: 'error', message: 'Arduino LED circuit is open! Ensure Source (+), Button, LED, Resistor, and Source (-) form a closed loop.' };
+    }
+    return { status: 'success', message: 'Arduino LED circuit verified and closed!' };
+  }
+
+  if (expKey === 'diode_iv') {
+    const diode = findComp('diode') || findComp('led');
+    if (!source || !resistor || !diode || !ammeter || !voltmeter) {
+      return { status: 'error', message: 'Missing required components. Please place Source, Resistor, Diode, Ammeter, and Voltmeter.' };
     }
     
+    if (find(resistor.snap1) === find(resistor.snap2)) return { status: 'error', message: 'Resistor is shorted! Both terminals are connected to the same electrical node.' };
+    if (find(diode.snap1) === find(diode.snap2)) return { status: 'error', message: 'Diode is shorted! Both terminals are connected to the same electrical node.' };
+    if (find(ammeter.snap1) === find(ammeter.snap2)) return { status: 'error', message: 'Ammeter is shorted! Both terminals are connected to the same electrical node.' };
+    if (find(voltmeter.snap1) === find(voltmeter.snap2)) return { status: 'error', message: 'Voltmeter is shorted! Both terminals are connected to the same electrical node.' };
+    
+    const posRail = find(0), negRail = find(1);
+    if (posRail === negRail) return { status: 'error', message: 'Short Circuit Detected! Positive rail (+) is connected directly to Ground (-) rail.' };
+    
+    const seriesComps = [resistor, diode, ammeter];
+    let currentNode = posRail;
+    const visitedComps = new Set();
+    let stepsLeft = 10;
+    
+    while (currentNode !== negRail && stepsLeft > 0) {
+      stepsLeft--;
+      let foundNext = false;
+      for (const comp of seriesComps) {
+        if (visitedComps.has(comp)) continue;
+        const n1 = find(comp.snap1);
+        const n2 = find(comp.snap2);
+        if (n1 === currentNode) {
+          currentNode = n2;
+          visitedComps.add(comp);
+          foundNext = true;
+          break;
+        } else if (n2 === currentNode) {
+          currentNode = n1;
+          visitedComps.add(comp);
+          foundNext = true;
+          break;
+        }
+      }
+      if (!foundNext) break;
+    }
+    
+    if (currentNode !== negRail || visitedComps.size < 3) {
+      return { status: 'error', message: 'Diode I-V circuit loop is open! Ensure all components (Resistor, Diode, Ammeter) form a closed series loop.' };
+    }
+    
+    const volt1 = find(voltmeter.snap1);
+    const volt2 = find(voltmeter.snap2);
+    const nodeD1 = find(diode.snap1);
+    const nodeD2 = find(diode.snap2);
     const voltmeterParallel = (
-      (find(volt1) === nodeD1 && find(volt2) === nodeD2) ||
-      (find(volt1) === nodeD2 && find(volt2) === nodeD1)
+      (volt1 === nodeD1 && volt2 === nodeD2) ||
+      (volt1 === nodeD2 && volt2 === nodeD1)
     );
     if (!voltmeterParallel) {
       return { status: 'error', message: 'Voltmeter must be connected in PARALLEL directly across the Diode.' };
     }
-    return { status: 'success', message: 'Diode forward bias circuit verified!' };
+    
+    return { status: 'success', message: 'Diode I-V circuit loop verified and closed!' };
   }
 
   if (expKey === 'voltage_divider') {
-    if (!source || comps.filter(c => c.type === 'resistor').length < 2) {
-      return { status: 'error', message: 'Missing components. Place Source and at least 2 Resistors.' };
-    }
     const resList = comps.filter(c => c.type === 'resistor');
-    const r1 = resList[0], r2 = resList[1];
+    if (!source || resList.length < 2 || !ammeter || !voltmeter) {
+      return { status: 'error', message: 'Missing required components. Please place Source, 2 Resistors, Ammeter, and Voltmeter.' };
+    }
+    
+    const r1 = resList[0];
+    const r2 = resList[1];
+    
+    if (find(r1.snap1) === find(r1.snap2)) return { status: 'error', message: 'Resistor R1 is shorted!' };
+    if (find(r2.snap1) === find(r2.snap2)) return { status: 'error', message: 'Resistor R2 is shorted!' };
+    if (find(ammeter.snap1) === find(ammeter.snap2)) return { status: 'error', message: 'Ammeter is shorted!' };
+    if (find(voltmeter.snap1) === find(voltmeter.snap2)) return { status: 'error', message: 'Voltmeter is shorted!' };
+    
     const posRail = find(0), negRail = find(1);
-    if (posRail === negRail) return { status: 'error', message: 'Short Circuit Detected!' };
+    if (posRail === negRail) return { status: 'error', message: 'Short Circuit Detected! Positive rail is connected directly to Ground.' };
     
-    const nodeR1_1 = find(r1.snap1), nodeR1_2 = find(r1.snap2);
-    const nodeR2_1 = find(r2.snap1), nodeR2_2 = find(r2.snap2);
+    const seriesComps = [r1, r2, ammeter];
+    let currentNode = posRail;
+    const visitedComps = new Set();
+    let stepsLeft = 10;
     
-    const r1_connected_to_pos = (nodeR1_1 === posRail || nodeR1_2 === posRail);
-    const r2_connected_to_neg = (nodeR2_1 === negRail || nodeR2_2 === negRail);
-    const r1_to_r2 = (nodeR1_1 === nodeR2_1 || nodeR1_1 === nodeR2_2 || nodeR1_2 === nodeR2_1 || nodeR1_2 === nodeR2_2);
-    
-    if (r1_connected_to_pos && r2_connected_to_neg && r1_to_r2) {
-      return { status: 'success', message: 'Voltage divider series network verified!' };
+    while (currentNode !== negRail && stepsLeft > 0) {
+      stepsLeft--;
+      let foundNext = false;
+      for (const comp of seriesComps) {
+        if (visitedComps.has(comp)) continue;
+        const n1 = find(comp.snap1);
+        const n2 = find(comp.snap2);
+        if (n1 === currentNode) {
+          currentNode = n2;
+          visitedComps.add(comp);
+          foundNext = true;
+          break;
+        } else if (n2 === currentNode) {
+          currentNode = n1;
+          visitedComps.add(comp);
+          foundNext = true;
+          break;
+        }
+      }
+      if (!foundNext) break;
     }
-    const r2_connected_to_pos = (nodeR2_1 === posRail || nodeR2_2 === posRail);
-    const r1_connected_to_neg = (nodeR1_1 === negRail || nodeR1_2 === negRail);
-    if (r2_connected_to_pos && r1_connected_to_neg && r1_to_r2) {
-      return { status: 'success', message: 'Voltage divider series network verified!' };
+    
+    if (currentNode !== negRail || visitedComps.size < 3) {
+      return { status: 'error', message: 'Voltage Divider circuit is open! Ensure all components (R1, R2, Ammeter) form a closed series loop.' };
     }
-    return { status: 'error', message: 'Ensure Resistor 1 -> Resistor 2 forms a series connection between Battery (+) and Ground (-).' };
+    
+    const volt1 = find(voltmeter.snap1);
+    const volt2 = find(voltmeter.snap2);
+    const nodeR2_1 = find(r2.snap1);
+    const nodeR2_2 = find(r2.snap2);
+    const voltmeterParallel = (
+      (volt1 === nodeR2_1 && volt2 === nodeR2_2) ||
+      (volt1 === nodeR2_2 && volt2 === nodeR2_1)
+    );
+    if (!voltmeterParallel) {
+      return { status: 'error', message: 'Voltmeter must be connected in PARALLEL across Resistor R2.' };
+    }
+    
+    return { status: 'success', message: 'Voltage Divider circuit loop verified and closed!' };
   }
 
   if (expKey === 'planck_led') {
-    if (!source || !resistor || !led) {
-      return { status: 'error', message: 'Missing components. Place Source, Resistor, and LED.' };
+    const ledComp = findComp('led');
+    if (!source || !resistor || !ledComp || !ammeter || !voltmeter) {
+      return { status: 'error', message: 'Missing required components. Please place Source, Resistor, LED, Ammeter, and Voltmeter.' };
     }
-    const r1 = resistor.snap1, r2 = resistor.snap2;
-    const l1 = led.snap1, l2 = led.snap2;
+    
+    if (find(resistor.snap1) === find(resistor.snap2)) return { status: 'error', message: 'Resistor is shorted! Both terminals are connected to the same electrical node.' };
+    if (find(ledComp.snap1) === find(ledComp.snap2)) return { status: 'error', message: 'LED is shorted! Both terminals are connected to the same electrical node.' };
+    if (find(ammeter.snap1) === find(ammeter.snap2)) return { status: 'error', message: 'Ammeter is shorted! Both terminals are connected to the same electrical node.' };
+    if (find(voltmeter.snap1) === find(voltmeter.snap2)) return { status: 'error', message: 'Voltmeter is shorted! Both terminals are connected to the same electrical node.' };
+    
     const posRail = find(0), negRail = find(1);
-    if (posRail === negRail) return { status: 'error', message: 'Short Circuit Detected!' };
+    if (posRail === negRail) return { status: 'error', message: 'Short Circuit Detected! Positive rail (+) is connected directly to Ground (-) rail.' };
     
-    const nodeR1 = find(r1), nodeR2 = find(r2);
-    const nodeL1 = find(l1), nodeL2 = find(l2);
+    const seriesComps = [resistor, ledComp, ammeter];
+    let currentNode = posRail;
+    const visitedComps = new Set();
+    let stepsLeft = 10;
     
-    let pathOk = false;
-    if ((nodeR1 === posRail || nodeR2 === posRail) && (nodeL1 === negRail || nodeL2 === negRail)) {
-      const rFree = (nodeR1 === posRail) ? nodeR2 : nodeR1;
-      if (rFree === nodeL1 || rFree === nodeL2) pathOk = true;
-    } else if ((nodeL1 === posRail || nodeL2 === posRail) && (nodeR1 === negRail || nodeR2 === negRail)) {
-      const lFree = (nodeL1 === posRail) ? nodeL2 : nodeL1;
-      if (lFree === nodeR1 || lFree === nodeR2) pathOk = true;
+    while (currentNode !== negRail && stepsLeft > 0) {
+      stepsLeft--;
+      let foundNext = false;
+      for (const comp of seriesComps) {
+        if (visitedComps.has(comp)) continue;
+        const n1 = find(comp.snap1);
+        const n2 = find(comp.snap2);
+        if (n1 === currentNode) {
+          currentNode = n2;
+          visitedComps.add(comp);
+          foundNext = true;
+          break;
+        } else if (n2 === currentNode) {
+          currentNode = n1;
+          visitedComps.add(comp);
+          foundNext = true;
+          break;
+        }
+      }
+      if (!foundNext) break;
     }
-    if (pathOk) {
-      return { status: 'success', message: 'LED Planck constant test circuit verified!' };
+    
+    if (currentNode !== negRail || visitedComps.size < 3) {
+      return { status: 'error', message: 'Planck\'s Constant LED circuit loop is open! Ensure all components (Resistor, LED, Ammeter) form a closed series loop.' };
     }
-    return { status: 'error', message: 'Connect Battery (+) -> Resistor -> LED -> Ground (-) in a closed loop.' };
+    
+    const volt1 = find(voltmeter.snap1);
+    const volt2 = find(voltmeter.snap2);
+    const nodeL1 = find(ledComp.snap1);
+    const nodeL2 = find(ledComp.snap2);
+    const voltmeterParallel = (
+      (volt1 === nodeL1 && volt2 === nodeL2) ||
+      (volt1 === nodeL2 && volt2 === nodeL1)
+    );
+    if (!voltmeterParallel) {
+      return { status: 'error', message: 'Voltmeter must be connected in PARALLEL directly across the LED.' };
+    }
+    
+    return { status: 'success', message: 'Planck\'s Constant LED circuit loop verified and closed!' };
   }
 
   const isCircuit = ['ohms', 'kvl', 'kcl', 'rc_rl_rlc', 'series_parallel', 'wheatstone', 'lcr', 'rc', 'arduino_led', 'diode_iv', 'voltage_divider', 'planck_led'].includes(expKey);
