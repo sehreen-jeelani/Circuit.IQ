@@ -7417,8 +7417,8 @@ function updateTargetHighlights() {
       }
     } else if (!voltmeter) {
       if (!state.selectedTool || state.selectedTool === 'voltmeter') {
-        targetHighlightRing1 = addRing(9 * 14 + 9);
-        targetHighlightRing2 = addRing(14 * 14 + 9);
+        targetHighlightRing1 = addRing(9 * 14 + 11);
+        targetHighlightRing2 = addRing(14 * 14 + 11);
       }
     } else {
       if (!state.selectedTool || state.selectedTool === 'wire') {
@@ -7562,31 +7562,31 @@ function updateTargetHighlights() {
         if (!isVolt1ConnectedToR1) {
           if (v1_1Node !== r1_1Node && v1_2Node !== r1_1Node && v1_1Node !== r1_2Node && v1_2Node !== r1_2Node) {
             targetHighlightRing1 = addRing(7 * 14 + 3, true);
-            targetHighlightRing2 = addRing(7 * 14 + 4, true);
+            targetHighlightRing2 = addRing(7 * 14 + 5, true);
             return;
           }
           if (v1_1Node === r1_1Node) {
             if (v1_2Node !== r1_2Node) {
               targetHighlightRing1 = addRing(11 * 14 + 3, true);
-              targetHighlightRing2 = addRing(11 * 14 + 4, true);
+              targetHighlightRing2 = addRing(11 * 14 + 5, true);
               return;
             }
           } else if (v1_2Node === r1_1Node) {
             if (v1_1Node !== r1_2Node) {
               targetHighlightRing1 = addRing(7 * 14 + 3, true);
-              targetHighlightRing2 = addRing(11 * 14 + 4, true);
+              targetHighlightRing2 = addRing(11 * 14 + 5, true);
               return;
             }
           } else if (v1_1Node === r1_2Node) {
             if (v1_2Node !== r1_1Node) {
               targetHighlightRing1 = addRing(11 * 14 + 3, true);
-              targetHighlightRing2 = addRing(7 * 14 + 4, true);
+              targetHighlightRing2 = addRing(7 * 14 + 5, true);
               return;
             }
           } else if (v1_2Node === r1_2Node) {
             if (v1_1Node !== r1_1Node) {
               targetHighlightRing1 = addRing(7 * 14 + 3, true);
-              targetHighlightRing2 = addRing(7 * 14 + 4, true);
+              targetHighlightRing2 = addRing(7 * 14 + 5, true);
               return;
             }
           }
@@ -7601,31 +7601,31 @@ function updateTargetHighlights() {
         if (!isVolt2ConnectedToR2) {
           if (v2_1Node !== r2_1Node && v2_2Node !== r2_1Node && v2_1Node !== r2_2Node && v2_2Node !== r2_2Node) {
             targetHighlightRing1 = addRing(13 * 14 + 3, true);
-            targetHighlightRing2 = addRing(13 * 14 + 4, true);
+            targetHighlightRing2 = addRing(13 * 14 + 5, true);
             return;
           }
           if (v2_1Node === r2_1Node) {
             if (v2_2Node !== r2_2Node) {
               targetHighlightRing1 = addRing(17 * 14 + 3, true);
-              targetHighlightRing2 = addRing(17 * 14 + 4, true);
+              targetHighlightRing2 = addRing(17 * 14 + 5, true);
               return;
             }
           } else if (v2_2Node === r2_1Node) {
             if (v2_1Node !== r2_2Node) {
               targetHighlightRing1 = addRing(13 * 14 + 3, true);
-              targetHighlightRing2 = addRing(17 * 14 + 4, true);
+              targetHighlightRing2 = addRing(17 * 14 + 5, true);
               return;
             }
           } else if (v2_1Node === r2_2Node) {
             if (v2_2Node !== r2_1Node) {
               targetHighlightRing1 = addRing(17 * 14 + 3, true);
-              targetHighlightRing2 = addRing(13 * 14 + 4, true);
+              targetHighlightRing2 = addRing(13 * 14 + 5, true);
               return;
             }
           } else if (v2_2Node === r2_2Node) {
             if (v2_1Node !== r2_1Node) {
               targetHighlightRing1 = addRing(13 * 14 + 3, true);
-              targetHighlightRing2 = addRing(13 * 14 + 4, true);
+              targetHighlightRing2 = addRing(13 * 14 + 5, true);
               return;
             }
           }
@@ -7707,53 +7707,189 @@ function updateTargetHighlights() {
   else if (state.activeExperiment === 'series_parallel') {
     const source = findComp('source');
     const resistors = comps.filter(c => c.type === 'resistor');
-    
-    const resistor1 = resistors.find(r => r.snap1 === 7 * 14 + 4 || r.snap2 === 7 * 14 + 4);
-    const resistor2 = resistors.find(r => r.snap1 === 11 * 14 + 4 || r.snap2 === 11 * 14 + 4);
+    const ammeter = findComp('ammeter');
+    const voltmeter = findComp('voltmeter');
+    const isParallel = (state.params.C === 2);
 
-    if (!source) {
-      if (!state.selectedTool || state.selectedTool === 'source') {
-        targetHighlightRing1 = addRing(1 * 14 + 0);
-        targetHighlightRing2 = addRing(1 * 14 + 1);
-      }
-    } else if (!resistor1) {
-      if (!state.selectedTool || state.selectedTool === 'resistor') {
-        targetHighlightRing1 = addRing(7 * 14 + 4);
-        targetHighlightRing2 = addRing(11 * 14 + 4);
-      }
-    } else if (!resistor2) {
-      if (!state.selectedTool || state.selectedTool === 'resistor') {
-        targetHighlightRing1 = addRing(11 * 14 + 4);
-        targetHighlightRing2 = addRing(15 * 14 + 4);
+    if (isParallel) {
+      const resistor1 = resistors.find(r => r.snap1 === 8 * 14 + 3 || r.snap2 === 8 * 14 + 3 || r.snap1 === 12 * 14 + 3 || r.snap2 === 12 * 14 + 3);
+      const resistor2 = resistors.find(r => r.snap1 === 8 * 14 + 5 || r.snap2 === 8 * 14 + 5 || r.snap1 === 12 * 14 + 5 || r.snap2 === 12 * 14 + 5);
+
+      if (!source) {
+        if (!state.selectedTool || state.selectedTool === 'source') {
+          targetHighlightRing1 = addRing(1 * 14 + 0);
+          targetHighlightRing2 = addRing(1 * 14 + 1);
+        }
+      } else if (!ammeter) {
+        if (!state.selectedTool || state.selectedTool === 'ammeter') {
+          targetHighlightRing1 = addRing(3 * 14 + 7);
+          targetHighlightRing2 = addRing(6 * 14 + 7);
+        }
+      } else if (!resistor1) {
+        if (!state.selectedTool || state.selectedTool === 'resistor') {
+          targetHighlightRing1 = addRing(8 * 14 + 3);
+          targetHighlightRing2 = addRing(12 * 14 + 3);
+        }
+      } else if (!resistor2) {
+        if (!state.selectedTool || state.selectedTool === 'resistor') {
+          targetHighlightRing1 = addRing(8 * 14 + 5);
+          targetHighlightRing2 = addRing(12 * 14 + 5);
+        }
+      } else if (!voltmeter) {
+        if (!state.selectedTool || state.selectedTool === 'voltmeter') {
+          targetHighlightRing1 = addRing(8 * 14 + 9);
+          targetHighlightRing2 = addRing(12 * 14 + 9);
+        }
+      } else {
+        if (!state.selectedTool || state.selectedTool === 'wire') {
+          const am1 = ammeter.snap1, am2 = ammeter.snap2;
+          const r1_1 = resistor1.snap1, r1_2 = resistor1.snap2;
+          const r2_1 = resistor2.snap1, r2_2 = resistor2.snap2;
+          const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
+
+          if (uf.find(6 * 14 + 0) !== uf.find(am1) && uf.find(6 * 14 + 0) !== uf.find(am2)) {
+            targetHighlightRing1 = addRing(6 * 14 + 0, true);
+            targetHighlightRing2 = addRing(am1, true);
+            return;
+          }
+
+          const am_conn_term = (uf.find(am1) === uf.find(6 * 14 + 0)) ? am1 : am2;
+          const am_free_term = (am_conn_term === am1) ? am2 : am1;
+
+          const am_to_r1 = (uf.find(am_free_term) === uf.find(8 * 14 + 3) || uf.find(am_free_term) === uf.find(12 * 14 + 3));
+          if (!am_to_r1) {
+            targetHighlightRing1 = addRing(am_free_term, true);
+            targetHighlightRing2 = addRing(8 * 14 + 3, true);
+            return;
+          }
+
+          const r1_to_r2_start = (uf.find(8 * 14 + 3) === uf.find(8 * 14 + 5) || uf.find(8 * 14 + 3) === uf.find(12 * 14 + 5));
+          if (!r1_to_r2_start) {
+            targetHighlightRing1 = addRing(8 * 14 + 3, true);
+            targetHighlightRing2 = addRing(8 * 14 + 5, true);
+            return;
+          }
+
+          const r1_to_r2_end = (uf.find(12 * 14 + 3) === uf.find(12 * 14 + 5) || uf.find(12 * 14 + 3) === uf.find(8 * 14 + 5));
+          if (!r1_to_r2_end) {
+            targetHighlightRing1 = addRing(12 * 14 + 3, true);
+            targetHighlightRing2 = addRing(12 * 14 + 5, true);
+            return;
+          }
+
+          const r2_to_gnd = (uf.find(12 * 14 + 5) === uf.find(6 * 14 + 1));
+          if (!r2_to_gnd) {
+            targetHighlightRing1 = addRing(12 * 14 + 5, true);
+            targetHighlightRing2 = addRing(6 * 14 + 1, true);
+            return;
+          }
+
+          const volt1_connected = (uf.find(volt1) === uf.find(8 * 14 + 5) || uf.find(volt1) === uf.find(12 * 14 + 5));
+          if (!volt1_connected) {
+            targetHighlightRing1 = addRing(volt1, true);
+            targetHighlightRing2 = addRing(8 * 14 + 5, true);
+            return;
+          }
+
+          const volt1_conn_to = (uf.find(volt1) === uf.find(8 * 14 + 5)) ? 8 * 14 + 5 : 12 * 14 + 5;
+          const volt2_target = (volt1_conn_to === 8 * 14 + 5) ? 12 * 14 + 5 : 8 * 14 + 5;
+
+          const volt2_connected = (uf.find(volt2) === uf.find(volt2_target));
+          if (!volt2_connected) {
+            targetHighlightRing1 = addRing(volt2, true);
+            targetHighlightRing2 = addRing(volt2_target, true);
+            return;
+          }
+        }
       }
     } else {
-      if (!state.selectedTool || state.selectedTool === 'wire') {
-        const r1_1 = resistor1.snap1, r1_2 = resistor1.snap2;
-        const r2_1 = resistor2.snap1, r2_2 = resistor2.snap2;
+      const resistor1 = resistors.find(r => r.snap1 === 7 * 14 + 4 || r.snap2 === 7 * 14 + 4 || r.snap1 === 11 * 14 + 4 || r.snap2 === 11 * 14 + 4);
+      const resistor2 = resistors.find(r => r.snap1 === 11 * 14 + 4 || r.snap2 === 11 * 14 + 4 || r.snap1 === 15 * 14 + 4 || r.snap2 === 15 * 14 + 4);
 
-        const s_to_r1 = (uf.find(7 * 14 + 0) === uf.find(r1_1) || uf.find(7 * 14 + 0) === uf.find(r1_2));
-        if (!s_to_r1) {
-          targetHighlightRing1 = addRing(7 * 14 + 0, true);
-          targetHighlightRing2 = addRing(r1_1, true);
-          return;
+      if (!source) {
+        if (!state.selectedTool || state.selectedTool === 'source') {
+          targetHighlightRing1 = addRing(1 * 14 + 0);
+          targetHighlightRing2 = addRing(1 * 14 + 1);
         }
-
-        const r1_pos_term = (uf.find(r1_1) === uf.find(7 * 14 + 0)) ? r1_1 : r1_2;
-        const r1_shared_term = (r1_pos_term === r1_1) ? r1_2 : r1_1;
-
-        const r2_shared_term = (uf.find(r2_1) === uf.find(r1_shared_term)) ? r2_1 : ((uf.find(r2_2) === uf.find(r1_shared_term)) ? r2_2 : null);
-        if (r2_shared_term === null) {
-          targetHighlightRing1 = addRing(r1_shared_term, true);
-          targetHighlightRing2 = addRing(r2_1, true);
-          return;
+      } else if (!resistor1) {
+        if (!state.selectedTool || state.selectedTool === 'resistor') {
+          targetHighlightRing1 = addRing(7 * 14 + 4);
+          targetHighlightRing2 = addRing(11 * 14 + 4);
         }
+      } else if (!resistor2) {
+        if (!state.selectedTool || state.selectedTool === 'resistor') {
+          targetHighlightRing1 = addRing(11 * 14 + 4);
+          targetHighlightRing2 = addRing(15 * 14 + 4);
+        }
+      } else if (!ammeter) {
+        if (!state.selectedTool || state.selectedTool === 'ammeter') {
+          targetHighlightRing1 = addRing(15 * 14 + 7);
+          targetHighlightRing2 = addRing(20 * 14 + 7);
+        }
+      } else if (!voltmeter) {
+        if (!state.selectedTool || state.selectedTool === 'voltmeter') {
+          targetHighlightRing1 = addRing(7 * 14 + 9);
+          targetHighlightRing2 = addRing(11 * 14 + 9);
+        }
+      } else {
+        if (!state.selectedTool || state.selectedTool === 'wire') {
+          const r1_1 = resistor1.snap1, r1_2 = resistor1.snap2;
+          const r2_1 = resistor2.snap1, r2_2 = resistor2.snap2;
+          const am1 = ammeter.snap1, am2 = ammeter.snap2;
+          const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
 
-        const r2_free_term = (r2_shared_term === r2_1) ? r2_2 : r2_1;
-        const to_gnd = (uf.find(r2_free_term) === uf.find(15 * 14 + 1));
-        if (!to_gnd) {
-          targetHighlightRing1 = addRing(r2_free_term, true);
-          targetHighlightRing2 = addRing(15 * 14 + 1, true);
-          return;
+          const s_to_r1 = (uf.find(7 * 14 + 0) === uf.find(r1_1) || uf.find(7 * 14 + 0) === uf.find(r1_2));
+          if (!s_to_r1) {
+            targetHighlightRing1 = addRing(7 * 14 + 0, true);
+            targetHighlightRing2 = addRing(r1_1, true);
+            return;
+          }
+
+          const r1_pos_term = (uf.find(r1_1) === uf.find(7 * 14 + 0)) ? r1_1 : r1_2;
+          const r1_shared_term = (r1_pos_term === r1_1) ? r1_2 : r1_1;
+
+          const r2_shared_term = (uf.find(r2_1) === uf.find(r1_shared_term)) ? r2_1 : ((uf.find(r2_2) === uf.find(r1_shared_term)) ? r2_2 : null);
+          if (r2_shared_term === null) {
+            targetHighlightRing1 = addRing(r1_shared_term, true);
+            targetHighlightRing2 = addRing(r2_1, true);
+            return;
+          }
+
+          const r2_free_term = (r2_shared_term === r2_1) ? r2_2 : r2_1;
+
+          const r2_to_am = (uf.find(r2_free_term) === uf.find(am1) || uf.find(r2_free_term) === uf.find(am2));
+          if (!r2_to_am) {
+            targetHighlightRing1 = addRing(15 * 14 + 4, true);
+            targetHighlightRing2 = addRing(am1, true);
+            return;
+          }
+
+          const am_conn_term = (uf.find(am1) === uf.find(r2_free_term)) ? am1 : am2;
+          const am_free_term = (am_conn_term === am1) ? am2 : am1;
+
+          const to_gnd = (uf.find(am_free_term) === uf.find(20 * 14 + 1));
+          if (!to_gnd) {
+            targetHighlightRing1 = addRing(am_free_term, true);
+            targetHighlightRing2 = addRing(20 * 14 + 1, true);
+            return;
+          }
+
+          const volt1_connected = (uf.find(volt1) === uf.find(r1_1) || uf.find(volt1) === uf.find(r1_2));
+          if (!volt1_connected) {
+            targetHighlightRing1 = addRing(volt1, true);
+            targetHighlightRing2 = addRing(r1_1, true);
+            return;
+          }
+
+          const volt1_conn_to = (uf.find(volt1) === uf.find(r1_1)) ? r1_1 : r1_2;
+          const volt2_target = (volt1_conn_to === r1_1) ? r1_2 : r1_1;
+
+          const volt2_connected = (uf.find(volt2) === uf.find(volt2_target));
+          if (!volt2_connected) {
+            targetHighlightRing1 = addRing(volt2, true);
+            targetHighlightRing2 = addRing(volt2_target, true);
+            return;
+          }
         }
       }
     }
@@ -7761,11 +7897,12 @@ function updateTargetHighlights() {
   else if (state.activeExperiment === 'wheatstone') {
     const source = findComp('source');
     const resistors = comps.filter(c => c.type === 'resistor');
-    
-    const r1 = resistors.find(r => r.snap1 === 6 * 14 + 3 || r.snap2 === 6 * 14 + 3);
-    const r2 = resistors.find(r => r.snap1 === 10 * 14 + 3 || r.snap2 === 10 * 14 + 3);
-    const r3 = resistors.find(r => r.snap1 === 6 * 14 + 5 || r.snap2 === 6 * 14 + 5);
-    const r4 = resistors.find(r => r.snap1 === 10 * 14 + 5 || r.snap2 === 10 * 14 + 5);
+    const galv = findComp('galvanometer');
+
+    const r1 = resistors.find(r => r.snap1 === 6 * 14 + 4 || r.snap2 === 6 * 14 + 4 || r.snap1 === 10 * 14 + 4 || r.snap2 === 10 * 14 + 4);
+    const r2 = resistors.find(r => r.snap1 === 10 * 14 + 4 || r.snap2 === 10 * 14 + 4 || r.snap1 === 14 * 14 + 4 || r.snap2 === 14 * 14 + 4);
+    const r3 = resistors.find(r => r.snap1 === 6 * 14 + 9 || r.snap2 === 6 * 14 + 9 || r.snap1 === 10 * 14 + 9 || r.snap2 === 10 * 14 + 9);
+    const r4 = resistors.find(r => r.snap1 === 10 * 14 + 9 || r.snap2 === 10 * 14 + 9 || r.snap1 === 14 * 14 + 9 || r.snap2 === 14 * 14 + 9);
 
     if (!source) {
       if (!state.selectedTool || state.selectedTool === 'source') {
@@ -7774,23 +7911,28 @@ function updateTargetHighlights() {
       }
     } else if (!r1) {
       if (!state.selectedTool || state.selectedTool === 'resistor') {
-        targetHighlightRing1 = addRing(6 * 14 + 3);
-        targetHighlightRing2 = addRing(10 * 14 + 3);
+        targetHighlightRing1 = addRing(6 * 14 + 4);
+        targetHighlightRing2 = addRing(10 * 14 + 4);
       }
     } else if (!r2) {
       if (!state.selectedTool || state.selectedTool === 'resistor') {
-        targetHighlightRing1 = addRing(10 * 14 + 3);
-        targetHighlightRing2 = addRing(14 * 14 + 3);
+        targetHighlightRing1 = addRing(10 * 14 + 4);
+        targetHighlightRing2 = addRing(14 * 14 + 4);
       }
     } else if (!r3) {
       if (!state.selectedTool || state.selectedTool === 'resistor') {
-        targetHighlightRing1 = addRing(6 * 14 + 5);
-        targetHighlightRing2 = addRing(10 * 14 + 5);
+        targetHighlightRing1 = addRing(6 * 14 + 9);
+        targetHighlightRing2 = addRing(10 * 14 + 9);
       }
     } else if (!r4) {
       if (!state.selectedTool || state.selectedTool === 'resistor') {
-        targetHighlightRing1 = addRing(10 * 14 + 5);
-        targetHighlightRing2 = addRing(14 * 14 + 5);
+        targetHighlightRing1 = addRing(10 * 14 + 9);
+        targetHighlightRing2 = addRing(14 * 14 + 9);
+      }
+    } else if (!galv) {
+      if (!state.selectedTool || state.selectedTool === 'galvanometer') {
+        targetHighlightRing1 = addRing(8 * 14 + 9);
+        targetHighlightRing2 = addRing(12 * 14 + 9);
       }
     } else {
       if (!state.selectedTool || state.selectedTool === 'wire') {
@@ -7806,23 +7948,43 @@ function updateTargetHighlights() {
 
         const r1_to_r3 = (uf.find(r1_pos_term) === uf.find(r3.snap1) || uf.find(r1_pos_term) === uf.find(r3.snap2));
         if (!r1_to_r3) {
-          targetHighlightRing1 = addRing(r1_pos_term, true);
-          targetHighlightRing2 = addRing(r3.snap1, true);
+          targetHighlightRing1 = addRing(6 * 14 + 4, true);
+          targetHighlightRing2 = addRing(6 * 14 + 9, true);
           return;
         }
 
         const r2_to_r4 = (uf.find(r2.snap2) === uf.find(r4.snap2) || uf.find(r2.snap2) === uf.find(r4.snap1) || uf.find(r2.snap1) === uf.find(r4.snap2) || uf.find(r2.snap1) === uf.find(r4.snap1));
         if (!r2_to_r4) {
-          targetHighlightRing1 = addRing(r2.snap2, true);
-          targetHighlightRing2 = addRing(r4.snap2, true);
+          targetHighlightRing1 = addRing(14 * 14 + 4, true);
+          targetHighlightRing2 = addRing(14 * 14 + 9, true);
           return;
         }
 
         const r4_gnd_term = (uf.find(r4.snap1) === uf.find(2 * 14 + 1)) ? r4.snap1 : r4.snap2;
         const to_gnd = (uf.find(r4_gnd_term) === uf.find(2 * 14 + 1));
         if (!to_gnd) {
-          targetHighlightRing1 = addRing(r4_gnd_term, true);
+          targetHighlightRing1 = addRing(14 * 14 + 9, true);
           targetHighlightRing2 = addRing(2 * 14 + 1, true);
+          return;
+        }
+
+        const nodeA = uf.find(10 * 14 + 4);
+        const g1 = galv.snap1, g2 = galv.snap2;
+        const g1_connected = (uf.find(g1) === nodeA || uf.find(g2) === nodeA);
+        if (!g1_connected) {
+          targetHighlightRing1 = addRing(10 * 14 + 4, true);
+          targetHighlightRing2 = addRing(g1, true);
+          return;
+        }
+
+        const g_conn_term = (uf.find(g1) === nodeA) ? g1 : g2;
+        const g_free_term = (g_conn_term === g1) ? g2 : g1;
+
+        const nodeB = uf.find(10 * 14 + 9);
+        const g2_connected = (uf.find(g_free_term) === nodeB);
+        if (!g2_connected) {
+          targetHighlightRing1 = addRing(10 * 14 + 9, true);
+          targetHighlightRing2 = addRing(g_free_term, true);
           return;
         }
       }
@@ -7834,7 +7996,7 @@ function updateTargetHighlights() {
     const inductor = findComp('inductor');
     const capacitor = findComp('capacitor');
     const ammeter = findComp('ammeter');
-    const voltmeter = state.activeExperiment === 'rc_rl_rlc' ? findComp('voltmeter') : null;
+    const voltmeter = findComp('voltmeter');
 
     if (!source) {
       if (!state.selectedTool || state.selectedTool === 'source') {
@@ -7861,7 +8023,7 @@ function updateTargetHighlights() {
         targetHighlightRing1 = addRing(19 * 14 + 9);
         targetHighlightRing2 = addRing(24 * 14 + 9);
       }
-    } else if (state.activeExperiment === 'rc_rl_rlc' && !voltmeter) {
+    } else if (!voltmeter) {
       if (!state.selectedTool || state.selectedTool === 'voltmeter') {
         targetHighlightRing1 = addRing(15 * 14 + 11);
         targetHighlightRing2 = addRing(19 * 14 + 11);
@@ -7872,6 +8034,7 @@ function updateTargetHighlights() {
         const l1 = inductor.snap1, l2 = inductor.snap2;
         const c1 = capacitor.snap1, c2 = capacitor.snap2;
         const am1 = ammeter.snap1, am2 = ammeter.snap2;
+        const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
 
         const s_to_r = (uf.find(7 * 14 + 0) === uf.find(r1) || uf.find(7 * 14 + 0) === uf.find(r2));
         if (!s_to_r) {
@@ -7920,23 +8083,20 @@ function updateTargetHighlights() {
           return;
         }
 
-        if (state.activeExperiment === 'rc_rl_rlc') {
-          const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
-          const volt1_connected = (uf.find(volt1) === uf.find(c1) || uf.find(volt1) === uf.find(c2));
-          if (!volt1_connected) {
-            targetHighlightRing1 = addRing(volt1, true);
-            targetHighlightRing2 = addRing(c1, true);
-            return;
-          }
+        const volt1_connected = (uf.find(volt1) === uf.find(c1) || uf.find(volt1) === uf.find(c2));
+        if (!volt1_connected) {
+          targetHighlightRing1 = addRing(volt1, true);
+          targetHighlightRing2 = addRing(c1, true);
+          return;
+        }
 
-          const volt1_conn_to = (uf.find(volt1) === uf.find(c1)) ? c1 : c2;
-          const volt2_target = (volt1_conn_to === c1) ? c2 : c1;
-          const volt2_connected = (uf.find(volt2) === uf.find(volt2_target));
-          if (!volt2_connected) {
-            targetHighlightRing1 = addRing(volt2, true);
-            targetHighlightRing2 = addRing(volt2_target, true);
-            return;
-          }
+        const volt1_conn_to = (uf.find(volt1) === uf.find(c1)) ? c1 : c2;
+        const volt2_target = (volt1_conn_to === c1) ? c2 : c1;
+        const volt2_connected = (uf.find(volt2) === uf.find(volt2_target));
+        if (!volt2_connected) {
+          targetHighlightRing1 = addRing(volt2, true);
+          targetHighlightRing2 = addRing(volt2_target, true);
+          return;
         }
       }
     }
@@ -7946,6 +8106,8 @@ function updateTargetHighlights() {
     const switchComp = findComp('toggle_switch') || findComp('button');
     const resistor = findComp('resistor');
     const capacitor = findComp('capacitor');
+    const ammeter = findComp('ammeter');
+    const voltmeter = findComp('voltmeter');
 
     if (!source) {
       if (!state.selectedTool || state.selectedTool === 'source') {
@@ -7967,11 +8129,23 @@ function updateTargetHighlights() {
         targetHighlightRing1 = addRing(14 * 14 + 7);
         targetHighlightRing2 = addRing(19 * 14 + 7);
       }
+    } else if (!ammeter) {
+      if (!state.selectedTool || state.selectedTool === 'ammeter') {
+        targetHighlightRing1 = addRing(19 * 14 + 10);
+        targetHighlightRing2 = addRing(24 * 14 + 10);
+      }
+    } else if (!voltmeter) {
+      if (!state.selectedTool || state.selectedTool === 'voltmeter') {
+        targetHighlightRing1 = addRing(14 * 14 + 11);
+        targetHighlightRing2 = addRing(19 * 14 + 11);
+      }
     } else {
       if (!state.selectedTool || state.selectedTool === 'wire') {
         const sw1 = switchComp.snap1, sw2 = switchComp.snap2;
         const r1 = resistor.snap1, r2 = resistor.snap2;
         const c1 = capacitor.snap1, c2 = capacitor.snap2;
+        const am1 = ammeter.snap1, am2 = ammeter.snap2;
+        const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
 
         const s_to_sw = (uf.find(5 * 14 + 0) === uf.find(sw1) || uf.find(5 * 14 + 0) === uf.find(sw2));
         if (!s_to_sw) {
@@ -7995,18 +8169,45 @@ function updateTargetHighlights() {
 
         const r_to_c = (uf.find(r_free_term) === uf.find(c1) || uf.find(r_free_term) === uf.find(c2));
         if (!r_to_c) {
-          targetHighlightRing1 = addRing(r_free_term, true);
-          targetHighlightRing2 = addRing(c1, true);
+          targetHighlightRing1 = addRing(14 * 14 + 6, true);
+          targetHighlightRing2 = addRing(14 * 14 + 7, true);
           return;
         }
 
         const c_conn_term = (uf.find(c1) === uf.find(r_free_term)) ? c1 : c2;
         const c_free_term = (c_conn_term === c1) ? c2 : c1;
 
-        const c_to_gnd = (uf.find(c_free_term) === uf.find(24 * 14 + 1));
-        if (!c_to_gnd) {
-          targetHighlightRing1 = addRing(c_free_term, true);
+        const c_to_am = (uf.find(c_free_term) === uf.find(am1) || uf.find(c_free_term) === uf.find(am2));
+        if (!c_to_am) {
+          targetHighlightRing1 = addRing(19 * 14 + 7, true);
+          targetHighlightRing2 = addRing(19 * 14 + 10, true);
+          return;
+        }
+
+        const am_conn_term = (uf.find(am1) === uf.find(c_free_term)) ? am1 : am2;
+        const am_free_term = (am_conn_term === am1) ? am2 : am1;
+
+        const am_to_gnd = (uf.find(am_free_term) === uf.find(24 * 14 + 1));
+        if (!am_to_gnd) {
+          targetHighlightRing1 = addRing(am_free_term, true);
           targetHighlightRing2 = addRing(24 * 14 + 1, true);
+          return;
+        }
+
+        const volt1_connected = (uf.find(volt1) === uf.find(c1) || uf.find(volt1) === uf.find(c2));
+        if (!volt1_connected) {
+          targetHighlightRing1 = addRing(volt1, true);
+          targetHighlightRing2 = addRing(c1, true);
+          return;
+        }
+
+        const volt1_conn_to = (uf.find(volt1) === uf.find(c1)) ? c1 : c2;
+        const volt2_target = (volt1_conn_to === c1) ? c2 : c1;
+
+        const volt2_connected = (uf.find(volt2) === uf.find(volt2_target));
+        if (!volt2_connected) {
+          targetHighlightRing1 = addRing(volt2, true);
+          targetHighlightRing2 = addRing(volt2_target, true);
           return;
         }
       }
@@ -8180,6 +8381,8 @@ function updateTargetHighlights() {
     const resistors = comps.filter(c => c.type === 'resistor');
     const r1 = resistors[0];
     const r2 = resistors[1];
+    const ammeter = findComp('ammeter');
+    const voltmeter = findComp('voltmeter');
 
     if (!source) {
       if (!state.selectedTool || state.selectedTool === 'source') {
@@ -8196,10 +8399,22 @@ function updateTargetHighlights() {
         targetHighlightRing1 = addRing(11 * 14 + 4);
         targetHighlightRing2 = addRing(15 * 14 + 4);
       }
+    } else if (!ammeter) {
+      if (!state.selectedTool || state.selectedTool === 'ammeter') {
+        targetHighlightRing1 = addRing(15 * 14 + 9);
+        targetHighlightRing2 = addRing(19 * 14 + 9);
+      }
+    } else if (!voltmeter) {
+      if (!state.selectedTool || state.selectedTool === 'voltmeter') {
+        targetHighlightRing1 = addRing(11 * 14 + 9);
+        targetHighlightRing2 = addRing(15 * 14 + 9);
+      }
     } else {
       if (!state.selectedTool || state.selectedTool === 'wire') {
         const r1_1 = r1.snap1, r1_2 = r1.snap2;
         const r2_1 = r2.snap1, r2_2 = r2.snap2;
+        const am1 = ammeter.snap1, am2 = ammeter.snap2;
+        const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
 
         const s_to_r1 = (uf.find(7 * 14 + 0) === uf.find(r1_1) || uf.find(7 * 14 + 0) === uf.find(r1_2));
         if (!s_to_r1) {
@@ -8219,10 +8434,38 @@ function updateTargetHighlights() {
         }
 
         const r2_free_term = (r2_shared_term === r2_1) ? r2_2 : r2_1;
-        const to_gnd = (uf.find(r2_free_term) === uf.find(15 * 14 + 1));
+
+        const r2_to_am = (uf.find(r2_free_term) === uf.find(am1) || uf.find(r2_free_term) === uf.find(am2));
+        if (!r2_to_am) {
+          targetHighlightRing1 = addRing(15 * 14 + 4, true);
+          targetHighlightRing2 = addRing(am1, true);
+          return;
+        }
+
+        const am_conn_term = (uf.find(am1) === uf.find(r2_free_term)) ? am1 : am2;
+        const am_free_term = (am_conn_term === am1) ? am2 : am1;
+
+        const to_gnd = (uf.find(am_free_term) === uf.find(19 * 14 + 1));
         if (!to_gnd) {
-          targetHighlightRing1 = addRing(r2_free_term, true);
-          targetHighlightRing2 = addRing(15 * 14 + 1, true);
+          targetHighlightRing1 = addRing(am_free_term, true);
+          targetHighlightRing2 = addRing(19 * 14 + 1, true);
+          return;
+        }
+
+        const volt1_connected = (uf.find(volt1) === uf.find(r2_shared_term) || uf.find(volt1) === uf.find(r2_free_term));
+        if (!volt1_connected) {
+          targetHighlightRing1 = addRing(volt1, true);
+          targetHighlightRing2 = addRing(r2_shared_term, true);
+          return;
+        }
+
+        const volt1_conn_to = (uf.find(volt1) === uf.find(r2_shared_term)) ? r2_shared_term : r2_free_term;
+        const volt2_target = (volt1_conn_to === r2_shared_term) ? r2_free_term : r2_shared_term;
+
+        const volt2_connected = (uf.find(volt2) === uf.find(volt2_target));
+        if (!volt2_connected) {
+          targetHighlightRing1 = addRing(volt2, true);
+          targetHighlightRing2 = addRing(volt2_target, true);
           return;
         }
       }
@@ -8232,6 +8475,8 @@ function updateTargetHighlights() {
     const source = findComp('source');
     const resistor = findComp('resistor');
     const led = findComp('led');
+    const ammeter = findComp('ammeter');
+    const voltmeter = findComp('voltmeter');
 
     if (!source) {
       if (!state.selectedTool || state.selectedTool === 'source') {
@@ -8248,10 +8493,22 @@ function updateTargetHighlights() {
         targetHighlightRing1 = addRing(11 * 14 + 5);
         targetHighlightRing2 = addRing(15 * 14 + 5);
       }
+    } else if (!ammeter) {
+      if (!state.selectedTool || state.selectedTool === 'ammeter') {
+        targetHighlightRing1 = addRing(15 * 14 + 9);
+        targetHighlightRing2 = addRing(19 * 14 + 9);
+      }
+    } else if (!voltmeter) {
+      if (!state.selectedTool || state.selectedTool === 'voltmeter') {
+        targetHighlightRing1 = addRing(11 * 14 + 9);
+        targetHighlightRing2 = addRing(15 * 14 + 9);
+      }
     } else {
       if (!state.selectedTool || state.selectedTool === 'wire') {
         const r1 = resistor.snap1, r2 = resistor.snap2;
         const l1 = led.snap1, l2 = led.snap2;
+        const am1 = ammeter.snap1, am2 = ammeter.snap2;
+        const volt1 = voltmeter.snap1, volt2 = voltmeter.snap2;
 
         const s_to_r = (uf.find(7 * 14 + 0) === uf.find(r1) || uf.find(7 * 14 + 0) === uf.find(r2));
         if (!s_to_r) {
@@ -8273,10 +8530,37 @@ function updateTargetHighlights() {
         const l_conn_term = (uf.find(l1) === uf.find(r_free_term)) ? l1 : l2;
         const l_free_term = (l_conn_term === l1) ? l2 : l1;
 
-        const l_to_gnd = (uf.find(l_free_term) === uf.find(15 * 14 + 1));
-        if (!l_to_gnd) {
-          targetHighlightRing1 = addRing(l_free_term, true);
-          targetHighlightRing2 = addRing(15 * 14 + 1, true);
+        const l_to_am = (uf.find(l_free_term) === uf.find(am1) || uf.find(l_free_term) === uf.find(am2));
+        if (!l_to_am) {
+          targetHighlightRing1 = addRing(15 * 14 + 5, true);
+          targetHighlightRing2 = addRing(am1, true);
+          return;
+        }
+
+        const am_conn_term = (uf.find(am1) === uf.find(l_free_term)) ? am1 : am2;
+        const am_free_term = (am_conn_term === am1) ? am2 : am1;
+
+        const to_gnd = (uf.find(am_free_term) === uf.find(19 * 14 + 1));
+        if (!to_gnd) {
+          targetHighlightRing1 = addRing(am_free_term, true);
+          targetHighlightRing2 = addRing(19 * 14 + 1, true);
+          return;
+        }
+
+        const volt1_connected = (uf.find(volt1) === uf.find(l_conn_term) || uf.find(volt1) === uf.find(l_free_term));
+        if (!volt1_connected) {
+          targetHighlightRing1 = addRing(volt1, true);
+          targetHighlightRing2 = addRing(l_conn_term, true);
+          return;
+        }
+
+        const volt1_conn_to = (uf.find(volt1) === uf.find(l_conn_term)) ? l_conn_term : l_free_term;
+        const volt2_target = (volt1_conn_to === l_conn_term) ? l_free_term : l_conn_term;
+
+        const volt2_connected = (uf.find(volt2) === uf.find(volt2_target));
+        if (!volt2_connected) {
+          targetHighlightRing1 = addRing(volt2, true);
+          targetHighlightRing2 = addRing(volt2_target, true);
           return;
         }
       }
